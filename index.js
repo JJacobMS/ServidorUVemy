@@ -19,6 +19,8 @@ var corsOptions = {
 app.use(cors(corsOptions));
 app.use("/api/cursos", require('./routes/cursos.routes'))
 app.use("/api/clases", require('./routes/clases.routes'))
+app.use("/api/documentos", require('./routes/documentos.routes'))
+app.use("/api/tiposarchivos", require('./routes/tiposarchivos.routes'))
 
 
 app.get('*', (req, res) => {res.status(404).send()});
