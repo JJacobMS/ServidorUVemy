@@ -1,0 +1,34 @@
+GET http://localhost:3000/api/cursos
+
+###
+
+GET http://localhost:3000/api/cursos/16
+
+###
+
+POST http://localhost:3000/api/cursos
+Content-Type: application/json
+
+{
+    "titulo": "Curso de prueba",
+    "descripcion": "Curso de prueba",
+    "objetivos": "Curso de prueba",
+    "requisitos": "Curso de prueba"
+}
+
+###
+
+PUT http://localhost:3000/api/cursos/16
+Content-Type: application/json
+
+{
+    "idCurso": 16,
+    "titulo": "Curso de prueba",
+    "descripcion": "Curso de prueba",
+    "objetivos": "Curso de prueba",
+    "requisitos": "Curso de prueba"
+}
+
+###
+
+DELETE http://localhost:3000/api/cursos/17
