@@ -18,6 +18,9 @@ var corsOptions = {
 
 app.use(cors(corsOptions));
 app.use("/api/cursos", require('./routes/cursos.routes'))
+app.use("/api/clases", require('./routes/clases.routes'))
+
+
 app.get('*', (req, res) => {res.status(404).send()});
     const pool = mysql.createPool({
     user: process.env.DB_USER,
