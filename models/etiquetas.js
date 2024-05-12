@@ -5,7 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class etiquetas extends Model {
     static associate(models) {
-      etiquetas.belongsToMany(models.usuarios, { as: 'categorias', through: 'usuariosetiquetas', foreignKey: 'idEtiqueta'});
+      etiquetas.belongsToMany(models.usuarios, { as: 'usuarios', through: 'usuariosetiquetas', foreignKey: 'idEtiqueta'});
     }
   }
   etiquetas.init({
