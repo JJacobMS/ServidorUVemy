@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'tiposarchivos',
+    timestamps: false
   });
   return tiposarchivos;
 };

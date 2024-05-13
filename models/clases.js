@@ -27,7 +27,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
+    freezeTableName: true,
     modelName: 'clases',
+    timestamps: false
   });
   return clases;
 };
