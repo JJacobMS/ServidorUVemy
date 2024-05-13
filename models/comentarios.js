@@ -2,14 +2,14 @@
 const { Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-  class Comentarios extends Model {
+  class comentarios extends Model {
     static associate(models) {
-      Comentarios.belongsTo(models.clases, { as: 'clase', foreignKey: 'id' });
-      Comentarios.belongsTo(models.usuarios, { as: 'usuario', foreignKey: 'idUsuario' });
-      Comentarios.hasMany(models.comentarios, { as: 'comentarios', foreignKey: 'idComentario' });
+      comentarios.belongsTo(models.clases, { as: 'clase', foreignKey: 'id' });
+      comentarios.belongsTo(models.usuarios, { as: 'usuario', foreignKey: 'idUsuario' });
+      comentarios.hasMany(models.comentarios, { as: 'comentarios', foreignKey: 'idComentario' });
     }
   }
-  Comentarios.init({
+  comentarios.init({
     idComentario: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -44,7 +44,7 @@ module.exports = (sequelize) => {
   }, {
     sequelize,
     freezeTableName: true,
-    modelName: 'Comentarios',
+    modelName: 'comentarios',
   });
-  return Comentarios;
+  return comentarios;
 };
