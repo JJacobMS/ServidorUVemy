@@ -1,5 +1,5 @@
 'use strict';
-/** @type {import('sequelize-cli').Migration} */
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('comentarios', {
@@ -7,8 +7,7 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
-        allowNull: false
+        type: Sequelize.INTEGER
       },
       fecha: {
         type: Sequelize.DATE,
@@ -24,7 +23,7 @@ module.exports = {
         allowNull: false,
         references: {
           model: 'clases',
-          key: 'idClase'
+          key: 'id'
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
@@ -39,14 +38,13 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      idComentario: {
+      idRespuestaAComentario: {
         type: Sequelize.INTEGER,
+        allowNull: true,
         references: {
           model: 'comentarios',
           key: 'idComentario'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        }
       },
       createdAt: {
         allowNull: false,
