@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class usuarios extends Model {
     static associate(models) {
       usuarios.belongsToMany(models.etiquetas, {as: 'etiquetas', through: 'usuariosetiquetas', foreignKey: 'idUsuario'});
-      //usuarios.belongsToMany(models.cursos, {through: 'usuarioscursos', foreignKey: 'idUsuario'});
+      usuarios.belongsToMany(models.cursos, {through: 'usuarioscursos', foreignKey: 'idUsuario'});
       usuarios.hasMany(models.comentarios, {foreignKey: 'idUsuario'});
     }
   }
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    contraseña: {
+    contrasena: {
       type: DataTypes.STRING,
       allowNull: false
     }
