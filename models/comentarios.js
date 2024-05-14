@@ -45,6 +45,7 @@ module.exports = (sequelize) => {
     sequelize,
     freezeTableName: true,
     modelName: 'comentarios',
+    timestamps: false
   });
   return comentarios;
 };
