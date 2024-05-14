@@ -3,7 +3,7 @@ const jwtSecret = process.env.JWT_SECRET;
 const claimTypes = require('../config/claimtypes');
 const { generaToken } = require('../services/jwttoken.service');
 
-const authorize = () => {
+const autorizar = () => {
     return async (req, res, next) => {
         try {
             const encabezadoAuth = req.header('Authorization');
@@ -28,4 +28,4 @@ const authorize = () => {
     }
 }
 
-module.exports = authorize;
+module.exports = autorizar;

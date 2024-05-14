@@ -17,16 +17,16 @@ const generaToken = (idUsuario, correoElectronico, nombre) => {
 }
 const tiempoRestanteToken = (req) => {
     try{
-        const authHeader = req.header('Authorization');
-        if (!authHeader.startsWith('Bearer'))
+        const encabezadoAuth = req.header('Authorization');
+        if (!encabezadoAuth.startsWith('Bearer'))
             return 0;
         
-        const token = authHeader.split(' ')[1];
-        const decoded = jwt.verify(token, jwtSecret);
+        const token = encabezadoAuth.split(' ')[1];
+        const descifrado = jwt.verify(token, jwtSecret);
 
-        const time = (decodedToken.exp - (new Date().getTime() / 1000));
-        const minutos = Math.floor(time / 60);
-        const segundos = Math.floor(time - minutos * 60);
+        const tiempo = (decodedToken.exp - (new Date().gettiempo() / 1000));
+        const minutos = Math.floor(tiempo / 60);
+        const segundos = Math.floor(tiempo - minutos * 60);
 
         return "00:" + minutos.toString().padStart(2, "0") + ':' + segundos.toString().padStart(2, "0");
     } catch (error) {
