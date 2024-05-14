@@ -2,9 +2,9 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET;
 const ClaimTypes = require('../config/claimtypes');
 
-const generaToken = (email, nombre) => {
+const generaToken = (correoElectronico, nombre) => {
     const token = jwt.sign({
-        [ClaimTypes.Email]: email,
+        [ClaimTypes.Email]: correoElectronico,
         [ClaimTypes.GivenName]: nombre,
         "iss": "UVemyServidorJWT",
         "aud": "UsuariosUVemyJWT"
@@ -32,3 +32,5 @@ const tiempoRestanteToken = (req) => {
         return null;
     }
 }
+
+module.exports = { generaToken, tiempoRestanteToken };
