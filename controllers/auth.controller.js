@@ -4,10 +4,12 @@ const { generaToken, tiempoRestanteToken } = require('../services/jwttoken.servi
 
 let self = {};
 
-self.login = async function (req, res) {
+self.iniciarSesion = async function (req, res) {
     try{
+        const { correoElectronico, contrasena } = req.body;
+
         let data = await usuarios.findOne({
-            where: { email: email },
+            where: { correoElectronico: correoElectronico },
             raw: true,
             attributes: ['idUsuario', 'correoElectronico', 'contrasena', 'nombres', 'apellidos']
         });
@@ -15,13 +17,13 @@ self.login = async function (req, res) {
         if (data === null)
             return res.status(401).send({ message: "Correo electrónico o contraseña incorrectos" });
 
-        const contraeñaValida = await bcrypt.compare(contraseña, data.contrasena);
-        if (!contraeñaValida)
+        const contraenaValida = await bcrypt.compare(contrasena, data.contrasena);
+        if (!contraenaValida)
             return res.status(401).send({ message: "Correo electrónico o contraseña incorrectos" });
 
-        token = generaToken(data.email, data.nombres);
+        token = generaToken(data.correoElectronico, data.nombres);
         return res.status(200).json({
-            email: data.email,
+            idUsuario: data.idUsuario,
             nombres: data.nombres,
             apellidos: data.apellidos,
             correoElectronico: data.correoElectronico,
