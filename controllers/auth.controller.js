@@ -21,7 +21,7 @@ self.iniciarSesion = async function (req, res) {
         if (!contraenaValida)
             return res.status(401).send({ message: "Correo electrónico o contraseña incorrectos" });
 
-        token = generaToken(data.correoElectronico, data.nombres);
+        token = generaToken(data.idUsuario, data.correoElectronico, data.nombres);
         return res.status(200).json({
             idUsuario: data.idUsuario,
             nombres: data.nombres,
