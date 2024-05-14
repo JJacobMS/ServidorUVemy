@@ -1,9 +1,20 @@
 const { clases, cursos } = require('../models');
 let self = {}
 
-self.getAll = async function(req, res){
+self.obtenerPorId = async function(req, res){
+    if(req.params.id == null) return res.status(400).json({ message : "No especificó el ID"})
     try{
-        let data = await clases.findAll({ attributes: ['idClase', 'nombre', 'descripcion', 'idCurso']})
+        let data = await clases.findOne({ where: {idClase: req.params.id}, attributes: ['idClase', 'nombre', 'descripcion', 'idCurso']})
+        return res.status(200).json(data)
+    }catch(error){
+        return res.status(500).json(error)
+    }
+}
+
+self.obtenerPorCurso = async function(req, res){
+    if(req.params.idCurso == null) return res.status(400).json({ message : "No especificó el curso"})
+    try{
+        let data = await clases.findAll({ where: {idCurso: req.params.idCurso}, attributes: ['idClase', 'nombre', 'descripcion', 'idCurso']})
         return res.status(200).json(data)
     }catch(error){
         return res.status(500).json(error)
