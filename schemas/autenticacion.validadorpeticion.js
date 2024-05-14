@@ -1,12 +1,18 @@
-const { body } = require('express-validator');
-
-const inicioSesionSchema = () => {
-    console.log("Validando esquema inicio de sesión");
-    return [
-        body("correoElectronico").notEmpty()
-            .trim().isEmail().withMessage("Correo electrónico no válido"),
-        body("contrasena").notEmpty().withMessage("Contraseña requerida")
-    ];
+const inicioSesionSchema = ()  => {
+    return {
+        correoElectronico: {
+            in: ['body'],
+            trim: true,
+            isEmail: true,
+            errorMessage: 'Correo electrónico inválido',
+        },
+        contrasena: {
+            in: ['body'],
+            trim: true,
+            notEmpty: true,
+            errorMessage: 'Contraseña requerida',
+        },
+    }
 }
 
 module.exports = inicioSesionSchema;
