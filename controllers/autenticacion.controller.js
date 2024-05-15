@@ -15,11 +15,11 @@ self.iniciarSesion = async function (req, res) {
         });
 
         if (data === null)
-            return res.status(401).send({ message: "Correo electrónico o contraseña incorrectos" });
+            return res.status(401).send({ detalles: ["Correo electrónico o contraseña incorrectos"] });
 
         const contraenaValida = await bcrypt.compare(contrasena, data.contrasena);
         if (!contraenaValida)
-            return res.status(401).send({ message: "Correo electrónico o contraseña incorrectos" });
+            return res.status(401).send({ detalles: ["Correo electrónico o contraseña incorrectos"] });
 
         token = generaToken(data.idUsuario, data.correoElectronico, data.nombres);
         return res.status(200).json({
@@ -30,7 +30,7 @@ self.iniciarSesion = async function (req, res) {
             jwt: token
         });
     } catch (error) {
-        res.status(500).send({ message: error.message });
+        res.status(500).send({ detalles: [error.message] });
     }
 }
 
