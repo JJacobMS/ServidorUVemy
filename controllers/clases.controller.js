@@ -37,7 +37,7 @@ self.create = async function(req, res){
             idCurso: req.body.idCurso
         });
 
-        return res.status(201).send();
+        return res.status(201).json(data);
     }catch(error){
         return res.status(500).json(error);
     }
