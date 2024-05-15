@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const { usuarios, Sequelize } = require('../models');
 const { generaToken, tiempoRestanteToken } = require('../services/jwttoken.service');
+const CodigosRespuesta = require('../utils/codigosRespuesta');
 
 let self = {};
 
@@ -15,14 +16,14 @@ self.iniciarSesion = async function (req, res) {
         });
 
         if (data === null)
-            return res.status(401).send({ message: "Correo electrónico o contraseña incorrectos" });
+            return res.status(CodigosRespuesta.UNAUTHORIZED).send({ detalles: ["Correo electrónico o contraseña incorrectos"] });
 
         const contraenaValida = await bcrypt.compare(contrasena, data.contrasena);
         if (!contraenaValida)
-            return res.status(401).send({ message: "Correo electrónico o contraseña incorrectos" });
+            return res.status(CodigosRespuesta.UNAUTHORIZED).send({ detalles: ["Correo electrónico o contraseña incorrectos"] });
 
         token = generaToken(data.idUsuario, data.correoElectronico, data.nombres);
-        return res.status(200).json({
+        return res.status(CodigosRespuesta.OK).json({
             idUsuario: data.idUsuario,
             nombres: data.nombres,
             apellidos: data.apellidos,
@@ -30,7 +31,7 @@ self.iniciarSesion = async function (req, res) {
             jwt: token
         });
     } catch (error) {
-        res.status(500).send({ message: error.message });
+        res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: [error.message] });
     }
 }
 

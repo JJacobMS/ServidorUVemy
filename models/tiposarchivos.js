@@ -12,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
     idTipoArchivo: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     nombre: {
       type: DataTypes.STRING,
