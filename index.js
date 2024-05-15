@@ -45,5 +45,24 @@ app.get('*', (req, res) => {res.status(404).send()});
         }}
 getConexion();
 app.listen(process.env.SERVER_PORT,()=>{
-    console.log('Aplicacion de ejemplo escuchando en el puerto'+process.env.SERVER_PORT);
+    console.log('Aplicacion de ejemplo escuchando en el puerto '+process.env.SERVER_PORT);
+});
+
+
+//gRPC
+
+const grpc = require("@grpc/grpc-js");
+const protoLoader = require("@grpc/proto-loader");
+const PROTO_PATH = "./proto/documento.proto";
+
+const packageDefinition = protoLoader.loadSync(PROTO_PATH);
+const documentoProto = grpc.loadPackageDefinition(packageDefinition);
+
+const server = new grpc.Server();
+
+const { enviarVideoClase } = require('./services/videogrpc.service');
+server.addService(documentoProto.VideoService.service, { EnviarVideoClase : enviarVideoClase});
+
+server.bindAsync(`localhost:${process.env.SERVER_PORT_GRPC}`, grpc.ServerCredentials.createInsecure(), ()=>{
+    console.log(`Servidor gRPC en ejecución en el puerto ${process.env.SERVER_PORT_GRPC}`)
 });
