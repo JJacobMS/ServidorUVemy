@@ -91,4 +91,16 @@ self.borrarEtiquetasDelCurso = async function(cursoId){
     }
 }
 
+self.crearCursosEtiquetas = async function(idCurso, idEtiqueta){
+    try{
+        let etiquetaCreada = await cursosetiquetas.create({
+            idCurso: idCurso,
+            idEtiqueta: idEtiqueta,
+        })
+        return res.status(201).json(etiquetaCreada)
+    }catch(error){
+        return { status: 500, message: error.message };
+    }
+}
+
 module.exports = self;

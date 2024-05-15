@@ -38,6 +38,9 @@ self.create = async function(req, res){
             requisitos: req.body.requisitos,
             idUsuario: req.body.idUsuario
         })
+        for (let etiquetaId of req.body.etiquetas) {
+            await cursosetiquetas.crearCursosEtiquetas(cursoCreado.idCurso, etiquetaId);
+        }
         return res.status(201).json(cursoCreado)
     }catch(error){
         return res.status(500).json({ error: error.message });

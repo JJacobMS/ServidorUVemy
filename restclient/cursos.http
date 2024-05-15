@@ -14,7 +14,8 @@ Content-Type: application/json
     "descripcion": "Curso de prueba",
     "objetivos": "Curso de prueba",
     "requisitos": "Curso de prueba",
-    "idUsuario": 1
+    "idUsuario": 1,
+    "etiquetas": [1, 2, 3]
 }
 
 ###
