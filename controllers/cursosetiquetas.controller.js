@@ -1,13 +1,13 @@
 const { sequelize, DataTypes } = require('sequelize');
-const cursoModel = require('../models/cursos');
+const cursoEtiqueta = require('../models/cursosetiquetas');
 const db = require('../models/index');
-const cursosetiquetas = require('./cursosetiquetas.controller');
-const curso = db.cursos;
+const cursosetiquetas = db.cursosetiquetas;
+const cursos = db.cursos;
 let self = {}
 
 self.getAll = async function (req, res){
     try{
-        let data = await curso.findAll({ attributes: ['idCurso', 'titulo', 'descripcion', 'objetivos', 'requisitos', 'idUsuario']})
+        let data = await cursosetiquetas.findAll({ attributes: ['idCursoEtiqueta', 'idCurso', 'idEtiqueta']})
         return res.status(200).json(data)
     }catch(error){
         return res.status(500).json({ error: error.message });
@@ -17,7 +17,7 @@ self.getAll = async function (req, res){
 self.get = async function(req, res){
     try{
         let id = req.params.id;
-        let data = await curso.findByPk(id, { attributes: ['idCurso', 'titulo', 'descripcion', 'objetivos', 'requisitos', 'idUsuario']});
+        let data = await cursosetiquetas.findByPk(id, { attributes: ['idCursoEtiqueta', 'idCurso', 'idEtiqueta']});
         if(data){
             return res.status(200).json(data)
         }else{
@@ -30,12 +30,9 @@ self.get = async function(req, res){
 
 self.create = async function(req, res){
     try{
-        let cursoCreado = await curso.create({
-            titulo: req.body.titulo,
-            descripcion: req.body.descripcion,
-            objetivos: req.body.objetivos,
-            requisitos: req.body.requisitos,
-            idUsuario: req.body.idUsuario
+        let cursoCreado = await cursosetiquetas.create({
+            idCurso: req.body.idCurso,
+            idEtiqueta: req.body.idEtiqueta,
         })
         return res.status(201).json(cursoCreado)
     }catch(error){
@@ -47,7 +44,7 @@ self.update = async function(req, res){
     try{
         let id = req.params.id;
         let body = req.body;
-        let data = await curso.update(body, {where:{idCurso:id}});
+        let data = await cursosetiquetas.update(body, {where:{idCursoEtiqueta:id}});
         if(data[0]==0){
             return res.status(404).send()
         }else{
@@ -61,7 +58,7 @@ self.update = async function(req, res){
 self.delete = async function(req, res){
     try{
         let id = req.params.id;
-        let data = await curso.findByPk(id);
+        let data = await cursosetiquetas.findByPk(id);
         if(!data){
             return res.status(404).send()
         }
@@ -69,27 +66,39 @@ self.delete = async function(req, res){
         if(data.protegida){
             return res.status(400).send()
         }
-        resultadoEtiquetas = await eliminarEtiquetasDelCurso(id);
-        if(resultadoEtiquetas===404 || resultadoEtiquetas===204){
-            data = await curso.destroy({ where : {idCurso:id}});
-            if(data === 1){
-                return res.status(204).send()
-            }else{
-                return res.status(404).send()
-            }
-        }
-        else{
-            //
-            return res.status(resultadoEtiquetas).send()
+
+        data = await cursosetiquetas.destroy({ where : {idCursoEtiqueta:id}});
+        if(data === 1){
+            return res.status(204).send()
+        }else{
+            return res.status(404).send()
         }
     }catch(error){
         return res.status(500).json({ error: error.message });
     }
 }
 
-async function eliminarEtiquetasDelCurso(cursoId) {
-    const resultado = await cursosetiquetas.deleteByCurso(cursoId);
-    return resultado;
+self.deleteByCurso = async function(cursoId){
+    try{
+        let id = cursoId;
+        let data = await cursos.findByPk(id);
+        if(!data){
+            return 404
+        }
+
+        if(data.protegida){
+            return 400
+        }
+        //throw new Error("Error al eliminar el curso");
+        data = await cursosetiquetas.destroy({ where : {idCurso:id}});
+        if(data >= 1 ){
+            return 204
+        }else{
+            return 404
+        }
+    }catch(error){
+        return { status: 500, message: error.message };
+    }
 }
 
 module.exports = self;

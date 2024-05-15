@@ -1,0 +1,32 @@
+GET http://localhost:3000/api/cursosetiquetas
+
+###
+
+GET http://localhost:3000/api/cursosetiquetas/11
+
+###
+
+POST http://localhost:3000/api/cursosetiquetas
+Content-Type: application/json
+
+{
+    "idCurso": 31,
+    "idEtiqueta": 1
+}
+
+###
+
+PUT http://localhost:3000/api/cursosetiquetas/11
+Content-Type: application/json
+
+{
+    "idCursoEtiqueta": 12,
+    "idCurso": 20,
+    "idEtiqueta": 2
+}
+
+###
+
+DELETE http://localhost:3000/api/cursosetiquetas/19
+
+

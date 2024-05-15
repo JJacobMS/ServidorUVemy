@@ -13,7 +13,8 @@ Content-Type: application/json
     "titulo": "Curso de prueba",
     "descripcion": "Curso de prueba",
     "objetivos": "Curso de prueba",
-    "requisitos": "Curso de prueba"
+    "requisitos": "Curso de prueba",
+    "idUsuario": 1
 }
 
 ###
@@ -26,9 +27,10 @@ Content-Type: application/json
     "titulo": "Curso de prueba",
     "descripcion": "Curso de prueba",
     "objetivos": "Curso de prueba",
-    "requisitos": "Curso de prueba"
+    "requisitos": "Curso de prueba",
+    "idUsuario": 1
 }
 
 ###
 
-DELETE http://localhost:3000/api/cursos/17
+DELETE http://localhost:3000/api/cursos/3
