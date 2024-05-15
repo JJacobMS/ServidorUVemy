@@ -2,6 +2,7 @@ const { sequelize, DataTypes } = require('sequelize');
 const cursoModel = require('../models/cursos');
 const db = require('../models/index');
 const cursosetiquetas = require('./cursosetiquetas.controller');
+const usuarioscursos = require('./usuarioscursos.controller');
 const curso = db.cursos;
 let self = {}
 
@@ -65,22 +66,22 @@ self.delete = async function(req, res){
         if(!data){
             return res.status(404).send()
         }
-
-        if(data.protegida){
-            return res.status(400).send()
-        }
-        resultadoEtiquetas = await eliminarEtiquetasDelCurso(id);
-        if(resultadoEtiquetas===404 || resultadoEtiquetas===204){
-            data = await curso.destroy({ where : {idCurso:id}});
-            if(data === 1){
-                return res.status(204).send()
-            }else{
-                return res.status(404).send()
+        resultadoUsuarios = await eliminarUsuariosInscritosDelCurso(id);
+        if(resultadoUsuarios===404  || resultadoUsuarios===204){
+            resultadoEtiquetas = await eliminarEtiquetasDelCurso(id);
+            if(resultadoEtiquetas===404  || resultadoEtiquetas===204){
+                data = await curso.destroy({ where : {idCurso:id}});
+                if(data === 1){
+                    return res.status(204).send()
+                }else{
+                    return res.status(404).send()
+                }
             }
-        }
-        else{
-            //
-            return res.status(resultadoEtiquetas).send()
+            else{
+                return res.status(resultadoEtiquetas).send()
+            }
+        } else {
+            return res.status(resultadoUsuarios).send()
         }
     }catch(error){
         return res.status(500).json({ error: error.message });
@@ -88,7 +89,12 @@ self.delete = async function(req, res){
 }
 
 async function eliminarEtiquetasDelCurso(cursoId) {
-    const resultado = await cursosetiquetas.deleteByCurso(cursoId);
+    const resultado = await cursosetiquetas.borrarEtiquetasDelCurso(cursoId);
+    return resultado;
+}
+
+async function eliminarUsuariosInscritosDelCurso(cursoId) {
+    const resultado = await usuarioscursos.borrarUsuariosInscritosDelCurso(cursoId);
     return resultado;
 }
 

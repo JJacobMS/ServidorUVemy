@@ -23,6 +23,7 @@ app.use("/api/documentos", require('./routes/documentos.routes'))
 app.use("/api/tiposarchivos", require('./routes/tiposarchivos.routes'))
 app.use("/api/autenticacion", require('./routes/autenticacion.routes'))
 app.use("/api/cursosetiquetas", require('./routes/cursosetiquetas.routes'))
+app.use("/api/usuarioscursos", require('./routes/usuarioscursos.routes'))
 
 const errorLogger = require('./middlewares/errorlogger.middleware');
 const errorHandler = require('./middlewares/errorhandler.middleware');

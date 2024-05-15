@@ -19,18 +19,17 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:3000/api/cursos/16
+PUT http://localhost:3000/api/cursos/42
 Content-Type: application/json
 
 {
-    "idCurso": 16,
     "titulo": "Curso de prueba",
     "descripcion": "Curso de prueba",
     "objetivos": "Curso de prueba",
-    "requisitos": "Curso de prueba",
+    "requisitos": "Curso de prueba2",
     "idUsuario": 1
 }
 
-###
+### TO DO Borrar los cursos usuarios, ya borra las etiquetas
 
-DELETE http://localhost:3000/api/cursos/3
+DELETE http://localhost:3000/api/cursos/36
