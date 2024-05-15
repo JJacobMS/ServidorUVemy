@@ -28,9 +28,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     idCurso:{
+      allowNull: true,
       type: DataTypes.INTEGER,
     },
     idClase: {
+      allowNull: true,
       type: DataTypes.INTEGER,
     }
   }, {
