@@ -2,13 +2,14 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET;
 const claimTypes = require('../config/claimtypes');
 const { generaToken } = require('../services/jwttoken.service');
+const CodigosRespuesta = require('../utils/codigosRespuesta');
 
 const autorizar = () => {
     return async (req, res, next) => {
         try {
             const encabezadoAuth = req.header('Authorization');
             if (!encabezadoAuth.startsWith('Bearer '))
-                return res.status(401).json();
+                return res.status(CodigosRespuesta.UNAUTHORIZED).json();
 
             const token = encabezadoAuth.split(' ')[1];
             const tokenDecodificado = jwt.verify(token, jwtSecret);
@@ -23,7 +24,7 @@ const autorizar = () => {
 
             next();
         } catch (error) {
-            return res.status(401).json();
+            return res.status(CodigosRespuesta.UNAUTHORIZED).json();
         }
     }
 }

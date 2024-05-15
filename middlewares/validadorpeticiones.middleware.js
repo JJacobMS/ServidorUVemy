@@ -1,12 +1,13 @@
 const { validationResult } = require('express-validator');
+const CodigosRespuesta = require('../utils/codigosRespuesta');
 
 const validarFormatoPeticion = (req, res, next) => {
     const errores = validationResult(req);
 
     if(!errores.isEmpty()) {
-        return res.status(400).json({
+        return res.status(CodigosRespuesta.BAD_REQUEST).json({
             exito: false,
-            codigo: 400,
+            codigo: CodigosRespuesta.BAD_REQUEST,
             detalles: errores.array().map(error => error.msg)
         });
     } else {

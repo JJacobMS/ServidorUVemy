@@ -1,6 +1,7 @@
 const { sequelize, DataTypes } = require('sequelize');
 const comentarios = require('../models/comentarios');
 const db = require('../models/index');
+const CodigosRespuesta = require('../utils/codigosRespuesta');
 const comentarios = db.comentarios;
 let self = {}
 
@@ -12,9 +13,9 @@ self.get = async function (req, res) {
                 idClase: idClase
             }
         });
-        res.status(200).json(data);
+        res.status(CodigosRespuesta.OK).json(data);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
 
@@ -27,9 +28,9 @@ self.create = async function (req, res) {
             fecha: req.body.fecha,
             idRespuestaAComentario: req.body.idRespuestaAComentario
         });
-        return res.status(201).json(data);
+        return res.status(CodigosRespuesta.CREATED).json(data);
     } catch (error) {
-        return res.status(500).json({ error: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
 
