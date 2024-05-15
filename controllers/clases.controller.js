@@ -21,16 +21,12 @@ self.obtenerPorCurso = async function(req, res){
     }
 }
 
-self.create = async function(req, res){
+self.crear = async function(req, res){
     try{
-        if(req.body.idCurso == null) return res.status(400).send();
-
         let curso = await cursos.findOne({ where: { idCurso: req.body.idCurso }});
 
         if(curso == null) return res.status(400).send();
-
-        if(req.body.nombre == null || req.body.descripcion == null) return res.status(400).send();
-
+        
         const data = await clases.create({
             nombre: req.body.nombre,
             descripcion: req.body.descripcion,
