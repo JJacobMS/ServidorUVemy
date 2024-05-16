@@ -16,13 +16,12 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:3000/api/cursosetiquetas/11
+PUT http://localhost:3000/api/cursosetiquetas/10
 Content-Type: application/json
 
 {
-    "idCursoEtiqueta": 12,
-    "idCurso": 20,
-    "idEtiqueta": 2
+    "idCurso": 16,
+    "idEtiqueta": 4
 }
 
 ###

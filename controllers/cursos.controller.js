@@ -3,6 +3,7 @@ const cursoModel = require('../models/cursos');
 const db = require('../models/index');
 const cursosetiquetas = require('./cursosetiquetas.controller');
 const usuarioscursos = require('./usuarioscursos.controller');
+const documentos = require('./documentos.controller');
 const curso = db.cursos;
 let self = {}
 
@@ -38,6 +39,9 @@ self.create = async function(req, res){
             requisitos: req.body.requisitos,
             idUsuario: req.body.idUsuario
         })
+        console.log(req.body.archivo);
+        console.log(cursoCreado.idCurso);
+        crearArchivoDelCurso(req.body.archivo, cursoCreado.idCurso);
         for (let etiquetaId of req.body.etiquetas) {
             await cursosetiquetas.crearCursosEtiquetas(cursoCreado.idCurso, etiquetaId);
         }
@@ -49,11 +53,28 @@ self.create = async function(req, res){
 
 self.update = async function(req, res){
     try{
+        let body = {
+            id: req.params.id,
+            titulo: req.body.titulo,
+            descripcion: req.body.descripcion,
+            objetivos: req.body.objetivos,
+            requisitos: req.body.requisitos,
+            idUsuario: req.body.idUsuario
+        };
+        //eliminar la miniatura y poner la nueva o solo actualizarla
         let id = req.params.id;
-        let body = req.body;
         let data = await curso.update(body, {where:{idCurso:id}});
         if(data[0]==0){
-            return res.status(404).send()
+            resultadoEtiquetas = await eliminarEtiquetasDelCurso(id);
+            if(resultadoEtiquetas===404  || resultadoEtiquetas===204){
+                for (let etiquetaId of req.body.etiquetas) {
+                    await cursosetiquetas.crearCursosEtiquetas(cursoCreado.idCurso, etiquetaId);
+                }
+                return res.status(404).send()
+            }
+            else{
+                return res.status(resultadoEtiquetas).send()
+            }
         }else{
             return res.status(204).send()
         }
@@ -69,22 +90,11 @@ self.delete = async function(req, res){
         if(!data){
             return res.status(404).send()
         }
-        resultadoUsuarios = await eliminarUsuariosInscritosDelCurso(id);
-        if(resultadoUsuarios===404  || resultadoUsuarios===204){
-            resultadoEtiquetas = await eliminarEtiquetasDelCurso(id);
-            if(resultadoEtiquetas===404  || resultadoEtiquetas===204){
-                data = await curso.destroy({ where : {idCurso:id}});
-                if(data === 1){
-                    return res.status(204).send()
-                }else{
-                    return res.status(404).send()
-                }
-            }
-            else{
-                return res.status(resultadoEtiquetas).send()
-            }
-        } else {
-            return res.status(resultadoUsuarios).send()
+        data = await curso.destroy({ where : {idCurso:id}});
+        if(data === 1){
+            return res.status(204).send()
+        }else{
+            return res.status(404).send()
         }
     }catch(error){
         return res.status(500).json({ error: error.message });
@@ -96,8 +106,13 @@ async function eliminarEtiquetasDelCurso(cursoId) {
     return resultado;
 }
 
-async function eliminarUsuariosInscritosDelCurso(cursoId) {
-    const resultado = await usuarioscursos.borrarUsuariosInscritosDelCurso(cursoId);
+async function crearArchivoDelCurso(documento, idCurso) {
+    const resultado = await documentos.crearArchivoDelCurso(documento,idCurso);
+    return resultado;
+}
+
+async function eliminarArchivoDelCurso(documentoId) {
+    const resultado = await documentos.borrarArchivoDelCurso(documentoId);
     return resultado;
 }
 

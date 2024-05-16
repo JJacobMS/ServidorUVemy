@@ -2,7 +2,7 @@ GET http://localhost:3000/api/cursos
 
 ###
 
-GET http://localhost:3000/api/cursos/16
+GET http://localhost:3000/api/cursos/21
 
 ###
 
@@ -14,13 +14,14 @@ Content-Type: application/json
     "descripcion": "Curso de prueba",
     "objetivos": "Curso de prueba",
     "requisitos": "Curso de prueba",
-    "idUsuario": 1,
+    "archivo": "SGVsbG8gV29ybGQ=",
+    "idUsuario": 2,
     "etiquetas": [1, 2, 3]
 }
 
 ###
 
-PUT http://localhost:3000/api/cursos/42
+PUT http://localhost:3000/api/cursos/21
 Content-Type: application/json
 
 {
@@ -28,9 +29,12 @@ Content-Type: application/json
     "descripcion": "Curso de prueba",
     "objetivos": "Curso de prueba",
     "requisitos": "Curso de prueba2",
-    "idUsuario": 1
+    "idUsuario": 1,
+    "idDocumento": 1,
+    "etiquetas": [1, 2, 3]
+
 }
 
-### TO DO Borrar los cursos usuarios, ya borra las etiquetas
+###
 
-DELETE http://localhost:3000/api/cursos/36
+DELETE http://localhost:3000/api/cursos/55
