@@ -13,21 +13,6 @@ self.getAll = async function(req, res){
     }
 }
 
-self.create = async function(req, res){
-    try{
-        let documentoCreado  = await dbdocumentos.create({
-            archivo: req.body.archivo,
-            nombre: req.body.nombre,
-            idTipoArchivo: req.body.idTipoArchivo,
-            idCurso: req.body.idCurso,
-            idClase: req.body.idClase
-        })
-        return res.status(201).json(documentoCreado)
-    }catch(error){
-        return res.status(500).json({ error: error.message });
-    }
-}
-
 self.borrarArchivoDelCurso = async function(documentoId){
     try{
         let id = documentoId;
