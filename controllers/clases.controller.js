@@ -1,4 +1,5 @@
-const { clases, cursos } = require('../models');
+const { clases, cursos, documentos, tiposarchivos } = require('../models');
+const CodigosRespuesta = require('../utils/codigosRespuesta');
 let self = {}
 
 self.obtenerPorId = async function(req, res){
@@ -25,7 +26,7 @@ self.crear = async function(req, res){
     try{
         let curso = await cursos.findOne({ where: { idCurso: req.body.idCurso }});
 
-        if(curso == null) return res.status(400).send();
+        if(curso == null) return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
         
         const data = await clases.create({
             nombre: req.body.nombre,
@@ -33,8 +34,11 @@ self.crear = async function(req, res){
             idCurso: req.body.idCurso
         });
 
+        if(data == null) return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear la clase");
+
         return res.status(201).json(data);
     }catch(error){
+        console.log(error);
         return res.status(500).json(error);
     }
 }

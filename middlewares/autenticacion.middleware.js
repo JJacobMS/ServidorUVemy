@@ -21,7 +21,6 @@ const autorizar = () => {
                 var nuevoToken = generaToken(tokenDecodificado[claimTypes.Email], tokenDecodificado[claimTypes.GivenName]);
                 res.header("Set-Authorization", nuevoToken);
             }
-
             next();
         } catch (error) {
             return res.status(CodigosRespuesta.UNAUTHORIZED).json();

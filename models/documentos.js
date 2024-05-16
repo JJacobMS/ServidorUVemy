@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     archivo: {
-      type: DataTypes.BLOB,
+      type: DataTypes.BLOB('long'),
       allowNull: false
     },
     nombre: {

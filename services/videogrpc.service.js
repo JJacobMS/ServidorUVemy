@@ -37,7 +37,7 @@ async function enviarVideoClase (call, callback) {
                     return;
                 }
 
-                const sinVideo = await verificarClaseSinVideo(datosDocumento.idClase);
+                const sinVideo = await verificarClaseSinVideo(datosDocumento.idClase, idTipoArchivo);
                 if(sinVideo == false){ 
                     console.log("Con video");
                     callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR})
@@ -100,10 +100,10 @@ async function verificarExistenciaClase(idClase){
     return existe;
 }
 
-async function verificarClaseSinVideo(idClase){
+async function verificarClaseSinVideo(idClase, idTipoArchivo){
     let sinVideo;
     try{
-        const documentoExistente = await documentos.findOne({where: { idClase: idClase}, attributes: ['idDocumento']});
+        const documentoExistente = await documentos.findOne({where: { idClase: idClase, idTipoArchivo: idTipoArchivo}, attributes: ['idDocumento']});
         sinVideo = (documentoExistente == null);
 
     }catch(error){

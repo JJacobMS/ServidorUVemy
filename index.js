@@ -6,6 +6,8 @@ const app = express();
 
 dotenv.config();
 
+var bodyParser = require('body-parser')
+app.use(bodyParser.json({ limit: '10mb' }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
