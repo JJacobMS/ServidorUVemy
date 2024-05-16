@@ -9,6 +9,6 @@ const { subirArchivoPDF } = require("../middlewares/upload.middleware")
 
 
 router.get('/', documentos.getAll);
-router.post('/', autorizar(), subirArchivoPDF.single("file"), checkSchema(crearDocumentoSchema()), validarFormatoPeticion, validarFile(), documentos.crear);
+router.post('/clase', autorizar(), subirArchivoPDF.single("file"), checkSchema(crearDocumentoSchema()), validarFormatoPeticion, validarFile(), documentos.crear);
 
 module.exports = router;

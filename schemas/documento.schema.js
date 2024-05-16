@@ -1,3 +1,5 @@
+const { TAMANIO_MAXIMO_DOCUMENTOS_KB } = require('../utils/tamanioDocumentos')
+
 const validarFile = () =>{
     return (req, res, next) => {   
         if(req.file == null){
@@ -13,8 +15,8 @@ const validarFile = () =>{
                 return res.status(400).json({ error: 'El archivo en el documento debe PDF' });
             }
     
-            const tamanioMB = req.file.size / (1024 * 1024);
-            if (tamanioMB > 1) {
+            const tamanioKB = req.file.size / 1024;
+            if (tamanioKB > TAMANIO_MAXIMO_DOCUMENTOS_KB) {
                 return res.status(400).json({ error: "El tamaño del archivo excede el límite de 1MB" });
             }
 
