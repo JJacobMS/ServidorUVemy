@@ -1,0 +1,14 @@
+###
+
+POST http://localhost:3000/api/documentos
+Content-Type: multipart/form-data; boundary=XXX
+Authorization: Bearer {{ token }}
+
+--XXX
+Content-Disposition: form-data; name="file"; filename="elpadrino.jpg"
+Content-Type: image/jpeg
+
+< ./assets/elpadrino.jpg
+--XXX--
+
+###
