@@ -114,11 +114,16 @@ self.usuarioEsquema = () => {
                 errorMessage: 'idsEtiqueta es requerido',
                 bail: true,
             },
-            trim: true,
-            escape: true,
-            isArray: {
-                errorMessage: 'idsEtiqueta debe ser un arreglo de números',
+            custom: {
+                options: (value) => Array.isArray(value),
+                errorMessage: 'idsEtiqueta debe ser un arreglo',
                 bail: true,
+            },
+            customSanitizer: {
+                options: (value) => {
+                    if (!value) return [];
+                    return Array.isArray(value) ? value.map(Number) : [Number(value)];
+                },
             },
             custom: {
                 options: (value) => value.every((element) => typeof element === 'number'),

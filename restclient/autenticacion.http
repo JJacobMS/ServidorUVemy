@@ -41,6 +41,18 @@ Content-Type: application/json
     "contrasena": "hola"
 }
 
+### Registro exitoso
+POST http://localhost:3000/api/autenticacion/registro
+Content-Type: application/json
+
+{
+    "nombres": "Juan",
+    "apellidos": "Perez",
+    "correoElectronico": "enrique@ejemplo.com",
+    "contrasena": "Contrasena1",
+    "idsEtiqueta": [1, 2]
+}
+
 ### Campos vacíos
 POST http://localhost:3000/api/autenticacion/registro
 
