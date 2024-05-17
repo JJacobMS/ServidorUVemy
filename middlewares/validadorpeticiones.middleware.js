@@ -6,8 +6,6 @@ const validarFormatoPeticion = (req, res, next) => {
 
     if(!errores.isEmpty()) {
         return res.status(CodigosRespuesta.BAD_REQUEST).json({
-            exito: false,
-            codigo: CodigosRespuesta.BAD_REQUEST,
             detalles: errores.array().map(error => error.msg)
         });
     } else {
