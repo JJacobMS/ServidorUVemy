@@ -1,13 +1,17 @@
 GET http://localhost:3000/api/cursos
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InN1bGVtNDc3QGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2dpdmVubmFtZSI6Implc3VzIiwiaXNzIjoiVVZlbXlTZXJ2aWRvckpXVCIsImF1ZCI6IlVzdWFyaW9zVVZlbXlKV1QiLCJpYXQiOjE3MTU5NTk1NTgsImV4cCI6MTcxNTk2MDc1OH0.DuXXvhzi-dDOfVX5JMp4UfPCcc29OildMTJMXtZ-Jhg
 
 ###
 
 GET http://localhost:3000/api/cursos/21
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InN1bGVtNDc3QGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2dpdmVubmFtZSI6Implc3VzIiwiaXNzIjoiVVZlbXlTZXJ2aWRvckpXVCIsImF1ZCI6IlVzdWFyaW9zVVZlbXlKV1QiLCJpYXQiOjE3MTU5NTk1NTgsImV4cCI6MTcxNTk2MDc1OH0.DuXXvhzi-dDOfVX5JMp4UfPCcc29OildMTJMXtZ-Jhg
 
 ###
 
+
 POST http://localhost:3000/api/cursos
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InN1bGVtNDc3QGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2dpdmVubmFtZSI6Implc3VzIiwiaXNzIjoiVVZlbXlTZXJ2aWRvckpXVCIsImF1ZCI6IlVzdWFyaW9zVVZlbXlKV1QiLCJpYXQiOjE3MTU5NTk1NTgsImV4cCI6MTcxNTk2MDc1OH0.DuXXvhzi-dDOfVX5JMp4UfPCcc29OildMTJMXtZ-Jhg
 
 {
     "titulo": "Curso de prueba",
@@ -15,26 +19,28 @@ Content-Type: application/json
     "objetivos": "Curso de prueba",
     "requisitos": "Curso de prueba",
     "archivo": "SGVsbG8gV29ybGQ=",
-    "idUsuario": 2,
+    "idUsuario": 1,
     "etiquetas": [1, 2, 3]
 }
 
 ###
 
-PUT http://localhost:3000/api/cursos/21
+
+PUT http://localhost:3000/api/cursos/134
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InN1bGVtNDc3QGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2dpdmVubmFtZSI6Implc3VzIiwiaXNzIjoiVVZlbXlTZXJ2aWRvckpXVCIsImF1ZCI6IlVzdWFyaW9zVVZlbXlKV1QiLCJpYXQiOjE3MTU5NTk1NTgsImV4cCI6MTcxNTk2MDc1OH0.DuXXvhzi-dDOfVX5JMp4UfPCcc29OildMTJMXtZ-Jhg
 
 {
-    "titulo": "Curso de prueba",
-    "descripcion": "Curso de prueba",
-    "objetivos": "Curso de prueba",
+    "titulo": "Curso de prueba2",
+    "descripcixon": "Curso de prueba2",
+    "objetivos": "Curso de prueba2",
     "requisitos": "Curso de prueba2",
-    "idUsuario": 1,
-    "idDocumento": 1,
-    "etiquetas": [1, 2, 3]
-
+    "archivo": "T3BlbkFJIHkgZXMgaW5jcmVhayBsZSBpbmNyZWDsZQ==",
+    "etiquetas": [3, 4, 5],
+    "idDocumento": 51
 }
 
 ###
 
-DELETE http://localhost:3000/api/cursos/55
+DELETE http://localhost:3000/api/cursos/65
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InN1bGVtNDc3QGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2dpdmVubmFtZSI6Implc3VzIiwiaXNzIjoiVVZlbXlTZXJ2aWRvckpXVCIsImF1ZCI6IlVzdWFyaW9zVVZlbXlKV1QiLCJpYXQiOjE3MTU5MDg4NzMsImV4cCI6MTcxNTkxMDA3M30.xOfhmKpwQejezYLwoYqUrbXWfomnevmyfj_dsqQGC1U

@@ -2,6 +2,7 @@ const db = require('../models/index');
 const dbdocumentos = db.documentos;
 const cursos = db.cursos;
 const { documentos, tiposarchivos } = require('../models');
+const CodigosRespuesta = require('../utils/codigosRespuesta');
 let self = {}
 
 self.getAll = async function(req, res){
@@ -33,19 +34,18 @@ self.borrarArchivoDelCurso = async function(documentoId){
 
 self.crearArchivoDelCurso = async function(documento, idCurso){
     try{
-        console.log(documento);
-        console.log(idCurso);
         let documentoCreado  = await dbdocumentos.create({
             archivo: documento,
-            nombre: null, 
+            nombre: "Miniatura del curso "+idCurso, //null
             idTipoArchivo: 1, //Debo de comprobar el mymetipe
             idCurso: idCurso,
-            idClase: 8
+            idClase: null //null
         })
-        console.log(documentoCreado);
+        if(documentoCreado==null){
+            return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message: "Error al crear el documento" };;
+        }
         return { status: 201, message: documentoCreado };;
     }catch(error){
-        console.log("error");
         return { status: 500, message: error.message };
     }
 }
@@ -75,7 +75,6 @@ self.crear = async function(req, res){
 
         return res.status(201).json(respuesta);
     }catch(error){
-        console.log(error);
         return res.status(500).json(error)
     }
 }
@@ -97,10 +96,24 @@ async function obtenerIdTipoArchivoPDF(){
             idTipoArchivo = tipoArchivoVideo.dataValues.idTipoArchivo;
         }
     }catch(error){
-        console.log(error);
         idTipoArchivo = 0;
     }
     return idTipoArchivo;
+}
+
+self.actualizarArchivoDelCurso = async function(idDocumento, documento){
+    try{
+        let data = await dbdocumentos.update({ archivo: documento }, {where:{idDocumento:idDocumento}, fields: ['archivo'] });
+        if(data[0]==0){
+            console.log("NOT_FOUND");
+            return CodigosRespuesta.NOT_FOUND
+        }else{
+            console.log("NO_CONTENT");
+            return CodigosRespuesta.NO_CONTENT
+        }
+    }catch(error){
+        return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message:error.message  }
+    }
 }
 
 module.exports = self;

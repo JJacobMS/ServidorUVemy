@@ -1,8 +1,11 @@
 const { sequelize, DataTypes } = require('sequelize');
 const cursoEtiqueta = require('../models/cursosetiquetas');
 const db = require('../models/index');
+const CodigosRespuesta = require('../utils/codigosRespuesta');
 const cursosetiquetas = db.cursosetiquetas;
 const cursos = db.cursos;
+const etiquetas = db.etiquetas;
+const usuarios = db.usuarios;
 let self = {}
 
 self.getAll = async function (req, res){
@@ -93,13 +96,25 @@ self.borrarEtiquetasDelCurso = async function(cursoId){
 
 self.crearCursosEtiquetas = async function(idCurso, idEtiqueta){
     try{
+        let cursoRecuperado = await cursos.findByPk(idCurso);
+        if(cursoRecuperado==null){
+            return { status: CodigosRespuesta.NOT_FOUND, message: "No se encontró el curso" } 
+        }
+        let etiquetaRecuperada = await etiquetas.findByPk(idEtiqueta);
+        if(etiquetaRecuperada==null){
+            return { status: CodigosRespuesta.NOT_FOUND, message: "No se encontró la etiqueta curso" }
+        }
         let etiquetaCreada = await cursosetiquetas.create({
             idCurso: idCurso,
             idEtiqueta: idEtiqueta,
+            idClase: 1
         })
-        return res.status(201).json(etiquetaCreada)
+        if(etiquetaCreada==null){
+            return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message: "Error al crear la etiqueta curso" };;
+        }
+        return { status: CodigosRespuesta.CREATED, message:etiquetaCreada }
     }catch(error){
-        return { status: 500, message: error.message };
+        return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message:error.message  }
     }
 }
 
