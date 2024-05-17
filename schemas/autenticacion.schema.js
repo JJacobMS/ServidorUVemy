@@ -1,66 +1,130 @@
+const { escape } = require("mysql2");
+
 let self = {};
 
-self.inicioSesionSchema = ()  => {
+self.inicioSesionSchema = () => {
     return {
         correoElectronico: {
             in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'Correo electrónico es requerido',
+                bail: true,
+            },
             trim: true,
-            isEmail: true,
-            errorMessage: 'Correo electrónico inválido',
+            escape: true,
+            isEmail: {
+                errorMessage: 'Correo electrónico inválido',
+                bail: true,
+            },
         },
         contrasena: {
             in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'Contraseña es requerida',
+                bail: true,
+            },
             trim: true,
-            notEmpty: true,
-            errorMessage: 'Contraseña requerida',
+            escape: true,
+            isLength: {
+                options: { min: 3, max: 18 },
+                errorMessage: 'Contraseña debe tener entre 3 y 18 caracteres',
+                bail: true,
+            },
         },
     }
 }
 
 self.usuarioEsquema = () => {
     return {
-        correoElectronico: {
-            in: ['body'],
-            trim: true,
-            isEmail: true,
-            errorMessage: 'Correo electrónico inválido',
-        },
-        contrasena: {
-            in: ['body'],
-            trim: true,
-            notEmpty: true,
-            matches: {
-                options: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-                errorMessage: 'La contraseña debe contener al menos una mayúscula, una minúscula y un número',
-            },
-            errorMessage: 'Contraseña requerida',
-        },
         nombres: {
             in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'Nombres requeridos',
+                bail: true,
+            },
             trim: true,
-            notEmpty: true,
-            errorMessage: 'Nombres requeridos',
+            escape: true,
+            isLength: { 
+                options: { max: 150 },
+                errorMessage: 'Nombre/s debe ser menor a 150 caracteres',
+                bail: true,
+            },
         },
         apellidos: {
             in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'Apellidos requeridos',
+                bail: true,
+            },
             trim: true,
-            notEmpty: true,
-            errorMessage: 'Apellidos requeridos',
+            escape: true,
+            isLength: { 
+                options: { max: 660 },
+                errorMessage: 'Apellido/s debe ser menor a 660 caracteres',
+                bail: true,
+            },
+        },
+        correoElectronico: {
+            in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'Correo electrónico es requerido',
+                bail: true,
+            },
+            trim: true,
+            escape: true,
+            isLength: {
+                options: { max: 600 },
+                errorMessage: 'Correo electrónico debe ser menor a 600 caracteres',
+                bail: true,
+            },
+            isEmail:{
+                errorMessage: 'Correo electrónico inválido',
+                bail: true,
+            },
+        },
+        contrasena: {
+            in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'Contraseña es requerida',
+                bail: true,
+            },
+            trim: true,
+            escape: true,
+            isLength: { 
+                options: { min: 3, max: 18},
+                errorMessage: 'La contraseña debe tener entre 3 y 18 caracteres',
+                bail: true, 
+            },
+            matches: {
+                options: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+                errorMessage: 'La contraseña debe contener al menos una mayúscula, una minúscula y un número',
+                bail: true,
+            },
         },
         idsEtiqueta: {
             in: ['body'],
-            isArray: true,
-            optional: true,
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'idsEtiqueta es requerido',
+                bail: true,
+            },
+            trim: true,
+            escape: true,
+            isArray: {
+                errorMessage: 'idsEtiqueta debe ser un arreglo de números',
+                bail: true,
+            },
             custom: {
                 options: (value) => value.every((element) => typeof element === 'number'),
-                errorMessage: 'Etiquetas deben ser un arreglo de números',
+                errorMessage: 'idsEtiqueta debe ser un arreglo de números',
+                bail: true,
             },
-            customSanitizer: {
-                options: (value) => value.map(Number),
-            },
-            errorMessage: 'Etiquetas deben ser un arreglo de números',
-            notEmpty: true,
-            errorMessage: 'Etiquetas requeridas'
         },
     }
 }
