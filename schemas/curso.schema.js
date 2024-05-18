@@ -93,4 +93,16 @@ const actualizarCursoSchema = () =>{
     }
 }
 
-module.exports = { crearCursoSchema, actualizarCursoSchema }
+const estadisticaCursoSchema = ()=> {
+    return {
+        id: {
+            in: ['params'],
+            notEmpty: true,
+            isNumeric: true,
+            errorMessage: 'IdCurso inválida',
+            bail: true
+        }
+    }
+}
+
+module.exports = { crearCursoSchema, actualizarCursoSchema, estadisticaCursoSchema }

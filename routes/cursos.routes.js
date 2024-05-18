@@ -3,7 +3,7 @@ const cursos = require('../controllers/cursos.controller');
 const cursosEstadisticas = require('../controllers/estadisticas.controller');
 const autorizar = require('../middlewares/autenticacion.middleware');
 const { checkSchema } = require('express-validator');
-const { crearCursoSchema, actualizarCursoSchema } = require('../schemas/curso.schema');
+const { crearCursoSchema, actualizarCursoSchema, estadisticaCursoSchema } = require('../schemas/curso.schema');
 const validarFormatoPeticion = require('../middlewares/validadorpeticiones.middleware');
 const validarCamposPeticion = require('../middlewares/validadorformatopeticiones.middleware');
 
@@ -17,7 +17,7 @@ router.put('/:id',autorizar(), checkSchema(actualizarCursoSchema()), validarForm
 
 router.delete('/:id',autorizar(), cursos.delete);
 
-router.get('/estadisticas/:id', cursosEstadisticas.obtenerEstadisticasCurso);
+router.get('/estadisticas/:id', checkSchema(estadisticaCursoSchema), validarFormatoPeticion, cursosEstadisticas.obtenerEstadisticasCurso);
 
 
 module.exports = router
