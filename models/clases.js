@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
   class clases extends Model {
     static associate(models) {
       clases.belongsTo(models.cursos, { foreignKey : 'idCurso'})
-      clases.hasMany(models.comentarios, { as: 'comentarios', foreignKey: 'idClase' });
+      clases.hasMany(models.comentarios, { foreignKey: 'idClase' });
     }
   }
   clases.init({

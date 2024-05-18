@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const cursos = require('../controllers/cursos.controller');
+const cursosEstadisticas = require('../controllers/estadisticas.controller');
 const autorizar = require('../middlewares/autenticacion.middleware');
 const { checkSchema } = require('express-validator');
 const { crearCursoSchema, actualizarCursoSchema } = require('../schemas/curso.schema');
@@ -15,5 +16,8 @@ router.post('/', autorizar(), checkSchema(crearCursoSchema()), validarFormatoPet
 router.put('/:id',autorizar(), checkSchema(actualizarCursoSchema()), validarFormatoPeticion,validarCamposPeticion(actualizarCursoSchema()),  cursos.update);
 
 router.delete('/:id',autorizar(), cursos.delete);
+
+router.get('/estadisticas/:id', cursosEstadisticas.obtenerEstadisticasCurso);
+
 
 module.exports = router
