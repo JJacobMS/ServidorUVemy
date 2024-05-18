@@ -34,4 +34,14 @@ const tiempoRestanteToken = (req) => {
     }
 }
 
-module.exports = { generaToken, tiempoRestanteToken };
+const generarTokenRegistro = (correoElectronico, codigo) => {
+    const token = jwt.sign({
+        [ClaimTypes.Email]: correoElectronico,
+        [ClaimTypes.CodigoVerificacion]: codigo
+    }, jwtSecret, {
+        expiresIn: '1d'
+    });
+    return token;
+}
+
+module.exports = { generaToken, tiempoRestanteToken, generarTokenRegistro };
