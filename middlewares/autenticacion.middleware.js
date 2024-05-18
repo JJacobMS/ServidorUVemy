@@ -4,7 +4,9 @@ const claimTypes = require('../config/claimtypes');
 const { generaToken } = require('../services/jwttoken.service');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 
-const autorizar = () => {
+let self = {};
+
+self.autorizar = () => {
     return async (req, res, next) => {
         try {
             const encabezadoAuth = req.header('Authorization');
@@ -29,4 +31,28 @@ const autorizar = () => {
     }
 }
 
-module.exports = autorizar;
+self.autorizarVerificacionCorreo = () => {
+    return async (req, res, next) => {
+        try {
+            const encabezadoAuth = req.header('Authorization');
+            if (!encabezadoAuth.startsWith('Bearer '))
+                return res.status(CodigosRespuesta.UNAUTHORIZED).json({ mensaje: 'Token de autorización no válido' });
+
+            const token = encabezadoAuth.split(' ')[1];
+            const tokenDecodificado = jwt.verify(token, jwtSecret);
+
+            if (tokenDecodificado.codigoVerificacion !== req.codigoVerificacion || tokenDecodificado.correoElectronico !== req.correoElectronico) {
+                return res.status(CodigosRespuesta.UNAUTHORIZED).json({ mensaje: 'Código de verificación incorrecto' });
+            }
+
+            req.tokenDecodificado = tokenDecodificado;
+
+            next();
+        } catch (error) {
+            return res.status(CodigosRespuesta.UNAUTHORIZED).json({ mensaje: 'Error al verificar el token de autorización' });
+        }
+    }
+}
+
+
+module.exports = self;
