@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { usuarios, Sequelize } = require('../models');
+const { usuarios, etiquetas, Sequelize } = require('../models');
 const { generaToken, tiempoRestanteToken } = require('../services/jwttoken.service');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 
@@ -38,9 +38,53 @@ self.iniciarSesion = async function (req, res) {
 self.tiempo = async function (req, res) {
     const tiempo = tiempoRestanteToken(req);
     if (tiempo == null)
-        return res.status(404).send();
+        return res.status(CodigosRespuesta.NOT_FOUND).send();
     
-    return res.status(200).send(tiempo);
+    return res.status(CodigosRespuesta.OK).send(tiempo);
+}
+
+self.registrarUsuario = async function (req, res) {
+    try {
+        const { correoElectronico, contrasena, nombres, apellidos, idsEtiqueta } = req.body;
+        const contrasenaHash = await bcrypt.hash(contrasena, 10);
+
+        const usuario = await usuarios.findOne({
+            where: {
+                correoElectronico: correoElectronico
+            }
+        });
+
+        if (usuario)
+            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Ya existe un usuario con ese correo electrónico" ]});
+
+        await usuarios.create({
+            correoElectronico: correoElectronico,
+            contrasena: contrasenaHash,
+            nombres: nombres,
+            apellidos: apellidos
+        });
+
+        const usuarioCreado = await usuarios.findOne({
+            where: {
+                correoElectronico: correoElectronico
+            }
+        });
+
+        if (idsEtiqueta && idsEtiqueta.length > 0) {
+            await Promise.all(idsEtiqueta.map(async etiquetaId => {
+                const etiqueta = await etiquetas.findByPk(etiquetaId);
+                if (etiqueta)
+                    await usuarioCreado.addEtiqueta(etiqueta);
+            }))
+        }
+
+        return res.status(CodigosRespuesta.CREATED).json({
+            idUsuario: usuarioCreado.idUsuario
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: error.message });
+    }
 }
 
 module.exports = self;
