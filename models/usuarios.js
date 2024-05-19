@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
     contrasena: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    imagen: {
+      type: DataTypes.BLOB('medium'),
+      allowNull: true,
+      defaultValue: null
     }
   }, {
     sequelize,

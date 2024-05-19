@@ -26,6 +26,7 @@
     "mysql2": "^3.9.7",
     "pdfkit": "^0.15.0",
     "pdfkit-table": "^0.1.99",
+    "nodemailer": "^6.9.13",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {

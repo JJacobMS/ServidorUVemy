@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt');
 const { usuarios, etiquetas, Sequelize } = require('../models');
-const { generaToken, tiempoRestanteToken } = require('../services/jwttoken.service');
+const { generaToken, tiempoRestanteToken, generarTokenRegistro } = require('../services/jwttoken.service');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
+const enviarCorreoVerificacion = require('../services/enviocorreo.service');
 
 let self = {};
 
@@ -43,9 +44,31 @@ self.tiempo = async function (req, res) {
     return res.status(CodigosRespuesta.OK).send(tiempo);
 }
 
+self.solicitarCodigoVerificacionCorreo = async function (req, res) {
+    try {
+        const { correoElectronico } = req.body;
+
+        let correoRegistrado = await usuarios.findOne({
+            where: { correoElectronico: correoElectronico },
+            raw: true,
+            attributes: ['correoElectronico']
+        });
+
+        if (correoRegistrado === null){
+            const codigo = enviarCorreoVerificacion(correoElectronico);
+            token = generarTokenRegistro(correoElectronico, codigo);
+            return res.status(CodigosRespuesta.OK).send({ jwt: token });
+        } else {
+            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Correo electrónico ya registrado"] });
+        }
+    } catch (error) {
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: error.message });
+    }
+}
+
 self.registrarUsuario = async function (req, res) {
     try {
-        const { correoElectronico, contrasena, nombres, apellidos, idsEtiqueta } = req.body;
+        const { correoElectronico, contrasena, nombres, apellidos, idsEtiqueta, imagen } = req.body;
         const contrasenaHash = await bcrypt.hash(contrasena, 10);
 
         const usuario = await usuarios.findOne({
@@ -55,13 +78,14 @@ self.registrarUsuario = async function (req, res) {
         });
 
         if (usuario)
-            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Ya existe un usuario con ese correo electrónico" ]});
+            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Correo electrónico ya registrado" ]});
 
         await usuarios.create({
             correoElectronico: correoElectronico,
             contrasena: contrasenaHash,
             nombres: nombres,
-            apellidos: apellidos
+            apellidos: apellidos,
+            imagen: imagen ? imagen : null
         });
 
         const usuarioCreado = await usuarios.findOne({
