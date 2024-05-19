@@ -1,6 +1,8 @@
-const { cursos, usuarioscursos, comentarios, etiquetas, cursosetiquetas, usuariosetiquetas, clases, usuarios, sequelize } = require('../models');
-const { Sequelize } = require('sequelize');
+const { cursos, sequelize } = require('../models');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
+const crearDocumento = require('../services/generaciondocumento.service');
+const generarEstadisticas = require('../services/generacionEstadisticas.service');
+
 let self = {}
 
 self.obtenerEstadisticasCurso = async function(req, res){
@@ -11,27 +13,11 @@ self.obtenerEstadisticasCurso = async function(req, res){
           return res.status(CodigosRespuesta.NOT_FOUND).send("Curso no existe");
       }
 
-      const calificaciontotal = await usuarioscursos.findOne({
-        where: { idCurso: idCursoSolicitado },
-        attributes: [[Sequelize.fn('AVG', Sequelize.col('calificacion')), 'promedioCalificacion']]
-      });
-
-      const clasesConComentarios = await clases.findAll({ attributes: [ 'nombre',
-            [Sequelize.fn('COUNT', Sequelize.col('comentarios.idComentario')), 'cantidadComentarios']],
-          include: [{ model: comentarios, attributes: [] }],
-          where: { idCurso: idCursoSolicitado }, group: ['clases.idClase'], raw: true 
-      });
-
-      const queryComentariosTotales = `SELECT count(idComentario) AS total FROM comentarios 
-        RIGHT JOIN clases ON clases.idClase = comentarios.idClase WHERE clases.idCurso = :idCurso`;
-
-      const [comentariosTotales, metadataComentarios] = await sequelize.query(queryComentariosTotales, {
-          replacements: { idCurso: idCursoSolicitado }          
-      });
-      
-      const etiquetasCoinciden = await recuperarEtiquetas(idCursoSolicitado);
-
-      const estudiantesCurso = await recuperarEstudiantesCurso(idCursoSolicitado);
+      const comentariosTotales = await generarEstadisticas.obtenerComentariosTotales(idCursoSolicitado);
+      const calificaciontotal = await generarEstadisticas.obtenerCalificacionTotal(idCursoSolicitado);
+      const clasesConComentarios = await generarEstadisticas.obtenerClasesConComentarios(idCursoSolicitado);
+      const etiquetasCoinciden = await generarEstadisticas.recuperarEtiquetas(idCursoSolicitado);
+      const estudiantesCurso = await generarEstadisticas.recuperarEstudiantesCurso(idCursoSolicitado);
       
       respuestaEstadisticas = {
         nombre: cursoSolicitado.titulo,
@@ -50,37 +36,60 @@ self.obtenerEstadisticasCurso = async function(req, res){
     }
 }
 
-async function recuperarEtiquetas(idCursoSolicitado){
-  const queryEtiquetas = `SELECT etiquetas.nombre FROM cursosetiquetas
-    INNER JOIN usuariosetiquetas ON usuariosetiquetas.idEtiqueta = cursosetiquetas.idEtiqueta
-    INNER JOIN etiquetas ON cursosetiquetas.idEtiqueta = etiquetas.idEtiqueta
-    WHERE cursosetiquetas.idCurso = :idCurso GROUP BY cursosetiquetas.idEtiqueta, etiquetas.nombre;
-  `;
 
-  const [etiquetasCoinciden, metadata] = await sequelize.query(queryEtiquetas, {
-      replacements: { idCurso: idCursoSolicitado }          
-  });
+self.devolverReporte = async function(req, res){
+  const idCursoSolicitado = req.params.id;
+    try{
+      let cursoSolicitado = await cursos.findByPk(idCursoSolicitado, {attributes : ['titulo']});
+      if(cursoSolicitado == null){
+          return res.status(CodigosRespuesta.NOT_FOUND).send("Curso no existe");
+      }
 
-  let etiquetasNombres = [];
-  for(const item of etiquetasCoinciden){
-    etiquetasNombres.push(item.nombre);
-  }
-  return etiquetasNombres;
-}
+      const comentariosTotales = await generarEstadisticas.obtenerComentariosTotales(idCursoSolicitado);
+      const calificaciontotal = await generarEstadisticas.obtenerCalificacionTotal(idCursoSolicitado);
+      const clasesConComentarios = await generarEstadisticas.obtenerClasesConComentarios(idCursoSolicitado);
+      const calificacionDesglose = await generarEstadisticas.obtenerDesgloseCalificacion(idCursoSolicitado);
+      const estudiantesCurso = await generarEstadisticas.recuperarEstudiantesCurso(idCursoSolicitado);
 
-async function recuperarEstudiantesCurso(idCursoSolicitado){
-  const queryEstudiantes = `SELECT concat(nombres, " ", apellidos) AS nombre FROM usuarios
-  INNER JOIN usuarioscursos ON usuarioscursos.idUsuario = usuarios.idUsuario WHERE usuarioscursos.idCurso = :idCurso`;
+      const clasesTabla = [];
+      for(let i = 0; i < clasesConComentarios.length; i++){
+        const itemTabla = [];
+        itemTabla.push(i + 1);
+        itemTabla.push(clasesConComentarios[i].nombre);
+        itemTabla.push(clasesConComentarios[i].cantidadComentarios);
 
-  const [resultsEstudiantes, metadataEs] = await sequelize.query(queryEstudiantes, {
-    replacements: { idCurso: idCursoSolicitado }          
-  });
+        clasesTabla.push(itemTabla);
+      }
 
-  let estudiantesNombres = [];
-  for(const item of resultsEstudiantes){
-    estudiantesNombres.push(item.nombre);
-  }
-  return estudiantesNombres;
+      const nombresClases = [];
+      const comentariosClases = [];
+      const limite = (clasesConComentarios.length > 15) ? 15 : clasesConComentarios.length;
+      for(let i = 0; i < limite; i++){
+        nombresClases.push("Clase " + (i + 1));
+        comentariosClases.push(clasesConComentarios[i].cantidadComentarios);
+      }
+      const clasesGraficoBarras = {clases: nombresClases, comentarios: comentariosClases};
+      
+      estadisticas = {
+        nombre: cursoSolicitado.titulo,
+        calificacionCurso: Number.parseFloat(calificaciontotal.dataValues.promedioCalificacion),
+        promedioComentarios: comentariosTotales[0].total/clasesConComentarios.length,
+        estudiantesInscritos: estudiantesCurso.length,
+        clasesTabla: clasesTabla,
+        clasesGraficoBarras: clasesGraficoBarras,
+        calificacionDesglose: calificacionDesglose
+      };
+        
+      const fecha = Date.now();
+      const nombre = "Reporte-Curso-" + idCursoSolicitado + "-" + new Intl.DateTimeFormat('es-MX').format(fecha);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=' + nombre);    
+      await crearDocumento(res, estadisticas);
+
+    }catch(error){
+      console.log(error);
+      return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send();
+    }
 }
 
 module.exports = self;

@@ -19,5 +19,6 @@ router.delete('/:id',autorizar(), cursos.delete);
 
 router.get('/estadisticas/:id', checkSchema(estadisticaCursoSchema), validarFormatoPeticion, cursosEstadisticas.obtenerEstadisticasCurso);
 
+router.get('/reporte/:id', checkSchema(estadisticaCursoSchema), validarFormatoPeticion, cursosEstadisticas.devolverReporte);
 
 module.exports = router
