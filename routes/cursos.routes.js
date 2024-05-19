@@ -2,11 +2,13 @@ const router = require('express').Router();
 const cursos = require('../controllers/cursos.controller');
 const cursosEstadisticas = require('../controllers/estadisticas.controller');
 const cursosInscripcion = require('../controllers/inscripcion.controller');
-const autorizar = require('../middlewares/autenticacion.middleware');
+const autorizacion = require('../middlewares/autenticacion.middleware');
 const { checkSchema } = require('express-validator');
 const { crearCursoSchema, actualizarCursoSchema, estadisticaCursoSchema, inscripcionCursoSchema, calificarCursoSchema, obtenerCalificacionCursoSchema } = require('../schemas/curso.schema');
 const validarFormatoPeticion = require('../middlewares/validadorpeticiones.middleware');
 const validarCamposPeticion = require('../middlewares/validadorformatopeticiones.middleware');
+
+const autorizar = autorizacion.autorizar;
 
 router.get('/', autorizar(), cursos.getAll);
 
