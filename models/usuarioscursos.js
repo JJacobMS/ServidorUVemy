@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     }, 
     calificacion: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     idCurso:{
       type: DataTypes.INTEGER,

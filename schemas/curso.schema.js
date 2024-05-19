@@ -99,10 +99,113 @@ const estadisticaCursoSchema = ()=> {
             in: ['params'],
             notEmpty: true,
             isNumeric: true,
-            errorMessage: 'IdCurso inválida',
-            bail: true
+            errorMessage: 'IdCurso inválida'
         }
     }
 }
 
-module.exports = { crearCursoSchema, actualizarCursoSchema, estadisticaCursoSchema }
+const inscripcionCursoSchema = ()=> {
+    return {
+        id: {
+            in: ['params'],
+            notEmpty: true,
+            exists: true,
+            isDecimal: {
+                errorMessage: 'IdCurso debe ser un número'
+            },
+            errorMessage: 'IdCurso inválida'
+        },
+        idCurso: {
+            in: ['body'],
+            notEmpty: true,
+            exists: true,
+            isDecimal: {
+                errorMessage: 'IdCurso debe ser un número'
+            },
+            errorMessage: 'IdCurso inválida'
+        },
+        idUsuario: {
+            in: ['body'],
+            notEmpty: true,
+            exists: true,
+            isDecimal: {
+                errorMessage: 'IdUsuario debe ser un número'
+            },
+            errorMessage: 'IdUsuario inválida'
+        }
+    }
+}
+
+const calificarCursoSchema = ()=> {
+    return {
+        id: {
+            in: ['params'],
+            notEmpty: true,
+            exists: true,
+            isDecimal: {
+                errorMessage: 'IdCurso debe ser un número'
+            },
+            errorMessage: 'IdCurso inválida'
+        },
+        idCurso: {
+            in: ['body'],
+            notEmpty: true,
+            exists: true,
+            isDecimal: {
+                errorMessage: 'IdCurso debe ser un número'
+            },
+            errorMessage: 'IdCurso inválida'
+        },
+        idUsuario: {
+            in: ['body'],
+            notEmpty: true,
+            exists: true,
+            isDecimal: {
+                errorMessage: 'IdUsuario debe ser un número'
+            },
+            errorMessage: 'IdUsuario inválida'
+        },
+        calificacion:{
+            in: ['body'],
+            notEmpty: true,
+            exists: true,
+            isDecimal: {
+                errorMessage: 'Calificación debe ser un número'
+            },
+            custom: {
+                options: (value)=>{
+                    if(value < 1 || value > 10){
+                        throw Error("Calificaicón debe ser un número entre 0 y 10");
+                    }
+                    return true;
+                }
+            },
+            errorMessage: 'Calificación inválida'
+        }
+    }
+}
+
+const obtenerCalificacionCursoSchema = ()=> {
+    return {
+        idCurso: {
+            in: ['params'],
+            notEmpty: true,
+            exists: true,
+            isDecimal: {
+                errorMessage: 'IdCurso debe ser un número'
+            },
+            errorMessage: 'IdCurso inválida'
+        },
+        idUsuario: {
+            in: ['params'],
+            notEmpty: true,
+            exists: true,
+            isDecimal: {
+                errorMessage: 'IdUsuario debe ser un número'
+            },
+            errorMessage: 'IdUsuario inválida'
+        }
+    }
+}
+
+module.exports = { crearCursoSchema, actualizarCursoSchema, estadisticaCursoSchema, inscripcionCursoSchema, calificarCursoSchema, obtenerCalificacionCursoSchema }
