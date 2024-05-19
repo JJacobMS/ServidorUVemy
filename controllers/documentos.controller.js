@@ -32,17 +32,17 @@ self.borrarArchivoDelCurso = async function(documentoId){
     }
 }
 
-self.crearArchivoDelCurso = async function(documento, idCurso){
+self.crearArchivoDelCurso = async function(documento, idCurso, transaccion){
     try{
         let documentoCreado  = await dbdocumentos.create({
             archivo: documento,
-            nombre: "Miniatura del curso "+idCurso, //null
+            nombre: "Miniatura del curso "+idCurso,
             idTipoArchivo: 1, //Debo de comprobar el mymetipe
             idCurso: idCurso,
-            idClase: null //null
-        })
+            idClase: null
+        }, { transaction: transaccion })
         if(documentoCreado==null){
-            return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message: "Error al crear el documento" };;
+            return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message: "Error al crear el documento" };
         }
         return { status: 201, message: documentoCreado };;
     }catch(error){
@@ -101,9 +101,15 @@ async function obtenerIdTipoArchivoPDF(){
     return idTipoArchivo;
 }
 
-self.actualizarArchivoDelCurso = async function(idDocumento, documento){
+self.actualizarArchivoDelCurso = async function(idDocumento, documento, transaccion){
     try{
-        let data = await dbdocumentos.update({ archivo: documento }, {where:{idDocumento:idDocumento}, fields: ['archivo'] });
+        let data = await dbdocumentos.update(
+            { archivo: documento }, 
+            {where:{idDocumento:idDocumento}, 
+            fields: ['archivo'],
+            transaction: transaccion
+        });
+        
         if(data[0]==0){
             console.log("NOT_FOUND");
             return CodigosRespuesta.NOT_FOUND

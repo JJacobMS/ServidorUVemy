@@ -5,40 +5,56 @@ const crearCursoSchema = () =>{
             notEmpty: true,
             isString:true,
             isLength: { options: { min: 1, max: 150 } },
-            errorMessage: 'Titulo inválido'
+            notEmpty: {
+                errorMessage: 'Titulo inválido',
+                bail: true
+            }
         },
         descripcion:{
             in: ['body'],
             notEmpty: true,
             isString:true,
             isLength: { options: { min: 1, max: 660 } },
-            errorMessage: 'Descripción inválida'
+            notEmpty: {
+                errorMessage: 'Descripción inválida',
+                bail: true
+            }
         },
         objetivos:{
             in: ['body'],
             notEmpty: true,
             isString:true,
             isLength: { options: { min: 1, max: 600 } },
-            errorMessage: 'Objetivos inválidos'
+            notEmpty: {
+                errorMessage: 'Objetivos inválidos',
+                bail: true
+            }
         },
         requisitos:{
             in: ['body'],
             notEmpty: true,
             isString:true,
             isLength: { options: { min: 1, max: 300 } },
-            errorMessage: 'Requisitos inválidos'
+            notEmpty: {
+                errorMessage: 'Requisitos inválidos',
+                bail: true
+            }
         },
         idUsuario: {
             in: ['body'],
             notEmpty: true,
             isNumeric: true,
-            errorMessage: 'IdUsuario inválida'
+            notEmpty: {
+                errorMessage: 'IdUsuario inválida',
+                bail: true
+            }
         },
         etiquetas: {
             in: ['body'],
-            custom: {
+            notEmpty: {
                 options: value => Array.isArray(value) && value.every(item => Number.isInteger(item)),
-                errorMessage: 'Etiquetas inválidas'
+                errorMessage: 'Etiquetas inválidas',
+                bail: true
             }
         },
 
@@ -53,32 +69,44 @@ const actualizarCursoSchema = () =>{
             notEmpty: true,
             isString:true,
             isLength: { options: { min: 1, max: 150 } },
-            errorMessage: 'Titulo inválido'
+            notEmpty: {
+                errorMessage: 'Titulo inválido',
+                bail: true
+            }
         },
         descripcion:{
             in: ['body'],
             notEmpty: true,
             isString:true,
             isLength: { options: { min: 1, max: 660 } },
-            errorMessage: 'Descripción inválida'
+            notEmpty: {
+                errorMessage: 'Descripción inválida',
+                bail: true
+            }
         },
         objetivos:{
             in: ['body'],
             notEmpty: true,
             isString:true,
             isLength: { options: { min: 1, max: 600 } },
-            errorMessage: 'Objetivos inválidos'
+            notEmpty: {
+                errorMessage: 'Objetivos inválidos',
+                bail: true
+            }
         },
         requisitos:{
             in: ['body'],
             notEmpty: true,
             isString:true,
             isLength: { options: { min: 1, max: 300 } },
-            errorMessage: 'Requisitos inválidos'
+            notEmpty: {
+                errorMessage: 'Requisitos inválidos',
+                bail: true
+            }
         },
         etiquetas: {
             in: ['body'],
-            custom: {
+            notEmpty: {
                 options: value => Array.isArray(value) && value.every(item => Number.isInteger(item)),
                 errorMessage: 'Etiquetas inválidas'
             }
@@ -87,7 +115,10 @@ const actualizarCursoSchema = () =>{
             in: ['body'],
             notEmpty: true,
             isNumeric: true,
-            errorMessage: 'idDocumento inválido'
+            notEmpty: {
+                errorMessage: 'idDocumento inválido',
+                bail: true
+            }
         }
         //ARCHIVO
     }

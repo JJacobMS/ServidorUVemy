@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       cursos.hasMany(models.clases, { foreignKey: 'idCurso' });
       cursos.belongsToMany(models.etiquetas, { through: 'cursosetiquetas', foreignKey: 'idCurso' });
       cursos.belongsTo(models.usuarios, { foreignKey: 'idUsuario' });
+      cursos.hasMany(models.documentos, { foreignKey: 'idCurso' }); 
     }
   }
   cursos.init({

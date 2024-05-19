@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       documentos.hasOne(models.clases, {foreignKey: "idClase"});
       documentos.hasOne(models.cursos, {foreignKey: "idCurso"});
+      documentos.hasOne(models.tiposarchivos, {foreignKey: "idTipoArchivo"});
     }
   }
   documentos.init({

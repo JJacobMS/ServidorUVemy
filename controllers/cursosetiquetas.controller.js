@@ -76,46 +76,4 @@ self.delete = async function(req, res){
     }
 }
 
-self.borrarEtiquetasDelCurso = async function(cursoId){
-    try{
-        let id = cursoId;
-        let data = await cursos.findByPk(id);
-        if(!data){
-            return 404
-        }
-        data = await cursosetiquetas.destroy({ where : {idCurso:id}});
-        if(data >= 1 ){
-            return 204
-        }else{
-            return 404
-        }
-    }catch(error){
-        return { status: 500, message: error.message };
-    }
-}
-
-self.crearCursosEtiquetas = async function(idCurso, idEtiqueta){
-    try{
-        let cursoRecuperado = await cursos.findByPk(idCurso);
-        if(cursoRecuperado==null){
-            return { status: CodigosRespuesta.NOT_FOUND, message: "No se encontró el curso" } 
-        }
-        let etiquetaRecuperada = await etiquetas.findByPk(idEtiqueta);
-        if(etiquetaRecuperada==null){
-            return { status: CodigosRespuesta.NOT_FOUND, message: "No se encontró la etiqueta curso" }
-        }
-        let etiquetaCreada = await cursosetiquetas.create({
-            idCurso: idCurso,
-            idEtiqueta: idEtiqueta,
-            idClase: 1
-        })
-        if(etiquetaCreada==null){
-            return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message: "Error al crear la etiqueta curso" };;
-        }
-        return { status: CodigosRespuesta.CREATED, message:etiquetaCreada }
-    }catch(error){
-        return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message:error.message  }
-    }
-}
-
 module.exports = self;
