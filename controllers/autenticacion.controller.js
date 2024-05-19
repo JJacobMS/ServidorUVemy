@@ -68,7 +68,7 @@ self.solicitarCodigoVerificacionCorreo = async function (req, res) {
 
 self.registrarUsuario = async function (req, res) {
     try {
-        const { correoElectronico, contrasena, nombres, apellidos, idsEtiqueta } = req.body;
+        const { correoElectronico, contrasena, nombres, apellidos, idsEtiqueta, imagen } = req.body;
         const contrasenaHash = await bcrypt.hash(contrasena, 10);
 
         const usuario = await usuarios.findOne({
@@ -84,7 +84,8 @@ self.registrarUsuario = async function (req, res) {
             correoElectronico: correoElectronico,
             contrasena: contrasenaHash,
             nombres: nombres,
-            apellidos: apellidos
+            apellidos: apellidos,
+            imagen: imagen ? imagen : null
         });
 
         const usuarioCreado = await usuarios.findOne({
