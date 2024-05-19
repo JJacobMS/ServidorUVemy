@@ -17,13 +17,21 @@ async function crearDocumento(res, estadisticas){
   doc.fontSize(14);
   doc.font('Helvetica-Bold').text('Datos en general del curso', { align: 'left' });
   doc.moveDown(1);
-  doc.font('Helvetica').list(['Calificación del curso: ' + estadisticas.calificacionCurso, 
-    'Promedio de comentarios por clase: ' + estadisticas.promedioComentarios, 'Estudiantes en el curso: ' + estadisticas.estudiantesInscritos])
+  const calificacion = Number.isNaN(estadisticas.calificacionCurso)? "-" : estadisticas.calificacionCurso;
+  const promedio = Number.isNaN(estadisticas.promedioComentarios)? "-" : estadisticas.promedioComentarios;
+  doc.font('Helvetica').list(['Calificación del curso: ' + calificacion, 
+    'Promedio de comentarios por clase: ' + promedio, 'Estudiantes en el curso: ' + estadisticas.estudiantesInscritos])
   doc.moveDown(1);
 
   await agregarTabla(doc, estadisticas.clasesTabla);
-  await agregarGraficaBarras(doc, estadisticas.clasesGraficoBarras);
-  await agregarGraficaPastel(doc, estadisticas.calificacionDesglose);
+
+  if(!Number.isNaN(estadisticas.promedioComentarios)){
+    await agregarGraficaBarras(doc, estadisticas.clasesGraficoBarras);
+  }
+
+  if(!Number.isNaN(estadisticas.calificacionCurso)){
+    await agregarGraficaPastel(doc, estadisticas.calificacionDesglose);
+  }
 
   doc.end();
 }

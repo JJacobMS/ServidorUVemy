@@ -80,16 +80,29 @@ self.devolverReporte = async function(req, res){
         calificacionDesglose: calificacionDesglose
       };
         
-      const fecha = Date.now();
-      const nombre = "Reporte-Curso-" + idCursoSolicitado + "-" + new Intl.DateTimeFormat('es-MX').format(fecha);
+      const nombre = "Reporte-Curso-" + idCursoSolicitado + "-" + darFormatoFecha(Date.now());
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename=' + nombre);    
+      res.setHeader('Content-Disposition', 'attachment; filename=' + nombre + ".pdf");    
       await crearDocumento(res, estadisticas);
 
     }catch(error){
       console.log(error);
       return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send();
     }
+}
+
+function darFormatoFecha(date) {
+  var d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
+
+  if (month.length < 2) 
+      month = '0' + month;
+  if (day.length < 2) 
+      day = '0' + day;
+
+  return [year, month, day].join('-');
 }
 
 module.exports = self;
