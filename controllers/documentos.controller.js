@@ -5,14 +5,14 @@ const { documentos, tiposarchivos } = require('../models');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 let self = {}
 
-self.getAll = async function(req, res){
+/*self.getAll = async function(req, res){
     try{
         let data = await dbdocumentos.findAll({ attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase']})
         return res.status(200).json(data)
     }catch(error){
         return res.status(500).json(error)
     }
-}
+}*/
 
 self.borrarArchivoDelCurso = async function(documentoId){
     try{
@@ -73,9 +73,9 @@ self.crear = async function(req, res){
             idTipoArchivo: data.idTipoArchivo
         }
 
-        return res.status(201).json(respuesta);
+        return res.status(CodigosRespuesta.CREATED).json(respuesta);
     }catch(error){
-        return res.status(500).json(error)
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error)
     }
 }
 
@@ -101,6 +101,53 @@ async function obtenerIdTipoArchivoPDF(){
     return idTipoArchivo;
 }
 
+self.actualizarDocumentoClase = async function(req, res){
+    const idDocumento = req.body.idDocumento;
+    try{
+        if(idDocumento != req.params.id){
+            return res.status(CodigosRespuesta.BAD_REQUEST).send("IdDocumento deben ser igual");
+        }
+
+        const archivoBuffer = req.file.buffer;
+
+        const documento = await documentos.findByPk(idDocumento, { 
+            attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase']});
+
+        if(documento == null){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("No existe el documento");
+        }
+
+        documento.archivo = archivoBuffer;
+        documento.nombre = req.body.nombre;
+
+        await documento.save();
+
+        return res.status(CodigosRespuesta.OK).json({idDocumento: documento.idDocumento, nombre: documento.nombre});
+    }catch(error){
+        console.log(error);
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error)
+    }
+}
+
+self.eliminarDocumentoClase = async function(req, res){
+    const idDocumento = req.params.id;
+    try{
+        const documento = await documentos.findByPk(idDocumento, { 
+            attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase']});
+
+        if(documento == null){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("No existe el documento");
+        }
+        
+        await documento.destroy();
+
+        return res.status(CodigosRespuesta.OK).json({idDocumento: idDocumento});
+    }catch(error){
+        console.log(error);
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error)
+    }
+}
+
 self.actualizarArchivoDelCurso = async function(idDocumento, documento, transaccion){
     try{
         let data = await dbdocumentos.update(
@@ -121,5 +168,7 @@ self.actualizarArchivoDelCurso = async function(idDocumento, documento, transacc
         return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message:error.message  }
     }
 }
+
+
 
 module.exports = self;
