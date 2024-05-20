@@ -1,4 +1,3 @@
-const fs = require('fs');
 const PDFDocument = require('pdfkit-table');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 

@@ -7,8 +7,31 @@ self.obtenerPorId = async function(req, res){
     try{
         let clase = await clases.findOne({ where: {idClase: idClase}, attributes: ['idClase', 'nombre', 'descripcion', 'idCurso']})
         if(clase == null){
-            res.status(CodigosRespuesta.NOT_FOUND).send("Clase no encontrada");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Clase no encontrada");
         }
+
+        let documentosClase = await documentos.findAll({ 
+            where: {idClase: idClase, '$tiposarchivos.nombre$': "application/pdf"}, 
+            attributes: ['idDocumento'],
+            include: { model: tiposarchivos, as: 'tiposarchivos', attributes: []}
+        });
+
+        let documentosID = [];
+        for(var item of documentosClase){
+            documentosID.push(item.idDocumento);
+        }
+        clase.dataValues.documentosId = documentosID;
+
+        let videoClase = await documentos.findOne({ 
+            where: {idClase: idClase, '$tiposarchivos.nombre$': "video/mp4"}, 
+            attributes: ['idDocumento'],
+            include: { model: tiposarchivos, as: 'tiposarchivos', attributes: []}
+        });
+
+        if(videoClase != null){
+            clase.dataValues.videoId = videoClase.dataValues.idDocumento;
+        }
+        
         return res.status(CodigosRespuesta.OK).json(clase);
     }catch(error){
         console.log(error);
@@ -77,7 +100,7 @@ self.eliminar = async function(req, res){
         if(clase == null){
             res.status(CodigosRespuesta.NOT_FOUND).send("Clase no encontrada");
         }
-
+        
         await clase.destroy();
         return res.status(CodigosRespuesta.OK).send()
     }catch(error){

@@ -76,7 +76,7 @@ const actualizarDocumentoSchema = () =>{
     }
 }
 
-const eliminarDocumentoSchema = () =>{
+const idDocumentoSchema = () =>{
     return {
         id: {
             in: ['params'],
@@ -89,4 +89,4 @@ const eliminarDocumentoSchema = () =>{
     }
 }
 
-module.exports = { crearDocumentoSchema, validarFile, actualizarDocumentoSchema, eliminarDocumentoSchema }
+module.exports = { crearDocumentoSchema, validarFile, actualizarDocumentoSchema, idDocumentoSchema }
