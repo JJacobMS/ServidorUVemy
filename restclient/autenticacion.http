@@ -186,3 +186,13 @@ Content-Type: application/json
 {
     "idsEtiqueta": ["1", "2"]
 }
+
+###
+
+POST http://localhost:3000/api/autenticacion
+Content-Type: application/json
+
+{
+    "correoElectronico": "melus@gmail.com",
+    "contrasena": "1234567890"
+}
