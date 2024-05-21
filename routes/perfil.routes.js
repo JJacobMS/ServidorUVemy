@@ -12,6 +12,6 @@ router.post('/verificacion', checkSchema(esquemas.solicitarVerificacionCorreoEsq
 
 router.post('/registro', checkSchema(esquemas.registrarUsuarioEsquema()), validarFormatoPeticion, autorizarVerificacionCorreo(), perfil.registrarUsuario);
 
-router.put('/perfil/foto', autorizar(), upload.single("imagen"), checkSchema(esquemas.fotoPerfilSchema()), validarFormatoPeticion, validarFoto(), perfil.subirFotoPerfilUsuario);
+router.put('/foto', autorizar(), upload.single("imagen"), checkSchema(esquemas.fotoPerfilSchema()), validarFormatoPeticion, validarFoto(), perfil.subirFotoPerfilUsuario);
 
 module.exports = router;
