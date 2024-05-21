@@ -4,14 +4,13 @@ const { checkSchema } = require('express-validator');
 const esquemas = require('../schemas/perfil.schema');
 const validarFormatoPeticion = require('../middlewares/validadorpeticiones.middleware');
 const { autorizarVerificacionCorreo, autorizar } = require('../middlewares/autorizacion.middleware');
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const { subirArchivoPDF } = require("../middlewares/upload.middleware")
 const { validarFoto } = require('../schemas/perfil.schema');
 
 router.post('/verificacion', checkSchema(esquemas.solicitarVerificacionCorreoEsquema()), validarFormatoPeticion, perfil.solicitarCodigoVerificacionCorreo);
 
 router.post('/registro', checkSchema(esquemas.registrarUsuarioEsquema()), validarFormatoPeticion, autorizarVerificacionCorreo(), perfil.registrarUsuario);
 
-router.put('/foto', autorizar(), upload.single("imagen"), checkSchema(esquemas.fotoPerfilSchema()), validarFormatoPeticion, validarFoto(), perfil.subirFotoPerfilUsuario);
+router.put('/foto', autorizar(), subirArchivoPDF.single("imagen"), checkSchema(esquemas.fotoPerfilSchema()), validarFormatoPeticion, validarFoto(), perfil.subirFotoPerfilUsuario);
 
 module.exports = router;
