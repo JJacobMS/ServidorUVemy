@@ -146,10 +146,10 @@ self.validarFoto = () =>{
             }
         
             if (req.file.buffer == null) {
-                return res.status(CodigosRespuesta.BAD_REQUEST).json({ error: 'El archivo en  debe ser bytes no vacío' });
+                return res.status(CodigosRespuesta.BAD_REQUEST).json({ error: 'El archivo imagen debe ser bytes no vacío' });
             }
             
-            if (!req.file.mimetype.startsWith("application/pdf") || !req.file.originalname.endsWith(".png")) {
+            if (!req.file.mimetype.startsWith("image/png") || !req.file.originalname.endsWith(".png")) {
                 return res.status(CodigosRespuesta.BAD_REQUEST).json({ error: 'El archivo en el documento debe PNG' });
             }
 
