@@ -3,7 +3,7 @@ const clases = require('../controllers/clases.controller');
 const { checkSchema } = require('express-validator');
 const { crearClaseSchema, actualizarClaseSchema, recuperarClaseSchema } = require('../schemas/clase.schema');
 const validarFormatoPeticion = require('../middlewares/validadorpeticiones.middleware');
-const autorizacion = require('../middlewares/autenticacion.middleware');
+const autorizacion = require('../middlewares/autorizacion.middleware');
 
 const autorizar = autorizacion.autorizar;
 

@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const documentos = require('../controllers/documentos.controller');
-const autorizacion = require('../middlewares/autenticacion.middleware');
+const autorizacion = require('../middlewares/autorizacion.middleware');
 const { checkSchema } = require('express-validator');
 const validarFormatoPeticion = require('../middlewares/validadorpeticiones.middleware');
 const { crearDocumentoSchema, validarFile, actualizarDocumentoSchema, idDocumentoSchema } = require('../schemas/documento.schema');
