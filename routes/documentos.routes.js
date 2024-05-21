@@ -12,7 +12,7 @@ const autorizar = autorizacion.autorizar;
 
 router.get('/clase/:id', checkSchema(idDocumentoSchema()), validarFormatoPeticion, documentos.obtenerArchivoPDF);
 
-router.post('/clase', autorizar(), subirArchivoPDF.single("file"), checkSchema(crearDocumentoSchema()), validarFormatoPeticion, validarFile(), documentos.crear);
+router.post('/clase', subirArchivoPDF.single("file"), checkSchema(crearDocumentoSchema()), validarFormatoPeticion, validarFile(), documentos.crear);
 
 router.put('/clase/:id', subirArchivoPDF.single("file"), checkSchema(actualizarDocumentoSchema()), validarFormatoPeticion, validarFile(), documentos.actualizarDocumentoClase);
 

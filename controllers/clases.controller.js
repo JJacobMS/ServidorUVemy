@@ -20,6 +20,7 @@ self.obtenerPorId = async function(req, res){
         for(var item of documentosClase){
             documentosID.push(item.idDocumento);
         }
+        console.log(documentosID);
         clase.dataValues.documentosId = documentosID;
 
         let videoClase = await documentos.findOne({ 

@@ -25,11 +25,11 @@ async function enviarVideoClase (call, callback) {
                 return;
             }
 
-            const esValido = autenticarToken(datosDocumento.jwt);
+            /*const esValido = autenticarToken(datosDocumento.jwt);
             if(!esValido){
                 callback(null, {respuesta: CodigosRespuesta.FORBIDDEN})
                 return;
-            }
+            }*/
 
             const video = Buffer.concat(stream);
             const tamanioKB = video.length/1024;

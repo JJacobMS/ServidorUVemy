@@ -1,7 +1,7 @@
 const db = require('../models/index');
 const dbdocumentos = db.documentos;
 const cursos = db.cursos;
-const { documentos, tiposarchivos } = require('../models');
+const { documentos, tiposarchivos, clases } = require('../models');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 let self = {}
 
@@ -80,6 +80,12 @@ self.crear = async function(req, res){
         const idTipoArch = await obtenerIdTipoArchivoPDF();
         if(idTipoArch == 0) return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear el documento");
 
+        const clase = await clases.findByPk(req.body.idClase, { attributes: ['idClase']});
+
+        if(clase == null){
+            return res.status(CodigosRespuesta.BAD_REQUEST).send("No existe la clase");
+        }
+
         const archivoBuffer = req.file.buffer;
 
         const data = await documentos.create({
@@ -89,7 +95,9 @@ self.crear = async function(req, res){
             idTipoArchivo: idTipoArch
         });
 
-        if(data == null) return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear el documento " + req.body.nombre);
+        if(data == null){
+            return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear el documento " + req.body.nombre);
+        } 
 
         const respuesta = {
             idDocumento: data.idDocumento,
@@ -170,6 +178,7 @@ self.eliminarDocumentoClase = async function(req, res){
         });
 
         if(documento == null){
+            console.log(documento.dataValues.nombre);
             return res.status(CodigosRespuesta.NOT_FOUND).send("No existe el documento");
         }
         

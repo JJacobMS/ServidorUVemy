@@ -11,7 +11,7 @@ router.get('/:id', checkSchema(recuperarClaseSchema()), validarFormatoPeticion, 
 
 router.get('/curso/:idCurso', autorizar(), clases.obtenerPorCurso);
 
-router.post('/', autorizar(), checkSchema(crearClaseSchema()), validarFormatoPeticion, clases.crear);
+router.post('/', checkSchema(crearClaseSchema()), validarFormatoPeticion, clases.crear);
 
 router.put('/:idClase', checkSchema(actualizarClaseSchema()), validarFormatoPeticion, clases.actualizar);
 
