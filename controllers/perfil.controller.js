@@ -4,6 +4,7 @@ const { generarTokenRegistro } = require('../services/jwttoken.service');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 const enviarCorreoVerificacion = require('../services/enviocorreo.service');
 const fs = require('fs');
+const claimTypes = require('../config/claimtypes');
 
 let self = {};
 
@@ -83,14 +84,14 @@ self.subirFotoPerfilUsuario = async function (req, res) {
         const imagen = req.file;
         const tokenDecodificado = req.tokenDecodificado;
 
-        if (idUsuario != tokenDecodificado.idUsuario)
+        if (idUsuario != tokenDecodificado[claimTypes.Id])
             return res.status(CodigosRespuesta.UNAUTHORIZED).send();
 
         const usuario = await usuarios.findByPk(idUsuario);
         if (!usuario)
             return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Usuario no encontrado"] });
 
-        const imagenBuffer = req.file.buffer;
+        const imagenBuffer = imagen.buffer;
         usuario.imagen = imagenBuffer;
         console.log(usuario);
         await usuario.save();
