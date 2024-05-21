@@ -65,8 +65,9 @@ const documentoProto = grpc.loadPackageDefinition(packageDefinition);
 
 const server = new grpc.Server();
 
-const { enviarVideoClase } = require('./services/videogrpc.service');
-server.addService(documentoProto.VideoService.service, { EnviarVideoClase : enviarVideoClase});
+const { enviarVideoClase, actualizarVideoClase } = require('./services/videogrpc.service');
+server.addService(documentoProto.VideoService.service, 
+    { EnviarVideoClase : enviarVideoClase, ActualizarVideoClase: actualizarVideoClase});
 
 server.bindAsync(`localhost:${process.env.SERVER_PORT_GRPC}`, grpc.ServerCredentials.createInsecure(), ()=>{
     console.log(`Servidor gRPC en ejecución en el puerto ${process.env.SERVER_PORT_GRPC}`)

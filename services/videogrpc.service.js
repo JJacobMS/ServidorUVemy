@@ -20,25 +20,26 @@ async function enviarVideoClase (call, callback) {
         })
 
         call.on('end', async ()=>{
-            if(stream == null || datosDocumento.nombre == null || datosDocumento.idClase == null || datosDocumento.jwt == null){
-                callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST});
-                return;
-            }
-
-            /*const esValido = autenticarToken(datosDocumento.jwt);
-            if(!esValido){
-                callback(null, {respuesta: CodigosRespuesta.FORBIDDEN})
-                return;
-            }*/
-
-            const video = Buffer.concat(stream);
-            const tamanioKB = video.length/1024;
-            if(tamanioKB > TAMANIO_MAXIMO_VIDEOS_KB){
-                callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
-                    return;
-            }
-            
             try{
+
+                if(stream == null || datosDocumento.nombre == null || datosDocumento.idClase == null || datosDocumento.jwt == null){
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST});
+                    return;
+                }
+
+                /*const esValido = autenticarToken(datosDocumento.jwt);
+                if(!esValido){
+                    callback(null, {respuesta: CodigosRespuesta.FORBIDDEN})
+                    return;
+                }*/
+
+                const video = Buffer.concat(stream);
+                const tamanioKB = video.length/1024;
+                if(tamanioKB > TAMANIO_MAXIMO_VIDEOS_KB){
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
+                        return;
+                }
+            
                 const idTipoArchivo = await verificarIdTipoArchivoVideo();
                 if(idTipoArchivo == 0){
                     callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR})
@@ -47,14 +48,14 @@ async function enviarVideoClase (call, callback) {
 
                 const existeClase = await verificarExistenciaClase(datosDocumento.idClase);
                 if(existeClase == false){ 
-                    callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR})
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
                     return;
                 }
 
                 const sinVideo = await verificarClaseSinVideo(datosDocumento.idClase, idTipoArchivo);
                 if(sinVideo == false){ 
                     console.log("Con video");
-                    callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR})
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
                     return;
                 }
 
@@ -65,6 +66,72 @@ async function enviarVideoClase (call, callback) {
                     idClase: datosDocumento.idClase
                 });
             }catch(error){
+                callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR});
+            }
+
+            const respuesta = { respuesta : CodigosRespuesta.OK};
+            callback(null, respuesta);
+        })
+
+    }catch(error){
+        console.log("Error grpc");
+        console.log(error);
+    }
+}  
+
+async function actualizarVideoClase (call, callback) {
+    const stream = [];
+    let datosDocumento;
+
+    try{
+        call.on('data', (message) =>{
+            if(message.datosVideo != null){
+                console.log(message.datosVideo);
+                datosDocumento = message.datosVideo;
+            }
+            if(message.chunks != null){
+                stream.push(message.chunks);
+                console.log(".");
+            }
+        })
+
+        call.on('end', async ()=>{
+            try{
+                if(stream == null || datosDocumento.nombre == null || datosDocumento.jwt == null || datosDocumento.idVideo == null){
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST});
+                    return;
+                }
+
+                /*const esValido = autenticarToken(datosDocumento.jwt);
+                if(!esValido){
+                    callback(null, {respuesta: CodigosRespuesta.FORBIDDEN})
+                    return;
+                }*/
+
+                const video = Buffer.concat(stream);
+                const tamanioKB = video.length/1024;
+                if(tamanioKB > TAMANIO_MAXIMO_VIDEOS_KB){
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
+                        return;
+                }
+
+                const doc = await documentos.findByPk(datosDocumento.idVideo, 
+                    { attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase']});
+
+                console.log(datosDocumento.id);
+                console.log(doc);
+                if(doc == null){ 
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
+                    return;
+                }
+
+                doc.nombre = datosDocumento.nombre;
+                doc.archivo = video;
+
+                await doc.save();
+
+            }catch(error){
+                console.log(error)
                 callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR});
             }
 
@@ -132,6 +199,7 @@ async function verificarExistenciaClase(idClase){
     return existe;
 }
 
+
 async function verificarClaseSinVideo(idClase, idTipoArchivo){
     let sinVideo;
     try{
@@ -145,4 +213,4 @@ async function verificarClaseSinVideo(idClase, idTipoArchivo){
     return sinVideo;
 }
 
-module.exports = { enviarVideoClase };
+module.exports = { enviarVideoClase, actualizarVideoClase };
