@@ -40,7 +40,8 @@ self.autorizarVerificacionCorreo = () => {
             const token = encabezadoAuth.split(' ')[1];
             const tokenDecodificado = jwt.verify(token, jwtSecret);
 
-            if (tokenDecodificado.codigoVerificacion !== req.codigoVerificacion || tokenDecodificado.correoElectronico !== req.correoElectronico) {
+            if (tokenDecodificado[claimTypes.CodigoVerificacion] !== req.body.codigoVerificacion || 
+                tokenDecodificado[claimTypes.Email] !== req.body.correoElectronico) {
                 return res.status(CodigosRespuesta.UNAUTHORIZED).json({ mensaje: 'Código de verificación incorrecto' });
             }
 

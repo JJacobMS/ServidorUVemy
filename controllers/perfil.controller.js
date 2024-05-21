@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const { usuarios, etiquetas } = require('../models');
 const { generarTokenRegistro } = require('../services/jwttoken.service');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
-const { enviarCorreoVerificacion } = require('../services/enviocorreo.service');
+const enviarCorreoVerificacion = require('../services/enviocorreo.service');
 const fs = require('fs');
 
 let self = {};
@@ -18,7 +18,7 @@ self.solicitarCodigoVerificacionCorreo = async function (req, res) {
         });
 
         if (correoRegistrado === null){
-            const codigo = enviarCorreoVerificacion(correoElectronico);
+            const codigo = await enviarCorreoVerificacion(correoElectronico);
             token = generarTokenRegistro(correoElectronico, codigo);
             return res.status(CodigosRespuesta.OK).send({ jwt: token });
         } else {
