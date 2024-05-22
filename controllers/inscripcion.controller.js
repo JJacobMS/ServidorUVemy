@@ -1,10 +1,11 @@
+const claimTypes = require('../config/claimtypes');
 const { cursos, usuarioscursos, usuarios } = require('../models');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 
 let self = {};
 
 self.inscribirse = async function(req, res){
-    const idUsuario = req.body.idUsuario;
+    const idUsuario = req.tokenDecodificado[claimTypes.Id];
     const idCurso = req.body.idCurso;
 
     if(idCurso != req.params.id){
@@ -46,10 +47,10 @@ self.inscribirse = async function(req, res){
 }
 
 self.calificarCurso = async function(req, res){
-    const idUsuario = req.body.idUsuario;
+    const idUsuario = req.tokenDecodificado[claimTypes.Id];
     const idCurso = req.body.idCurso;
 
-    if(idCurso != req.params.id){
+    if(idCurso != req.params.idCurso){
         return res.status(CodigosRespuesta.BAD_REQUEST).send("IdCurso no válido");
     }
 
@@ -73,7 +74,7 @@ self.calificarCurso = async function(req, res){
 
 self.obtenerCalificacionUsuarioCurso = async function(req, res){
     const idCurso = req.params.idCurso;
-    const idUsuario = req.params.idUsuario;
+    const idUsuario = req.tokenDecodificado[claimTypes.Id];
     try{
         const cursoExistente = await cursos.findByPk(idCurso, { attributes: [ 'idUsuario']});
         if(cursoExistente == null){

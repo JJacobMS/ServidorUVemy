@@ -8,12 +8,12 @@ const { subirArchivoPDF } = require("../middlewares/upload.middleware")
 
 //router.get('/', documentos.getAll);
 
-router.get('/clase/:idDocumento', checkSchema(idDocumentoSchema()), validarFormatoPeticion, autorizacion.autorizar(), autorizacion.autorizarProfesorOEstudianteIdDocumento(), documentos.obtenerArchivoPDF);
+router.get('/clase/:idDocumento', checkSchema(idDocumentoSchema()), validarFormatoPeticion, autorizacion.autorizar(), autorizacion.autorizarIdDocumento("Profesor,Estudiante"), documentos.obtenerArchivoPDF);
 
-router.post('/clase', subirArchivoPDF.single("file"), checkSchema(crearDocumentoSchema()), validarFormatoPeticion, validarFile(), autorizacion.autorizar(), autorizacion.autorizarProfesorIdClase(), documentos.crear);
+router.post('/clase', subirArchivoPDF.single("file"), checkSchema(crearDocumentoSchema()), validarFormatoPeticion, validarFile(), autorizacion.autorizar(), autorizacion.autorizarIdClase("Profesor"), documentos.crear);
 
 //router.put('/clase/:idDocumento', subirArchivoPDF.single("file"), checkSchema(actualizarDocumentoSchema()), validarFormatoPeticion, validarFile(), documentos.actualizarDocumentoClase);
 
-router.delete('/clase/:idDocumento', checkSchema(idDocumentoSchema()), validarFormatoPeticion, autorizacion.autorizar(), autorizacion.autorizarProfesorIdDocumento(), documentos.eliminarDocumentoClase);
+router.delete('/clase/:idDocumento', checkSchema(idDocumentoSchema()), validarFormatoPeticion, autorizacion.autorizar(), autorizacion.autorizarIdDocumento("Profesor"), documentos.eliminarDocumentoClase);
 
 module.exports = router;
