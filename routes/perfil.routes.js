@@ -13,4 +13,8 @@ router.post('/registro', checkSchema(esquemas.registrarUsuarioEsquema()), valida
 
 router.put('/foto', autorizar(), subirArchivoPDF.single("imagen"), checkSchema(esquemas.fotoPerfilSchema()), validarFormatoPeticion, validarFoto(), perfil.subirFotoPerfilUsuario);
 
+router.put('/', autorizar(), checkSchema(esquemas.actualizarPerfilSchema()), validarFormatoPeticion, perfil.actualizarPerfilUsuario);
+
+router.get('/foto', autorizar(), perfil.obtenerFotoPerfil);
+
 module.exports = router;

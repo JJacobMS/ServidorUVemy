@@ -26,7 +26,7 @@ self.solicitarCodigoVerificacionCorreo = async function (req, res) {
             return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Correo electrónico ya registrado"] });
         }
     } catch (error) {
-        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: [error.message] });
     }
 }
 
@@ -74,7 +74,7 @@ self.registrarUsuario = async function (req, res) {
         });
     } catch (error) {
         console.log(error);
-        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: [error.message] });
     }
 }
 
@@ -99,7 +99,59 @@ self.subirFotoPerfilUsuario = async function (req, res) {
         return res.status(CodigosRespuesta.OK).send({ idUsuario: usuario.idUsuario, detalles: ["Foto de perfil actualizada"] });
     } catch (error) {
         console.log(error);
-        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: [error.message] });
+    }
+}
+
+self.obtenerFotoPerfil = async function (req, res) {
+    try {
+        const idUsuario = req.tokenDecodificado[claimTypes.Id];
+        const usuario = await usuarios.findByPk(idUsuario, {
+            attributes: ['imagen']
+        });
+
+        if (!usuario)
+            return res.status(CodigosRespuesta.NOT_FOUND).send({ detalles: ["Usuario no encontrado"] });
+
+        if (!usuario.imagen)
+            return res.status(CodigosRespuesta.NOT_FOUND).send();
+
+        res.set('Content-Type', 'image/jpeg');
+        return res.status(CodigosRespuesta.OK).send(usuario.imagen);
+    } catch (error) {
+        console.log(error);
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: [error.message] });
+    }
+}
+
+self.actualizarPerfilUsuario = async function (req, res) {
+    try {
+        const idUsuario = req.tokenDecodificado[claimTypes.Id];
+        const { nombres, apellidos, correoElectronico, contrasena} = req.body;
+
+        if (idUsuario != req.body.idUsuario)
+            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["IdUsuario no coincide con el token"] });
+
+        const usuario = await usuarios.findOne({ where: { idUsuario: idUsuario }, attributes: ['idUsuario', 'nombres', 'apellidos', 'correoElectronico']});
+        if (!usuario)
+            return res.status(CodigosRespuesta.NOT_FOUND).send({ detalles: ["No existe el usuario"] });
+
+        usuario.nombres = nombres;
+        usuario.apellidos = apellidos;
+
+        if (correoElectronico != usuario.correoElectronico)
+            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["No se puede cambiar el correo electrónico"] });
+
+        if (contrasena != null){
+            const contrasenaHash = await bcrypt.hash(contrasena, 10);
+            usuario.contrasena = contrasenaHash;
+        }
+
+        await usuario.save();
+
+        return res.status(CodigosRespuesta.NO_CONTENT).send();
+    } catch (error) {
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: [error.message] });
     }
 }
 

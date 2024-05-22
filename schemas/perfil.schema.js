@@ -186,4 +186,88 @@ self.fotoPerfilSchema = () => {
     }
 }
 
+self.actualizarPerfilSchema = () => {
+    return {
+        idUsuario: {
+            in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'IdUsuario requerido',
+                bail: true,
+            },
+            trim: true,
+            escape: true,
+            isNumeric: {
+                errorMessage: 'IdUsuario debe ser un número',
+                bail: true,
+            }
+        },
+        nombres: {
+            in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'Nombres requeridos',
+                bail: true,
+            },
+            trim: true,
+            escape: true,
+            isLength: { 
+                options: { max: 150 },
+                errorMessage: 'Nombre/s debe ser menor a 150 caracteres',
+                bail: true,
+            },
+        },
+        apellidos: {
+            in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'Apellidos requeridos',
+                bail: true,
+            },
+            trim: true,
+            escape: true,
+            isLength: { 
+                options: { max: 660 },
+                errorMessage: 'Apellido/s debe ser menor a 660 caracteres',
+                bail: true,
+            },
+        },
+        correoElectronico: {
+            in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'Correo electrónico es requerido',
+                bail: true,
+            },
+            trim: true,
+            escape: true,
+            isLength: {
+                options: { max: 600 },
+                errorMessage: 'Correo electrónico debe ser menor a 600 caracteres',
+                bail: true,
+            },
+            isEmail:{
+                errorMessage: 'Correo electrónico inválido',
+                bail: true,
+            },
+        },
+        contrasena: {
+            in: ['body'],
+            optional: true, 
+            trim: true,
+            escape: true,
+            isLength: { 
+                options: { min: 3, max: 18 },
+                errorMessage: 'La contraseña debe tener entre 3 y 18 caracteres',
+                bail: true,
+            },
+            matches: {
+                options: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+                errorMessage: 'La contraseña debe contener al menos una mayúscula, una minúscula y un número',
+                bail: true,
+            },
+        }
+    }
+}
+
 module.exports = self;
