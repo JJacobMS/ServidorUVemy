@@ -1,82 +1,212 @@
-const { sequelize, DataTypes } = require('sequelize');
 const cursoModel = require('../models/cursos');
 const db = require('../models/index');
+const cursosetiquetas = require('../services/cursosetiquetas.service.');
+const usuarioscursos = require('./usuarioscursos.controller');
+const documentos = require('./documentos.controller');
+const CodigosRespuesta = require('../utils/codigosRespuesta');
 const curso = db.cursos;
+const usuario = db.usuarios;
+const documentosModel = db.documentos;
+const tiposarchivosModel = db.tiposarchivos;
+const sequelize = db.sequelize;
 let self = {}
 
 self.getAll = async function (req, res){
     try{
-        let data = await curso.findAll({ attributes: ['idCurso', 'titulo', 'descripcion', 'objetivos', 'requisitos']})
-        return res.status(200).json(data)
+        let data = await curso.findAll({ attributes: ['idCurso', 'titulo', 'descripcion', 'objetivos', 'requisitos', 'idUsuario']})
+        return res.status(CodigosRespuesta.OK).json(data)
     }catch(error){
-        return res.status(500).json({ error: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
 
 self.get = async function(req, res){
     try{
         let id = req.params.id;
-        let data = await curso.findByPk(id, { attributes: ['idCurso', 'titulo', 'descripcion', 'objetivos', 'requisitos']});
-        if(data){
-            return res.status(200).json(data)
-        }else{
-           return res.status(404).send()
+        if(id < 0){
+            id = 0;
         }
+        let offset = -6;
+        let limit = 6;
+        let nombreTipoArchivo = 'jacob';
+        for (let index = 0; index <= id; index++) {
+            offset += 6;
+        }
+
+        cursosRecuperados = await sequelize.query(
+            `SELECT cursos.idCurso, cursos.titulo, documentos.idDocumento, documentos.archivo
+            FROM cursos 
+            JOIN documentos ON cursos.idCurso=documentos.idCurso
+            JOIN tiposarchivos ON documentos.idTipoArchivo=tiposarchivos.idTipoArchivo 
+            WHERE tiposarchivos.nombre= :nombreTipoArchivo
+            ORDER BY idCurso ASC  
+            LIMIT :offset, :limit;`,
+            {
+              replacements: { nombreTipoArchivo, offset, limit },
+              type: sequelize.QueryTypes.SELECT
+            }
+          )
+
+        console.log(cursosRecuperados);
+        if (cursosRecuperados.length === 0) {
+            return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
+        }
+        return res.status(CodigosRespuesta.OK).json(cursosRecuperados)
     }catch(error){
-        return res.status(500).json({ error: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
 
 self.create = async function(req, res){
+    let transaccion;
     try{
-        let data = await curso.create({
+        let usuarioRecuperado = await usuario.findByPk(req.body.idUsuario);
+        if(usuarioRecuperado==null){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el usuario");
+        }
+
+        transaccion = await sequelize.transaction();
+        
+        let cursoCreado = await curso.create({
             titulo: req.body.titulo,
             descripcion: req.body.descripcion,
             objetivos: req.body.objetivos,
-            requisitos: req.body.requisitos
-        })
-        return res.status(201).json(data)
+            requisitos: req.body.requisitos,
+            idUsuario: req.body.idUsuario
+        }, { transaction: transaccion })
+
+        if(cursoCreado==null){
+            await transaccion.rollback();
+            return res.status(CodigosRespuesta.BAD_REQUEST).send("Error al crear el curso");
+        }
+
+        //let archivoCreado = await crearArchivoDelCurso(req.body.archivo, cursoCreado.idCurso, transaccion);
+        //if(archivoCreado.status!=201){
+          //  await transaccion.rollback();
+            //return res.status(CodigosRespuesta.BAD_REQUEST).json("Error al crear el archivo")
+        //}
+
+        for (let etiquetaId of req.body.etiquetas) {
+
+            let etiquetaCreada = await crearCursosEtiquetas(cursoCreado.idCurso, etiquetaId, transaccion);
+            console.log(etiquetaCreada.status);
+            if(etiquetaCreada.status!=201){
+                await transaccion.rollback();
+                return res.status(CodigosRespuesta.BAD_REQUEST).json("Error al crear una de las etiquetas")
+            }
+        }
+        await transaccion.commit();
+        return res.status(CodigosRespuesta.CREATED).json(cursoCreado)
     }catch(error){
-        return res.status(500).json({ error: error.message });
+        if (transaccion) {
+            await transaccion.rollback();
+        }
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
 
 self.update = async function(req, res){
+    let transaccion;
     try{
+        let body = {
+            id: req.params.id,
+            titulo: req.body.titulo,
+            descripcion: req.body.descripcion,
+            objetivos: req.body.objetivos,
+            requisitos: req.body.requisitos,
+        };
         let id = req.params.id;
-        let body = req.body;
-        let data = await curso.update(body, {where:{idCurso:id}});
+
+        transaccion = await sequelize.transaction();
+
+        //let resultadoArchivo = await actualizarArchivoDelCurso(req.body.idDocumento, req.body.archivo, transaccion);
+        //if(resultadoArchivo !== 404 && resultadoArchivo !== 204){
+          //  await transaccion.rollback();
+            //return res.status(resultadoArchivo).json("Error al actualizar la miniatura");
+        //}
+
+        let data = await curso.update(body, {where: 
+            {idCurso:id},
+            transaction: transaccion
+        });
+
         if(data[0]==0){
-            return res.status(404).send()
-        }else{
-            return res.status(204).send()
+            console.log("Error al actualizar el curso");
+            await transaccion.rollback();
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso");
+        } 
+
+        resultadoEtiquetas = await eliminarEtiquetasDelCurso(id, transaccion);
+
+        if(resultadoEtiquetas !== 404 && resultadoEtiquetas !== 204){
+            console.log("Error al actualizar el curso");
+            await transaccion.rollback();
+            return res.status(resultadoEtiquetas).send("Error al actualizar las etiquetas");
         }
+
+        for (let etiquetaId of req.body.etiquetas) {
+            let etiquetaCreada = await crearCursosEtiquetas(id, etiquetaId, transaccion);
+            if(etiquetaCreada.status!=201){
+                console.log("Error al crear una de las etiquetas");
+                await transaccion.rollback();
+                return res.status(CodigosRespuesta.BAD_REQUEST).json("Error al crear una de las etiquetas")
+            }
+        }
+        await transaccion.commit();
+        return res.status(CodigosRespuesta.NO_CONTENT).send();
     }catch(error){
-        return res.status(500).json({ error: error.message });
+        console.log("Error");
+        console.log(error);
+        if (transaccion) {
+            await transaccion.rollback();
+        }
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
 
 self.delete = async function(req, res){
     try{
         let id = req.params.id;
-        let data = await curso.findByPk(id);
-        if(!data){
-            return res.status(404).send()
+        let cursoRecuperado = await curso.findByPk(id);
+        if(cursoRecuperado==null){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
         }
-
-        if(data.protegida){
-            return res.status(400).send()
-        }
-
         data = await curso.destroy({ where : {idCurso:id}});
         if(data === 1){
-            return res.status(204).send()
+            return res.status(CodigosRespuesta.NO_CONTENT).send("Se ha eliminado el curso")
         }else{
-            return res.status(404).send()
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al eliminar el curso")
         }
     }catch(error){
-        return res.status(500).json({ error: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
+
+async function eliminarEtiquetasDelCurso(cursoId, transaccion) {
+    const resultado = await cursosetiquetas.borrarEtiquetasDelCurso(cursoId, transaccion);
+    return resultado;
+}
+
+async function crearArchivoDelCurso(documento, idCurso, transaccion) {
+    const resultado = await documentos.crearArchivoDelCurso(documento,idCurso, transaccion);
+    return resultado;
+}
+
+async function eliminarArchivoDelCurso(documentoId) {
+    const resultado = await documentos.borrarArchivoDelCurso(documentoId);
+    return resultado;
+}
+
+async function actualizarArchivoDelCurso(idDocumento, documento, transaccion) {
+    const resultado = await documentos.actualizarArchivoDelCurso(idDocumento, documento, transaccion);
+    return resultado;
+}
+
+
+async function crearCursosEtiquetas(idCurso, etiquetaId, transaccion) {
+    const resultado = await cursosetiquetas.crearCursosEtiquetas(idCurso, etiquetaId, transaccion);
+    return resultado;
+}
+
 
 module.exports = self;

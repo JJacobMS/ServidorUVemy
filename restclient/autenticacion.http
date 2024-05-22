@@ -3,14 +3,44 @@ POST http://localhost:3000/api/autenticacion
 Content-Type: application/json
 
 {
-    "correoElectronico": "enrique@ejemplo.com",
+    "correoElectronico": "kikgamboa@gmail.com",
     "contrasena": "Contrasena1"
 }
 
 ###
 
+PUT http://localhost:3000/api/perfil/foto
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJQcnVlYmEiLCJpc3MiOiJVVmVteVNlcnZpZG9ySldUIiwiYXVkIjoiVXN1YXJpb3NVVmVteUpXVCIsImlhdCI6MTcxNjMxMzYxMSwiZXhwIjoxNzE2MzE0ODExfQ.rwtjki3k-5Cp-JbjQryJuosf42iCFvc_B2mTcDrOeWQ
+
+###
+
 POST http://localhost:3000/api/clases
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiIxIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvZ2l2ZW5uYW1lIjoicyIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE1NjY0NDAwLCJleHAiOjE3MTU2NjU2MDB9.jU_km6ouz1uTJMUUPEIoLSk4iINWmIXe95_iYSJp7l8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjEsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InN1bGVtNDc3QGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2dpdmVubmFtZSI6InMiLCJpc3MiOiJVVmVteVNlcnZpZG9ySldUIiwiYXVkIjoiVXN1YXJpb3NVVmVteUpXVCIsImlhdCI6MTcxNTgxOTYzMCwiZXhwIjoxNzE1ODIwODMwfQ.5rpd_7Fw59hoD4CJtiT_GCxgaM9Xfj3354rl8lzu7Ak
+Content-Type: application/json
+
+{
+    "idCurso": 1,
+    "nombre": "Clase con documentos",
+    "descripcion": "cverdaderamente",
+    "documentos": [
+        {
+            "nombre": "a",
+            "archivo": ""
+        }
+    ]
+}
+
+###
+
+POST http://localhost:3000/api/documentos
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjEsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InN1bGVtNDc3QGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2dpdmVubmFtZSI6InMiLCJpc3MiOiJVVmVteVNlcnZpZG9ySldUIiwiYXVkIjoiVXN1YXJpb3NVVmVteUpXVCIsImlhdCI6MTcxNTgyOTk2NywiZXhwIjoxNzE1ODMxMTY3fQ.2dWmvdhRKlXGhWOx63CKl-8vqtNoujmKTbswmNsvZjs
+Content-Type: application/json
+
+{
+    "idClase": 1,
+    "nombre": "Documentos",
+    "archivo": ""
+}
 
 ###
 
@@ -39,125 +69,4 @@ Content-Type: application/json
 {
     "correoElectronico": "hola@gmail.com",
     "contrasena": "hola"
-}
-
-### Correo válido (envía código a correo)
-POST http://localhost:3000/api/autenticacion/verificacion
-Content-Type: application/json
-
-{
-    "correoElectronico": "ejemplo@ejemplo.com"
-}
-
-### Correo vacío
-POST http://localhost:3000/api/autenticacion/verificacion
-Content-Type: application/json
-
-{
-    "correoElectronico": ""
-}
-
-### Correo no válido
-POST http://localhost:3000/api/autenticacion/verificacion
-Content-Type: application/json
-
-{
-    "correoElectronico": "egamboa020903@"
-}
-
-### Correo ya registrado
-POST http://localhost:3000/api/autenticacion/verificacion
-Content-Type: application/json
-
-{
-    "correoElectronico": "enrique@ejemplo.com"
-}
-
-### Registro exitoso
-POST http://localhost:3000/api/autenticacion/registro
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJlZ2FtYm9hMDIwOTAzQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjp7fSwiaWF0IjoxNzE2MDExNDcwLCJleHAiOjE3MTYwOTc4NzB9.a4NWEi4Z7Az1K2FeA7b_frcfyirjj0U-wzIcmufTBQE
-
-{
-    "nombres": "Prueba",
-    "apellidos": "Con correo verificación",
-    "correoElectronico": "egamboa020903@gmail.com",
-    "contrasena": "Contrasena1",
-    "idsEtiqueta": [1, 2],
-    "codigoVerificacion": "5239"
-}
-
-### Campos vacíos
-POST http://localhost:3000/api/autenticacion/registro
-
-### Nombre muy largo (+150 caracteres) 151 caracteres enviados
-POST http://localhost:3000/api/autenticacion/registro
-Content-Type: application/json
-
-{
-    "nombres": "Lorem ipsum dolor sit amet, consectetur asdadipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaa123"
-}
-
-### Apellido muy largo (+660 caracteres) 661 caracteres enviados
-POST http://localhost:3000/api/autenticacion/registro
-Content-Type: application/json
-
-{
-    "apellidos": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorasdasdasdasdaadadddasdasaaasdjkhasjkdhaklshdaaLorasdasdasdasdaadaddasdasdasdad"
-}
-
-### Correo electrónico muy largo (+600 caracteres) 601 caracteres enviados
-POST http://localhost:3000/api/autenticacion/registro
-Content-Type: application/json
-
-{
-    "correoElectronico": "aL ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdhdljhasjkdhaklshdaaLorasdasdasdasdaasdasdasdasdasdasdasdasdadad@example.com"
-}
-
-### Correo electrónico inválido
-POST http://localhost:3000/api/autenticacion/registro
-Content-Type: application/json
-
-{
-    "correoElectronico": "correo@correo"
-}
-
-### Contraseña muy corta (menos de 3 caracteres)
-POST http://localhost:3000/api/autenticacion/registro
-Content-Type: application/json
-
-{
-    "contrasena": "12"
-}
-
-### Contraseña muy larga (más de 18 caracteres)
-POST http://localhost:3000/api/autenticacion/registro
-Content-Type: application/json
-
-{
-    "contrasena": "1234567890123456789"
-}
-
-### Contraseña sin política de seguridad (una mayúscula, una minúscula y un número)
-POST http://localhost:3000/api/autenticacion/registro
-Content-Type: application/json
-
-{
-    "contrasena": "contrasena"
-}
-
-### idsEtiqueta no es un arreglo
-POST http://localhost:3000/api/autenticacion/registro
-Content-Type: application/json
-
-{
-    "idsEtiqueta": "1"
-}
-
-### idsEtiqueta es arreglo pero no de números
-POST http://localhost:3000/api/autenticacion/registro
-Content-Type: application/json
-    
-{
-    "idsEtiqueta": ["1", "2"]
 }

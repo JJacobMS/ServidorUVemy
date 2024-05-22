@@ -1,0 +1,35 @@
+###
+
+POST http://localhost:3000/api/documentos
+Content-Type: multipart/form-data; boundary=XXX
+Authorization: Bearer {{ token }}
+
+--XXX
+Content-Disposition: form-data; name="file"; filename="elpadrino.jpg"
+Content-Type: image/jpeg
+
+< ./assets/elpadrino.jpg
+--XXX--
+
+###
+
+PUT http://localhost:3000/api/clases/59
+Content-Type: application/json
+
+{
+    "idClase": "59",
+    "nombre": "Modificadors de acceso",
+    "descripcion": "En esta clase se verán modificadores de acceso"
+}
+
+###
+
+GET http://localhost:3000/api/clases/59
+
+
+
+
+
+
+###
+DELETE http://localhost:3000/api/clases/38

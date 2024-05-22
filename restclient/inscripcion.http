@@ -1,0 +1,24 @@
+POST http://localhost:3000/api/cursos/inscripcion/1
+Content-Type: application/json
+
+{
+    "idCurso": 1,
+    "idUsuario": 7
+}
+
+###
+
+POST http://localhost:3000/api/cursos/calificacion/1
+Content-Type: application/json
+
+{
+    "idCurso": 1,
+    "idUsuario": 2,
+    "calificacion": 10
+}
+
+
+###
+
+GET http://localhost:3000/api/cursos/calificacion/4/4
+

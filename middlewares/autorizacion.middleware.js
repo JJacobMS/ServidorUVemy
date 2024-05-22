@@ -23,7 +23,6 @@ self.autorizar = () => {
                 var nuevoToken = generaToken(tokenDecodificado[claimTypes.Email], tokenDecodificado[claimTypes.GivenName]);
                 res.header("Set-Authorization", nuevoToken);
             }
-
             next();
         } catch (error) {
             return res.status(CodigosRespuesta.UNAUTHORIZED).json();
@@ -36,20 +35,21 @@ self.autorizarVerificacionCorreo = () => {
         try {
             const encabezadoAuth = req.header('Authorization');
             if (!encabezadoAuth.startsWith('Bearer '))
-                return res.status(CodigosRespuesta.UNAUTHORIZED).json({ mensaje: 'Token de autorización no válido' });
+                return res.status(CodigosRespuesta.UNAUTHORIZED).json({ detalles: ['Token de autorización no válido'] });
 
             const token = encabezadoAuth.split(' ')[1];
             const tokenDecodificado = jwt.verify(token, jwtSecret);
 
-            if (tokenDecodificado.codigoVerificacion !== req.codigoVerificacion || tokenDecodificado.correoElectronico !== req.correoElectronico) {
-                return res.status(CodigosRespuesta.UNAUTHORIZED).json({ mensaje: 'Código de verificación incorrecto' });
+            if (tokenDecodificado[claimTypes.CodigoVerificacion] !== req.body.codigoVerificacion || 
+                tokenDecodificado[claimTypes.Email] !== req.body.correoElectronico) {
+                return res.status(CodigosRespuesta.UNAUTHORIZED).json({ detalles: ['Código de verificación incorrecto'] });
             }
 
             req.tokenDecodificado = tokenDecodificado;
 
             next();
         } catch (error) {
-            return res.status(CodigosRespuesta.UNAUTHORIZED).json({ mensaje: 'Error al verificar el token de autorización' });
+            return res.status(CodigosRespuesta.UNAUTHORIZED).json({ detalles: ['Error al verificar el token de autorización'] });
         }
     }
 }

@@ -6,6 +6,9 @@ module.exports = (sequelize, DataTypes) => {
   class cursos extends Model {
     static associate(models) {
       cursos.hasMany(models.clases, { foreignKey: 'idCurso' });
+      cursos.belongsToMany(models.etiquetas, { through: 'cursosetiquetas', foreignKey: 'idCurso' });
+      cursos.belongsTo(models.usuarios, { foreignKey: 'idUsuario' });
+      cursos.hasMany(models.documentos, { foreignKey: 'idCurso' }); 
     }
   }
   cursos.init({
@@ -28,6 +31,9 @@ module.exports = (sequelize, DataTypes) => {
     }, 
     requisitos: {
       type : DataTypes.STRING,
+      allowNull: false
+    }, idUsuario:{
+      type: DataTypes.INTEGER,
       allowNull: false
     }, 
   }, {

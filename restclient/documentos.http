@@ -1,0 +1,10 @@
+POST http://localhost:3000/api/documentos
+Content-Type: application/json
+
+{
+    "archivo": "SGVsbG8gV29ybGQ=",
+    "nombre": "Archivo de prueba",
+    "idTipoArchivo": 1,
+    "idCurso": 51,
+    "idClase": null
+}

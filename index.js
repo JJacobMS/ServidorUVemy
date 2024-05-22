@@ -6,6 +6,8 @@ const app = express();
 
 dotenv.config();
 
+var bodyParser = require('body-parser')
+app.use(bodyParser.json({ limit: '10mb' }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -22,6 +24,9 @@ app.use("/api/clases", require('./routes/clases.routes'))
 app.use("/api/documentos", require('./routes/documentos.routes'))
 app.use("/api/tiposarchivos", require('./routes/tiposarchivos.routes'))
 app.use("/api/autenticacion", require('./routes/autenticacion.routes'))
+app.use("/api/perfil", require('./routes/perfil.routes'))
+app.use("/api/cursosetiquetas", require('./routes/cursosetiquetas.routes'))
+app.use("/api/usuarioscursos", require('./routes/usuarioscursos.routes'))
 app.use("/api/etiquetas", require('./routes/etiquetas.routes'))
 
 const errorLogger = require('./middlewares/errorlogger.middleware');

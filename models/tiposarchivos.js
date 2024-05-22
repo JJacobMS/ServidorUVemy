@@ -5,7 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class tiposarchivos extends Model {
     static associate(models) {
-      tiposarchivos.hasMany(models.documentos)
+      tiposarchivos.hasMany(models.documentos, { as: 'tiposarchivos', foreignKey: 'idTipoArchivo'})
     }
   }
   tiposarchivos.init({
@@ -21,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
+    freezeTableName: true,
     modelName: 'tiposarchivos',
     timestamps: false
   });

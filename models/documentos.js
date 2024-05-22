@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       documentos.hasOne(models.clases, {foreignKey: "idClase"});
       documentos.hasOne(models.cursos, {foreignKey: "idCurso"});
+      documentos.belongsTo(models.tiposarchivos, {as: "tiposarchivos",foreignKey: "idTipoArchivo"});
     }
   }
   documentos.init({
@@ -16,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     archivo: {
-      type: DataTypes.BLOB,
+      type: DataTypes.BLOB('long'),
       allowNull: false
     },
     nombre: {
@@ -25,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     idTipoArchivo:{
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     idCurso:{
       allowNull: true,
