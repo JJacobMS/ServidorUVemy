@@ -83,7 +83,7 @@ self.crear = async function(req, res){
         const clase = await clases.findByPk(req.body.idClase, { attributes: ['idClase']});
 
         if(clase == null){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("No existe la clase");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("No existe la clase");
         }
 
         const archivoBuffer = req.file.buffer;
