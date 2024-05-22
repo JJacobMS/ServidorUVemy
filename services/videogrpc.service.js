@@ -199,7 +199,6 @@ async function verificarExistenciaClase(idClase){
     return existe;
 }
 
-
 async function verificarClaseSinVideo(idClase, idTipoArchivo){
     let sinVideo;
     try{

@@ -3,9 +3,14 @@ POST http://localhost:3000/api/autenticacion
 Content-Type: application/json
 
 {
-    "correoElectronico": "enrique@ejemplo.com",
+    "correoElectronico": "kikgamboa@gmail.com",
     "contrasena": "Contrasena1"
 }
+
+###
+
+PUT http://localhost:3000/api/perfil/foto
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJQcnVlYmEiLCJpc3MiOiJVVmVteVNlcnZpZG9ySldUIiwiYXVkIjoiVXN1YXJpb3NVVmVteUpXVCIsImlhdCI6MTcxNjMxMzYxMSwiZXhwIjoxNzE2MzE0ODExfQ.rwtjki3k-5Cp-JbjQryJuosf42iCFvc_B2mTcDrOeWQ
 
 ###
 
