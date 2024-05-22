@@ -1,6 +1,6 @@
 const recuperarClaseSchema = () =>{
     return {
-        id: {
+        idClase: {
             in: ['params'],
             notEmpty: true,
             isDecimal: {

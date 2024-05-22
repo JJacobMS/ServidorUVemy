@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       clases.belongsTo(models.cursos, { foreignKey : 'idCurso'})
       clases.hasMany(models.comentarios, { foreignKey: 'idClase' });
+      clases.hasMany(models.documentos, { foreignKey: 'idClase'});
     }
   }
   clases.init({

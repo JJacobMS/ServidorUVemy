@@ -15,7 +15,7 @@ let self = {}
 }*/
 
 self.obtenerArchivoPDF = async function(req, res){
-    const idDocumento = req.params.id;
+    const idDocumento = req.params.idDocumento;
     try{
         let data = await dbdocumentos.findByPk(idDocumento, { 
             attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase'],
@@ -133,7 +133,7 @@ async function obtenerIdTipoArchivoPDF(){
     }
     return idTipoArchivo;
 }
-
+/*
 self.actualizarDocumentoClase = async function(req, res){
     const idDocumento = req.body.idDocumento;
     try{
@@ -168,9 +168,9 @@ self.actualizarDocumentoClase = async function(req, res){
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error)
     }
 }
-
+*/
 self.eliminarDocumentoClase = async function(req, res){
-    const idDocumento = req.params.id;
+    const idDocumento = req.params.idDocumento;
     try{
         const documento = await documentos.findByPk(idDocumento, { 
             attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase'],
