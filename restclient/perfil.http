@@ -1,0 +1,149 @@
+### Correo válido (envía código a correo)
+POST http://localhost:3000/api/perfil/verificacion
+Content-Type: application/json
+
+{
+    "correoElectronico": "egamboa020903@gmail.com"
+}
+
+### Correo vacío
+POST http://localhost:3000/api/perfil/verificacion
+Content-Type: application/json
+
+{
+    "correoElectronico": ""
+}
+
+### Correo no válido
+POST http://localhost:3000/api/perfil/verificacion
+Content-Type: application/json
+
+{
+    "correoElectronico": "egamboa020903@"
+}
+
+### Correo ya registrado
+POST http://localhost:3000/api/perfil/verificacion
+Content-Type: application/json
+
+{
+    "correoElectronico": "enrique@ejemplo.com"
+}
+
+### Registro exitoso
+POST http://localhost:3000/api/perfil/registro
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJlZ2FtYm9hMDIwOTAzQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiNTA3OSIsImlhdCI6MTcxNjMxMDg2OSwiZXhwIjoxNzE2Mzk3MjY5fQ.9o6Y_JwZk1louR-4lGBzfkOOdZVRz2u6OX039DHDqgU
+Content-Type: application/json
+
+{
+    "nombres": "Prueba",
+    "apellidos": "Con correo verificación",
+    "correoElectronico": "egamboa020903@gmail.com",
+    "contrasena": "Contrasena1",
+    "idsEtiqueta": [1, 3],
+    "codigoVerificacion": "5079"
+}
+
+### Campos vacíos
+POST http://localhost:3000/api/perfil/registro
+
+### Nombre muy largo (+150 caracteres) 151 caracteres enviados
+POST http://localhost:3000/api/perfil/registro
+Content-Type: application/json
+
+{
+    "nombres": "Lorem ipsum dolor sit amet, consectetur asdadipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaa123"
+}
+
+### Apellido muy largo (+660 caracteres) 661 caracteres enviados
+POST http://localhost:3000/api/perfil/registro
+Content-Type: application/json
+
+{
+    "apellidos": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorasdasdasdasdaadadddasdasaaasdjkhasjkdhaklshdaaLorasdasdasdasdaadaddasdasdasdad"
+}
+
+### Correo electrónico muy largo (+600 caracteres) 601 caracteres enviados
+POST http://localhost:3000/api/perfil/registro
+Content-Type: application/json
+
+{
+    "correoElectronico": "aL ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdasjdhahksjdhjklashdljhsdasdasaaasdjkhasjkdhaklshdaaLorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere mauris vitae.sdjkahsdhdljhasjkdhaklshdaaLorasdasdasdasdaasdasdasdasdasdasdasdasdadad@example.com"
+}
+
+### Correo electrónico inválido
+POST http://localhost:3000/api/perfil/registro
+Content-Type: application/json
+
+{
+    "correoElectronico": "correo@correo"
+}
+
+### Contraseña muy corta (menos de 3 caracteres)
+POST http://localhost:3000/api/perfil/registro
+Content-Type: application/json
+
+{
+    "contrasena": "12"
+}
+
+### Contraseña muy larga (más de 18 caracteres)
+POST http://localhost:3000/api/perfil/registro
+Content-Type: application/json
+
+{
+    "contrasena": "1234567890123456789"
+}
+
+### Contraseña sin política de seguridad (una mayúscula, una minúscula y un número)
+POST http://localhost:3000/api/perfil/registro
+Content-Type: application/json
+
+{
+    "contrasena": "contrasena"
+}
+
+### idsEtiqueta no es un arreglo
+POST http://localhost:3000/api/perfil/registro
+Content-Type: application/json
+
+{
+    "idsEtiqueta": "1"
+}
+
+### idsEtiqueta es arreglo pero no de números
+POST http://localhost:3000/api/perfil/registro
+Content-Type: application/json
+    
+{
+    "idsEtiqueta": ["1", "2"]
+}
+###
+
+GET http://localhost:3000/api/perfil/foto
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjYsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InpzMjEwMTM4NThAZXN0dWRpYW50ZXMudXYubXgiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIiwiaXNzIjoiVVZlbXlTZXJ2aWRvckpXVCIsImF1ZCI6IlVzdWFyaW9zVVZlbXlKV1QiLCJpYXQiOjE3MTYzMjc1MTksImV4cCI6MTcxNjMyODcxOX0.ImI0gf2oMMU0fYXaLWVACoc3KWKKSDPoh5Nuifi31MI
+
+###
+PUT http://localhost:3000/api/perfil
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJQcnVlYmEiLCJpc3MiOiJVVmVteVNlcnZpZG9ySldUIiwiYXVkIjoiVXN1YXJpb3NVVmVteUpXVCIsImlhdCI6MTcxNjM0MzEyMCwiZXhwIjoxNzE2MzQ0MzIwfQ.wfhYNzJPiaXAH7tRAjlIIc8n9nyqzzl0op6pXYJ_2fc
+Content-Type: application/json
+
+{
+    "idUsuario": 4,
+    "nombres": "Enrique PUT",
+    "apellidos": "Gamboa Hernández PUT",
+    "correoElectronico": "kikgamboa@gmail.com",
+    "contrasena": "Contrasena1"
+}
+
+###Sin contrasena
+PUT http://localhost:3000/api/perfil
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJQcnVlYmEiLCJpc3MiOiJVVmVteVNlcnZpZG9ySldUIiwiYXVkIjoiVXN1YXJpb3NVVmVteUpXVCIsImlhdCI6MTcxNjM0MzEyMCwiZXhwIjoxNzE2MzQ0MzIwfQ.wfhYNzJPiaXAH7tRAjlIIc8n9nyqzzl0op6pXYJ_2fc
+Content-Type: application/json
+
+{
+    "idUsuario": 4,
+    "nombres": "Enrique PUT",
+    "apellidos": "Gamboa Hernández PUT",
+    "correoElectronico": "kikgamboa@gmail.com"
+}
