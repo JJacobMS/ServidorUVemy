@@ -50,9 +50,9 @@ self.obtenerPorId = async function(req, res){
 
 self.crear = async function(req, res){
     try{
-        let curso = await cursos.findOne({ where: { idCurso: req.body.idCurso }});
+        /*let curso = await cursos.findOne({ where: { idCurso: req.body.idCurso }});
 
-        if(curso == null) return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
+        if(curso == null) return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");*/
         
         const data = await clases.create({
             nombre: req.body.nombre,

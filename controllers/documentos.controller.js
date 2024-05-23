@@ -80,11 +80,11 @@ self.crear = async function(req, res){
         const idTipoArch = await obtenerIdTipoArchivoPDF();
         if(idTipoArch == 0) return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear el documento");
 
-        const clase = await clases.findByPk(req.body.idClase, { attributes: ['idClase']});
+        /*const clase = await clases.findByPk(req.body.idClase, { attributes: ['idClase']});
 
         if(clase == null){
             return res.status(CodigosRespuesta.NOT_FOUND).send("No existe la clase");
-        }
+        }*/
 
         const archivoBuffer = req.file.buffer;
 
