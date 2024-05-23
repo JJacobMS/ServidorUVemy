@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const cursoslistas = require('../controllers/cursoslistas.controller');
-const autorizacion = require('../middlewares/autenticacion.middleware');
+const autorizacion = require('../middlewares/autorizacion.middleware');
 
 const autorizar = autorizacion.autorizar;
 
