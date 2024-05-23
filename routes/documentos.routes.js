@@ -3,13 +3,14 @@ const documentos = require('../controllers/documentos.controller');
 const autorizacion = require('../middlewares/autorizacion.middleware');
 const { checkSchema } = require('express-validator');
 const validarFormatoPeticion = require('../middlewares/validadorpeticiones.middleware');
+const { subirArchivoPDF } = require("../middlewares/upload.middleware")
 const { crearDocumentoSchema, validarFile, actualizarDocumentoSchema, idDocumentoSchema } = require('../schemas/documento.schema');
 
 //router.get('/', documentos.getAll);
 
 router.get('/clase/:idDocumento', checkSchema(idDocumentoSchema()), validarFormatoPeticion, autorizacion.autorizar(), autorizacion.autorizarIdDocumento("Profesor,Estudiante"), documentos.obtenerArchivoPDF);
 
-router.post('/clase', checkSchema(crearDocumentoSchema()), validarFormatoPeticion, validarFile(), autorizacion.autorizar(), autorizacion.autorizarIdClase("Profesor"), documentos.crear);
+router.post('/clase', subirArchivoPDF.single("file"), checkSchema(crearDocumentoSchema()), validarFormatoPeticion, validarFile(), autorizacion.autorizar(), autorizacion.autorizarIdClase("Profesor"), documentos.crear);
 
 //router.put('/clase/:idDocumento', subirArchivoPDF.single("file"), checkSchema(actualizarDocumentoSchema()), validarFormatoPeticion, validarFile(), documentos.actualizarDocumentoClase);
 
