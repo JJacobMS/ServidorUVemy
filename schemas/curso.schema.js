@@ -52,18 +52,43 @@ const crearCursoSchema = () =>{
         etiquetas: {
             in: ['body'],
             notEmpty: {
-                options: value => Array.isArray(value) && value.every(item => Number.isInteger(item)),
+                options: (value) => {
+                    if (value) {
+                        const tamanoMaximo = 1 * 1024 * 1024; 
+                        if (Array.isArray(value) && value.every(item => Number.isInteger(item)) && value.length > tamanoMaximo) {
+                            throw new Error('La imagen debe tener un tamaño de 1MB o menos');
+                        }
+                    }
+                    return true;
+                },
                 errorMessage: 'Etiquetas inválidas',
                 bail: true
             }
-        },
-
-        //ARCHIVO
+        }
     }
 }
 
+/*
+archivo: {
+            custom: {
+                options: value => Array.isArray(value) && value.every(item => Number.isInteger(item) ),
+                errorMessage: 'Archivo invalido',
+                bail: true
+            }
+        }
+        */
+
 const actualizarCursoSchema = () =>{
     return {
+        idCurso: {
+            in: ['body'],
+            notEmpty: true,
+            isNumeric: true,
+            notEmpty: {
+                errorMessage: 'idCurso inválido',
+                bail: true
+            }
+        },
         titulo: {
             in: ['body'],
             notEmpty: true,
@@ -120,7 +145,6 @@ const actualizarCursoSchema = () =>{
                 bail: true
             }
         }
-        //ARCHIVO
     }
 }
 
@@ -235,6 +259,13 @@ const obtenerCalificacionCursoSchema = ()=> {
                 errorMessage: 'IdUsuario debe ser un número'
             },
             errorMessage: 'IdUsuario inválida'
+        },
+        archivo: {
+            custom: {
+                options: value => Array.isArray(value) && value.every(item => Number.isInteger(item) ),
+                errorMessage: 'Archivo invalido',
+                bail: true
+            }
         }
     }
 }
