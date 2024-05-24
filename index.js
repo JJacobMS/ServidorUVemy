@@ -28,6 +28,7 @@ app.use("/api/perfil", require('./routes/perfil.routes'))
 app.use("/api/cursosetiquetas", require('./routes/cursosetiquetas.routes'))
 app.use("/api/usuarioscursos", require('./routes/usuarioscursos.routes'))
 app.use("/api/etiquetas", require('./routes/etiquetas.routes'))
+app.use("/api/usuarios", require('./routes/usuarios.routes'))
 
 const errorLogger = require('./middlewares/errorlogger.middleware');
 const errorHandler = require('./middlewares/errorhandler.middleware');

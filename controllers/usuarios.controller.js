@@ -1,4 +1,5 @@
 const { sequelize, DataTypes } = require('sequelize');
+const CodigosRespuesta = require('../utils/codigosRespuesta');
 const usuario = require('../models/usuarios');
 const db = require('../models/index');
 const usuarios = db.usuarios;
@@ -30,12 +31,16 @@ self.get = async function(req, res){
 
 self.create = async function(req, res){
     try{
-        let usuarioCreado = await usuarios.create({
-            idUsuario: req.body.idUsuario
+        let data = await usuarios.create({
+            idUsuario: req.body.idUsuario,
+            nombres: req.body.nombres,
+            apellidos: req.body.apellidos,
+            correoElectronico: req.body.correoElectronico,
+            contrasena: req.body.contrasena
         })
-        return res.status(201).json(cursoCreado)
+        return res.status(CodigosRespuesta.CREATED).json(data);
     }catch(error){
-        return res.status(500).json({ error: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
 

@@ -10,25 +10,25 @@ POST http://localhost:3000/api/usuarios
 Content-Type: application/json
 
 {
-    "idUsuario": 5,
+    "idUsuario": 1,
     "nombres": "Usuario de prueba",
     "apellidos": "Usuario de prueba",
-    "correoElectronico": "1",
+    "correoElectronico": "usuarioprueba@gmail.com",
     "contrasena": "$2a$12$eHNlLAWFcvmfeZG93A/HxOsHfhB/01gfa1MkPfKSnuSSt1Y02T8zq"
 }
 
 ###
 
-PUT http://localhost:3000/api/usuarios/5
+PUT http://localhost:3000/api/usuarios/2
 Content-Type: application/json
 
 {
-    "nombres": "Usuario de prueba",
-    "apellidos": "Usuario de prueba",
+    "nombres": "Usuario de pruebaNuevo",
+    "apellidos": "Usuario de pruebaNuevo",
     "correoElectronico": "1",
     "contrasena": "$2a$12$eHNlLAWFcvmfeZG93A/HxOsHfhB/01gfa1MkPfKSnuSSt1Y02T8zq"
 }
 
 ###
 
-DELETE http://localhost:3000/api/usuarios/3
+DELETE http://localhost:3000/api/usuarios/2
