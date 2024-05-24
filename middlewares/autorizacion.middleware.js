@@ -21,7 +21,7 @@ self.autorizar = () => {
 
             var minutosRestantes = (tokenDecodificado.exp - (new Date().getTime() / 1000)) / 60;
             if (minutosRestantes < 5) {
-                var nuevoToken = generaToken(tokenDecodificado[claimTypes.Email], tokenDecodificado[claimTypes.GivenName]);
+                var nuevoToken = generaToken(tokenDecodificado[claimTypes.Id],tokenDecodificado[claimTypes.Email], tokenDecodificado[claimTypes.GivenName]);
                 res.header("Set-Authorization", nuevoToken);
             }
             next();
