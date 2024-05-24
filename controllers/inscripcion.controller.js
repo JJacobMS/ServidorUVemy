@@ -1,10 +1,11 @@
+const claimTypes = require('../config/claimtypes');
 const { cursos, usuarioscursos, usuarios } = require('../models');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 
 let self = {};
 
 self.inscribirse = async function(req, res){
-    const idUsuario = req.body.idUsuario;
+    const idUsuario = req.tokenDecodificado[claimTypes.Id];
     const idCurso = req.body.idCurso;
 
     if(idCurso != req.params.id){
@@ -14,12 +15,12 @@ self.inscribirse = async function(req, res){
     try{
         const cursoExistente = await cursos.findByPk(idCurso, { attributes: [ 'idUsuario']});
         if(cursoExistente == null){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("Curso no existente");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Curso no existente");
         }
 
         const usuarioExistente = await usuarios.findByPk(idUsuario, { attributes: [ 'idUsuario']});
         if(usuarioExistente == null){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("Usuario no existente");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Usuario no existente");
         }
     
         if(cursoExistente.idUsuario == idUsuario){
@@ -46,31 +47,21 @@ self.inscribirse = async function(req, res){
 }
 
 self.calificarCurso = async function(req, res){
-    const idUsuario = req.body.idUsuario;
+    const idUsuario = req.tokenDecodificado[claimTypes.Id];
     const idCurso = req.body.idCurso;
 
-    if(idCurso != req.params.id){
+    if(idCurso != req.params.idCurso){
         return res.status(CodigosRespuesta.BAD_REQUEST).send("IdCurso no válido");
     }
 
     try{
-        const cursoExistente = await cursos.findByPk(idCurso, { attributes: [ 'idUsuario']});
-        if(cursoExistente == null){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("Curso no existente");
-        }
-
-        const usuarioExistente = await usuarios.findByPk(idUsuario, { attributes: [ 'idUsuario']});
-        if(usuarioExistente == null){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("Usuario no existente");
-        }
-    
-        if(cursoExistente.idUsuario == idUsuario){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("El profesor no se puede calificar a su propio curso");
-        }
-    
         const usuarioEnCurso = await usuarioscursos.findOne({attributes: ['idUsuarioCurso', 'idCurso', 'idUsuario', 'calificacion'], 
             where: { idCurso: idCurso, idUsuario: idUsuario}});
     
+        if(usuarioEnCurso == null){
+            return res.status(CodigosRespuesta.BAD_REQUEST).send("El usuario no está inscrito en el curso");
+        }
+
         usuarioEnCurso.calificacion = req.body.calificacion;
         await usuarioEnCurso.save();
 
@@ -83,16 +74,11 @@ self.calificarCurso = async function(req, res){
 
 self.obtenerCalificacionUsuarioCurso = async function(req, res){
     const idCurso = req.params.idCurso;
-    const idUsuario = req.params.idUsuario;
+    const idUsuario = req.tokenDecodificado[claimTypes.Id];
     try{
         const cursoExistente = await cursos.findByPk(idCurso, { attributes: [ 'idUsuario']});
         if(cursoExistente == null){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("Curso no existente");
-        }
-
-        const usuarioExistente = await usuarios.findByPk(idUsuario, { attributes: [ 'idUsuario']});
-        if(usuarioExistente == null){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("Usuario no existente");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Curso no existente");
         }
 
         const usuarioEnCurso = await usuarioscursos.findOne({attributes: ['idUsuario', 'calificacion'], 

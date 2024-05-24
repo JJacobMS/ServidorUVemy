@@ -126,7 +126,7 @@ const actualizarCursoSchema = () =>{
 
 const estadisticaCursoSchema = ()=> {
     return {
-        id: {
+        idCurso: {
             in: ['params'],
             notEmpty: true,
             isNumeric: true,
@@ -154,22 +154,13 @@ const inscripcionCursoSchema = ()=> {
                 errorMessage: 'IdCurso debe ser un número'
             },
             errorMessage: 'IdCurso inválida'
-        },
-        idUsuario: {
-            in: ['body'],
-            notEmpty: true,
-            exists: true,
-            isDecimal: {
-                errorMessage: 'IdUsuario debe ser un número'
-            },
-            errorMessage: 'IdUsuario inválida'
         }
     }
 }
 
 const calificarCursoSchema = ()=> {
     return {
-        id: {
+        idCurso: {
             in: ['params'],
             notEmpty: true,
             exists: true,
@@ -186,15 +177,6 @@ const calificarCursoSchema = ()=> {
                 errorMessage: 'IdCurso debe ser un número'
             },
             errorMessage: 'IdCurso inválida'
-        },
-        idUsuario: {
-            in: ['body'],
-            notEmpty: true,
-            exists: true,
-            isDecimal: {
-                errorMessage: 'IdUsuario debe ser un número'
-            },
-            errorMessage: 'IdUsuario inválida'
         },
         calificacion:{
             in: ['body'],
@@ -226,15 +208,6 @@ const obtenerCalificacionCursoSchema = ()=> {
                 errorMessage: 'IdCurso debe ser un número'
             },
             errorMessage: 'IdCurso inválida'
-        },
-        idUsuario: {
-            in: ['params'],
-            notEmpty: true,
-            exists: true,
-            isDecimal: {
-                errorMessage: 'IdUsuario debe ser un número'
-            },
-            errorMessage: 'IdUsuario inválida'
         }
     }
 }

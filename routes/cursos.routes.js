@@ -20,14 +20,14 @@ router.put('/:id',autorizar(), checkSchema(actualizarCursoSchema()), validarForm
 
 router.delete('/:id',autorizar(), cursos.delete);
 
-router.get('/estadisticas/:id', checkSchema(estadisticaCursoSchema()), validarFormatoPeticion, cursosEstadisticas.obtenerEstadisticasCurso);
+router.get('/estadisticas/:idCurso', checkSchema(estadisticaCursoSchema()), validarFormatoPeticion, autorizacion.autorizar(), autorizacion.autorizarIdCurso("Profesor"), cursosEstadisticas.obtenerEstadisticasCurso);
 
-router.get('/reporte/:id', checkSchema(estadisticaCursoSchema()), validarFormatoPeticion, cursosEstadisticas.devolverReporte);
+router.get('/reporte/:idCurso', checkSchema(estadisticaCursoSchema()), validarFormatoPeticion, autorizacion.autorizar(), autorizacion.autorizarIdCurso("Profesor"), cursosEstadisticas.devolverReporte);
 
-router.post('/inscripcion/:id', checkSchema(inscripcionCursoSchema()), validarFormatoPeticion, cursosInscripcion.inscribirse);
+router.post('/inscripcion/:id', checkSchema(inscripcionCursoSchema()), validarFormatoPeticion, autorizacion.autorizar(), cursosInscripcion.inscribirse);
 
-router.post('/calificacion/:id', checkSchema(calificarCursoSchema()), validarFormatoPeticion, cursosInscripcion.calificarCurso);
+router.post('/calificacion/:idCurso', checkSchema(calificarCursoSchema()), validarFormatoPeticion, autorizacion.autorizar(), autorizacion.autorizarIdCurso("Estudiante"), cursosInscripcion.calificarCurso);
 
-router.get('/calificacion/:idCurso/:idUsuario',checkSchema(obtenerCalificacionCursoSchema()), validarFormatoPeticion, cursosInscripcion.obtenerCalificacionUsuarioCurso);
+router.get('/calificacion/:idCurso',checkSchema(obtenerCalificacionCursoSchema()), validarFormatoPeticion,  autorizacion.autorizar(), autorizacion.autorizarIdCurso("Estudiante"), cursosInscripcion.obtenerCalificacionUsuarioCurso);
 
 module.exports = router

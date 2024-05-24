@@ -51,7 +51,7 @@ const crearDocumentoSchema = () =>{
 
 const actualizarDocumentoSchema = () =>{
     return {
-        id: {
+        idDocumento: {
             in: ['params'],
             notEmpty: true,
             isDecimal: {
@@ -78,7 +78,7 @@ const actualizarDocumentoSchema = () =>{
 
 const idDocumentoSchema = () =>{
     return {
-        id: {
+        idDocumento: {
             in: ['params'],
             notEmpty: true,
             isDecimal: {

@@ -5,7 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class documentos extends Model {
     static associate(models) {
-      documentos.hasOne(models.clases, {foreignKey: "idClase"});
+      documentos.belongsTo(models.clases, {as: "clases", foreignKey: "idClase"});
       documentos.hasOne(models.cursos, {foreignKey: "idCurso"});
       documentos.belongsTo(models.tiposarchivos, {as: "tiposarchivos",foreignKey: "idTipoArchivo"});
     }
