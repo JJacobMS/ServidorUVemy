@@ -19,6 +19,7 @@ var corsOptions = {
 //app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.use(cors(corsOptions));
+app.use("/api/comentarios", require('./routes/comentarios.routes'))
 app.use("/api/cursos", require('./routes/cursos.routes'))
 app.use("/api/clases", require('./routes/clases.routes'))
 app.use("/api/documentos", require('./routes/documentos.routes'))
