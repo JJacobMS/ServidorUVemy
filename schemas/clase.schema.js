@@ -19,6 +19,9 @@ const crearClaseSchema = () =>{
             isNumeric: true,
             errorMessage: 'IdCurso inválida'
         },
+        idClase: {
+
+        },
         nombre: {
             in: ['body'],
             notEmpty: true,
