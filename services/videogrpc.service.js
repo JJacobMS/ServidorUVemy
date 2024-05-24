@@ -145,4 +145,58 @@ async function verificarClaseSinVideo(idClase, idTipoArchivo){
     return sinVideo;
 }
 
-module.exports = { enviarVideoClase };
+async function recibirVideoClase(call, callback) {
+    let datosSolicitud;
+
+    call.on('data', (message) => {
+        datosSolicitud = message;
+    });
+
+    call.on('end', async () => {
+        if (!datosSolicitud || !datosSolicitud.idClase || !datosSolicitud.jwt) {
+            call.end();
+            callback(null, { respuesta: CodigosRespuesta.BAD_REQUEST });
+            return;
+        }
+
+        const esValido = autenticarToken(datosSolicitud.jwt);
+        if (!esValido) {
+            call.end();
+            callback(null, { respuesta: CodigosRespuesta.UNAUTHORIZED });
+            return;
+        }
+
+        try {
+            const video = await obtenerVideoClase(datosSolicitud.idClase);
+            if(!video){
+                call.end();
+                callback(null, { respuesta: CodigosRespuesta.NOT_FOUND });
+                return;
+            }
+
+            const tamanioChunks = 18 * 1024;
+            for (let i = 0; i < video.length; i += tamanioChunks) {
+                const chunk = video.slice(i, i + tamanioChunks);
+                call.write({ chunks: chunk });
+            }
+
+            call.end();
+        } catch (error) {
+            console.log(error);
+            call.end();
+            callback(null, { respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR });
+        }
+    });
+}
+
+async function obtenerVideoClase(idClase){
+    try {
+        const video = await documentos.findOne({ where: { idClase: idClase }, attributes: ['archivo'] });
+        return video ? video.archivo : null;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+module.exports = { enviarVideoClase, recibirVideoClase };
