@@ -11,7 +11,7 @@ const generaToken = (idUsuario, correoElectronico, nombre) => {
         "aud": "UsuariosUVemyJWT"
     }, 
         jwtSecret, { 
-            expiresIn: '20m' 
+            expiresIn: '720m' 
     });
     return token;
 }

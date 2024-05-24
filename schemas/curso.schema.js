@@ -64,19 +64,12 @@ const crearCursoSchema = () =>{
                 errorMessage: 'Etiquetas inválidas',
                 bail: true
             }
+        },
+        file: {
+            
         }
     }
 }
-
-/*
-archivo: {
-            custom: {
-                options: value => Array.isArray(value) && value.every(item => Number.isInteger(item) ),
-                errorMessage: 'Archivo invalido',
-                bail: true
-            }
-        }
-        */
 
 const actualizarCursoSchema = () =>{
     return {
@@ -144,6 +137,9 @@ const actualizarCursoSchema = () =>{
                 errorMessage: 'idDocumento inválido',
                 bail: true
             }
+        },
+        file: {
+            
         }
     }
 }

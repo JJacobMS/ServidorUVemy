@@ -4,12 +4,17 @@ const cursosetiquetas = require('../services/cursosetiquetas.service.');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 const sequelize = db.sequelize;
 const curso = db.cursos;
+const documentosModel = db.documentos;
+const tiposarchivosModel = db.tiposarchivos;
 
 let self = {}
 
 self.get = async function(req, res){
     try{
-        let id = req.params.id;
+        let id = req.params.pagina;
+        if(isNaN(id)){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al recuperar el recurso, el id no es valido");
+        }
         if(id < 0){
             id = 0;
         }
@@ -20,6 +25,29 @@ self.get = async function(req, res){
             offset += 6;
         }
 
+        const cursosRecuperados = await curso.findAll({
+            attributes: ['idCurso', 'titulo'],
+            include: [
+                {
+                    model: documentosModel,
+                    as: 'documentos', 
+                    attributes: ['idDocumento', 'archivo'],
+                    include: [
+                        {
+                            model: tiposarchivosModel,
+                            as: 'tiposarchivos',
+                            where: { nombre: nombreTipoArchivo},
+                            attributes: []
+                        }
+                    ],                    
+                }
+            ],
+            order: [['idCurso', 'ASC']],
+            //offset: offset,
+            limit: limit
+        });
+
+        /*
         cursosRecuperados = await sequelize.query(
             `SELECT cursos.idCurso, cursos.titulo, documentos.idDocumento, documentos.archivo
             FROM cursos 
@@ -29,10 +57,14 @@ self.get = async function(req, res){
             ORDER BY idCurso ASC  
             LIMIT :offset, :limit;`,
             {
-              replacements: { nombreTipoArchivo, offset, limit },
-              type: sequelize.QueryTypes.SELECT
+                replacements: { nombreTipoArchivo, offset, limit },
+                type: sequelize.QueryTypes.SELECT
             }
         )
+        */
+
+        
+        
 
         console.log(cursosRecuperados);
         if (cursosRecuperados.length === 0) {

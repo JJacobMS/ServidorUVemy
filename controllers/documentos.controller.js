@@ -60,7 +60,7 @@ self.borrarArchivoDelCurso = async function(documentoId){
 self.crearArchivoDelCurso = async function(documento, idCurso, transaccion){
     try{
         let documentoCreado  = await dbdocumentos.create({
-            archivo: documento,
+            archivo: documento.buffer,
             nombre: "Miniatura del curso "+idCurso,
             idTipoArchivo: 1, //Debo de comprobar el mymetipe
             idCurso: idCurso,
@@ -71,6 +71,7 @@ self.crearArchivoDelCurso = async function(documento, idCurso, transaccion){
         }
         return { status: 201, message: documentoCreado };;
     }catch(error){
+        console.log(error);
         return { status: 500, message: error.message };
     }
 }
@@ -198,7 +199,7 @@ self.eliminarDocumentoClase = async function(req, res){
 self.actualizarArchivoDelCurso = async function(idDocumento, documento, transaccion){
     try{
         let data = await dbdocumentos.update(
-            { archivo: documento }, 
+            { archivo: documento.buffer }, 
             {where:{idDocumento:idDocumento}, 
             fields: ['archivo'],
             transaction: transaccion
