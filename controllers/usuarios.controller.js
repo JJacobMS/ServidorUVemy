@@ -7,10 +7,22 @@ const cursos = db.cursos;
 let self = {}
 
 self.getAll = async function (req, res){
-    try{
-        let data = await usuarios.findAll({ attributes: ['idUsuario', 'nombres', 'apellidos', 'correoElectronico', 'contrasena']})
-        return res.status(200).json(data)
-    }catch(error){
+    try {
+        let pagina = parseInt(req.params.pagina, 10);
+        if (pagina < 1) {
+            pagina = 1; 
+        }
+        
+        let limite = 6;
+        let offset = (pagina - 1) * limite;
+
+        let data = await usuarios.findAll({
+            attributes: ['idUsuario', 'nombres', 'apellidos', 'imagen'],
+            limit: limite,
+            offset: offset
+        });
+        return res.status(200).json(data);
+    } catch (error) {
         return res.status(500).json({ error: error.message });
     }
 }
