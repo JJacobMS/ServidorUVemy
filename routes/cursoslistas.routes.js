@@ -4,6 +4,6 @@ const autorizacion = require('../middlewares/autorizacion.middleware');
 
 const autorizar = autorizacion.autorizar;
 
-router.get('/:id',autorizar(), cursoslistas.get);
+router.get('/:pagina',autorizar(), cursoslistas.get);
 
 module.exports = router

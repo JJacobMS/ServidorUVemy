@@ -7,18 +7,19 @@ const { checkSchema } = require('express-validator');
 const { crearCursoSchema, actualizarCursoSchema, estadisticaCursoSchema, inscripcionCursoSchema, calificarCursoSchema, obtenerCalificacionCursoSchema } = require('../schemas/curso.schema');
 const validarFormatoPeticion = require('../middlewares/validadorpeticiones.middleware');
 const validarCamposPeticion = require('../middlewares/validadorformatopeticiones.middleware');
+const { subirArchivoPDF } = require('../middlewares/upload.middleware')
 
 const autorizar = autorizacion.autorizar;
 
-router.get('/', autorizar(), cursos.getAll);
+router.get('/', autorizacion.autorizar(), cursos.getAll);
 
-router.get('/:id',autorizar(), cursos.get);
+router.get('/:idCurso',autorizar(), cursos.get);
 
-router.post('/', autorizar(), checkSchema(crearCursoSchema()), validarFormatoPeticion, validarCamposPeticion(crearCursoSchema()), cursos.create);
+router.post('/', subirArchivoPDF.single("file"), autorizar(), checkSchema(crearCursoSchema()), validarFormatoPeticion, validarCamposPeticion(crearCursoSchema()), cursos.create);
 
-router.put('/:id',autorizar(), checkSchema(actualizarCursoSchema()), validarFormatoPeticion,validarCamposPeticion(actualizarCursoSchema()),  cursos.update);
+router.put('/:idCurso', subirArchivoPDF.single("file"), autorizacion.autorizar(), autorizacion.autorizarIdCurso("Profesor"), checkSchema(actualizarCursoSchema()), validarFormatoPeticion,validarCamposPeticion(actualizarCursoSchema()),  cursos.update);
 
-router.delete('/:id',autorizar(), cursos.delete);
+router.delete('/:idCurso',autorizacion.autorizar(), autorizacion.autorizarIdCurso("Profesor"), cursos.delete);
 
 router.get('/estadisticas/:idCurso', checkSchema(estadisticaCursoSchema()), validarFormatoPeticion, autorizacion.autorizar(), autorizacion.autorizarIdCurso("Profesor"), cursosEstadisticas.obtenerEstadisticasCurso);
 

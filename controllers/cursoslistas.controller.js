@@ -4,12 +4,19 @@ const cursosetiquetas = require('../services/cursosetiquetas.service.');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 const sequelize = db.sequelize;
 const curso = db.cursos;
+const documentosModel = db.documentos;
+const tiposarchivosModel = db.tiposarchivos;
 
 let self = {}
 
 self.get = async function(req, res){
     try{
-        let id = req.params.id;
+        let id = req.params.pagina;
+        let calificacion = req.query.calificacion;
+        if(isNaN(id)){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al recuperar el recurso, el id no es valido");
+        }
+        //if calificacion es diferente de null y isNan
         if(id < 0){
             id = 0;
         }
@@ -20,21 +27,39 @@ self.get = async function(req, res){
             offset += 6;
         }
 
-        cursosRecuperados = await sequelize.query(
-            `SELECT cursos.idCurso, cursos.titulo, documentos.idDocumento, documentos.archivo
-            FROM cursos 
-            JOIN documentos ON cursos.idCurso=documentos.idCurso
-            JOIN tiposarchivos ON documentos.idTipoArchivo=tiposarchivos.idTipoArchivo 
-            WHERE tiposarchivos.nombre= :nombreTipoArchivo
-            ORDER BY idCurso ASC  
-            LIMIT :offset, :limit;`,
-            {
-              replacements: { nombreTipoArchivo, offset, limit },
-              type: sequelize.QueryTypes.SELECT
-            }
-        )
+        const documentos = await documentosModel.findAll({
+            attributes: ['idCurso', 'idDocumento', 'archivo'],
+            include: [
+                {
+                    model: tiposarchivosModel,
+                    as: 'tiposarchivos',
+                    where: { nombre: nombreTipoArchivo },
+                    attributes: []
+                }
+            ],
+            where: { idClase: null }
+        });
 
-        console.log(cursosRecuperados);
+        const cursoIds = documentos.map(doc => doc.idCurso);
+
+        const cursosRecuperados = await curso.findAll({
+            attributes: ['idCurso', 'titulo'],
+            where: {
+                idCurso: cursoIds
+            },
+            include: [
+                {
+                    model: documentosModel,
+                    as: 'documentos',
+                    attributes: ['idDocumento', 'archivo'],
+                    where: { idClase: null },
+                    limit: 1
+                }
+            ],
+            order: [['idCurso', 'ASC']],
+            limit: limit,
+            offset: offset
+        });
         if (cursosRecuperados.length === 0) {
             return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
         }
