@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { usuarios } = require('../models');
+const { usuarios, usuariosetiquetas } = require('../models');
 const { generaToken, tiempoRestanteToken } = require('../services/jwttoken.service');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 
@@ -22,12 +22,19 @@ self.iniciarSesion = async function (req, res) {
         if (!contraenaValida)
             return res.status(CodigosRespuesta.UNAUTHORIZED).send({ detalles: ["Correo electrónico o contraseña incorrectos"] });
 
+        const idsEtiqueta = await usuariosetiquetas.findAll({
+            where: { idUsuario: data.idUsuario },
+            raw: true,
+            attributes: ['idEtiqueta']
+        }).then(rows => rows.map(row => row.idEtiqueta));;
+
         token = generaToken(data.idUsuario, data.correoElectronico, data.nombres);
         return res.status(CodigosRespuesta.OK).json({
             idUsuario: data.idUsuario,
             nombres: data.nombres,
             apellidos: data.apellidos,
             correoElectronico: data.correoElectronico,
+            idsEtiqueta: idsEtiqueta,
             jwt: token
         });
     } catch (error) {
