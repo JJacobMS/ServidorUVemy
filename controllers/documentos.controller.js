@@ -59,10 +59,14 @@ self.borrarArchivoDelCurso = async function(documentoId){
 
 self.crearArchivoDelCurso = async function(documento, idCurso, transaccion){
     try{
+        const idTipoArch = await obtenerIdTipoArchivoPNG();
+        if(idTipoArch == 0){
+            return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear el tipo archivo");
+        } 
         let documentoCreado  = await dbdocumentos.create({
             archivo: documento.buffer,
             nombre: "Miniatura del curso "+idCurso,
-            idTipoArchivo: 1, //Debo de comprobar el mymetipe
+            idTipoArchivo: idTipoArch,
             idCurso: idCurso,
             idClase: null
         }, { transaction: transaccion })
@@ -120,6 +124,28 @@ async function obtenerIdTipoArchivoPDF(){
         if(tipoArchivoVideo == null){
             const tipoNuevo = await tiposarchivos.create({
                 nombre: "application/pdf"
+            });
+            if(tipoNuevo == null){
+                idTipoArchivo = 0;
+            }else{
+                idTipoArchivo = tipoNuevo.idTipoArchivo;
+            }
+        }else{
+            idTipoArchivo = tipoArchivoVideo.dataValues.idTipoArchivo;
+        }
+    }catch(error){
+        idTipoArchivo = 0;
+    }
+    return idTipoArchivo;
+}
+
+async function obtenerIdTipoArchivoPNG(){
+    let idTipoArchivo;
+    try{
+        const tipoArchivoVideo = await tiposarchivos.findOne({ where: {nombre: "image/png"}, attributes: ['idTipoArchivo']});
+        if(tipoArchivoVideo == null){
+            const tipoNuevo = await tiposarchivos.create({
+                nombre: "image/png"
             });
             if(tipoNuevo == null){
                 idTipoArchivo = 0;

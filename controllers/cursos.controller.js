@@ -60,6 +60,8 @@ self.create = async function(req, res){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Error al crear el curso, el idUsuario no es valido");
         }
         let usuarioRecuperado = await usuario.findByPk(req.body.idUsuario);
+        console.log(usuarioRecuperado);
+        console.log(req.body.idUsuario);
         if(usuarioRecuperado==null){
             return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el usuario");
         }
