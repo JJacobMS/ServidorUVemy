@@ -270,4 +270,47 @@ self.actualizarPerfilSchema = () => {
     }
 }
 
+self.actualizarEtiquetasSchema = () => {
+    return {
+        idUsuario: {
+            in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'IdUsuario requerido',
+                bail: true,
+            },
+            trim: true,
+            escape: true,
+            isNumeric: {
+                errorMessage: 'IdUsuario debe ser un número',
+                bail: true,
+            }
+        },
+        idsEtiqueta: {
+            in: ['body'],
+            exists: {
+                options: { checkFalsy: true },
+                errorMessage: 'idsEtiqueta es requerido',
+                bail: true,
+            },
+            custom: {
+                options: (value) => Array.isArray(value),
+                errorMessage: 'idsEtiqueta debe ser un arreglo',
+                bail: true,
+            },
+            customSanitizer: {
+                options: (value) => {
+                    if (!value) return [];
+                    return Array.isArray(value) ? value.map(Number) : [Number(value)];
+                },
+            },
+            custom: {
+                options: (value) => value.every((element) => typeof element === 'number'),
+                errorMessage: 'idsEtiqueta debe ser un arreglo de números',
+                bail: true,
+            },
+        }
+    }
+}
+
 module.exports = self;
