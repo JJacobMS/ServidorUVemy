@@ -22,36 +22,32 @@ self.getAll = async function (req, res){
 
 self.get = async function(req, res){
     try{
-        let id = req.params.id;
-        if(id < 0){
-            id = 0;
+        if(isNaN(req.params.id)){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al recuperar el curso, el id no es valido");
         }
-        let offset = -6;
-        let limit = 6;
-        let nombreTipoArchivo = 'jacob';
-        for (let index = 0; index <= id; index++) {
-            offset += 6;
+        let idCurso = req.params.id;
+        let cursoRecuperado = await curso.findByPk(idCurso, {
+            attributes: ['descripcion', 'objetivos', 'requisitos', 'idUsuario']
+        });
+        if (cursoRecuperado == null) {
+            return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
         }
-
-        cursosRecuperados = await sequelize.query(
-            `SELECT cursos.idCurso, cursos.titulo, documentos.idDocumento, documentos.archivo
+        etiquetasRecuperadas = await sequelize.query(
+            `SELECT cursosetiquetas.idEtiqueta, etiquetas.nombre
             FROM cursos 
-            JOIN documentos ON cursos.idCurso=documentos.idCurso
-            JOIN tiposarchivos ON documentos.idTipoArchivo=tiposarchivos.idTipoArchivo 
-            WHERE tiposarchivos.nombre= :nombreTipoArchivo
-            ORDER BY idCurso ASC  
-            LIMIT :offset, :limit;`,
+            INNER JOIN cursosetiquetas on cursosetiquetas.idCurso = cursos.idCurso
+            INNER JOIN etiquetas on etiquetas.idEtiqueta = cursosetiquetas.idEtiqueta
+            WHERE cursos.idCurso= :idCurso`,
             {
-              replacements: { nombreTipoArchivo, offset, limit },
+              replacements: { idCurso },
               type: sequelize.QueryTypes.SELECT
             }
-          )
-
-        console.log(cursosRecuperados);
-        if (cursosRecuperados.length === 0) {
-            return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
+        )
+        if(etiquetasRecuperadas.length > 0){
+            cursoRecuperado = cursoRecuperado.toJSON();
+            cursoRecuperado.etiquetas = etiquetasRecuperadas
         }
-        return res.status(CodigosRespuesta.OK).json(cursosRecuperados)
+        return res.status(CodigosRespuesta.OK).json(cursoRecuperado)
     }catch(error){
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
@@ -82,8 +78,8 @@ self.create = async function(req, res){
 
         //let archivoCreado = await crearArchivoDelCurso(req.body.archivo, cursoCreado.idCurso, transaccion);
         //if(archivoCreado.status!=201){
-          //  await transaccion.rollback();
-            //return res.status(CodigosRespuesta.BAD_REQUEST).json("Error al crear el archivo")
+            //await transaccion.rollback();
+          //  return res.status(CodigosRespuesta.BAD_REQUEST).json("Error al crear el archivo")
         //}
 
         for (let etiquetaId of req.body.etiquetas) {
@@ -108,6 +104,12 @@ self.create = async function(req, res){
 self.update = async function(req, res){
     let transaccion;
     try{
+        if(isNaN(req.params.id) || isNaN(req.body.idCurso)){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el id no es valido");
+        } else if(req.params.id != req.body.idCurso){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, los id no coinciden");
+        }
+
         let body = {
             id: req.params.id,
             titulo: req.body.titulo,
@@ -121,7 +123,7 @@ self.update = async function(req, res){
 
         //let resultadoArchivo = await actualizarArchivoDelCurso(req.body.idDocumento, req.body.archivo, transaccion);
         //if(resultadoArchivo !== 404 && resultadoArchivo !== 204){
-          //  await transaccion.rollback();
+            //await transaccion.rollback();
             //return res.status(resultadoArchivo).json("Error al actualizar la miniatura");
         //}
 
@@ -166,6 +168,10 @@ self.update = async function(req, res){
 
 self.delete = async function(req, res){
     try{
+        if(isNaN(req.params.id)){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al eliminar el curso, el id no es valido");
+        }
+
         let id = req.params.id;
         let cursoRecuperado = await curso.findByPk(id);
         if(cursoRecuperado==null){
