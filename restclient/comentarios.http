@@ -1,0 +1,153 @@
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg2NjczLCJleHAiOjE3MTY1ODc4NzN9.-kkvtxpffPVpn-5KS0V5R4xdVk722vrcSw0daJRtYps
+Content-Type: application/json
+
+{
+    "idClase": 1,
+    "idUsuario": 4,
+    "descripcion": "Ups! Me equivoqué publiqué el mismo comentario 4 veces. Disculpen"
+}
+
+### Comentario Respuesta
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg2NjczLCJleHAiOjE3MTY1ODc4NzN9.-kkvtxpffPVpn-5KS0V5R4xdVk722vrcSw0daJRtYps
+Content-Type: application/json
+
+{
+    "idClase": 1,
+    "idUsuario": 4,
+    "descripcion": "Ups! Me equivoqué publiqué el mismo comentario 4 veces. Disculpen",
+    "respondeAComentario": 4
+}
+
+### Comentario sin idClase
+
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+
+{
+    "idUsuario": 4,
+    "descripcion": "Ups! Me equivoqué publiqué el mismo comentario 4 veces. Disculpen"
+}
+
+### Comentario sin idUsuario
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+    
+{
+    "idClase": 1,
+    "descripcion": "Ups! Me equivoqué publiqué el mismo comentario 4 veces. Disculpen"
+}
+
+### Comentario con idUsuario distinto al token
+
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+    
+{
+    "idClase": 1,
+    "idUsuario": 1,
+    "descripcion": "Ups! Me equivoqué publiqué el mismo comentario 4 veces. Disculpen"
+}
+
+### Comentario sin descripción
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+    
+{
+    "idClase": 1,
+    "idUsuario": 1
+}
+
+### Comentario con descripción vacía
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+    
+{
+    "idClase": 1,
+    "idUsuario": 1,
+    "descripcion": ""
+}
+
+### Comentario con descripción mayor a 350 caracteres (351)
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+    
+{
+    "idClase": 1,
+    "idUsuario": 1,
+    "descripcion": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam gravida egestas lacus, at viverra nisl ultricies at. Vestibulum sed orci ut magna fermentum interdum. Cras sed turpis nec erat condimentum euismod. Aliquam erat volutpat. Morbi et ligula nec lectus dictum sagittis at sed nulla. Etiam dictum, elit ut tempor tincidunt, justo est sollicitudin"
+}
+
+### idClase negativo
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+    
+{
+    "idClase": -1,
+    "idUsuario": 1,
+    "descripcion": "Lorem ipsum dolor sit amet, adipiscing elit. Nam gravida egestas lacus, at viverra nisl ultricies at. Vestibulum sed orci ut magna fermentum interdum. Cras sed turpis nec erat condimentum euismod. Aliquam erat volutpat. Morbi et ligula nec lectus dictum sagittis at sed nulla. Etiam dictum, elit ut tempor tincidunt, justo est sollicitudin"
+}
+
+### idClase no entero
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+    
+{
+    "idClase": "a",
+    "idUsuario": 1,
+    "descripcion": "Lorem ipsum dolor sit amet, adipiscing elit. Nam gravida egestas lacus, at viverra nisl ultricies at. Vestibulum sed orci ut magna fermentum interdum. Cras sed turpis nec erat condimentum euismod. Aliquam erat volutpat. Morbi et ligula nec lectus dictum sagittis at sed nulla. Etiam dictum, elit ut tempor tincidunt, justo est sollicitudin"
+}
+
+### idUsuario negativo
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+    
+{
+    "idClase": 1,
+    "idUsuario": -1,
+    "descripcion": "Lorem ipsum dolor sit amet, adipiscing elit. Nam gravida egestas lacus, at viverra nisl ultricies at. Vestibulum sed orci ut magna fermentum interdum. Cras sed turpis nec erat condimentum euismod. Aliquam erat volutpat. Morbi et ligula nec lectus dictum sagittis at sed nulla. Etiam dictum, elit ut tempor tincidunt, justo est sollicitudin"
+}
+
+### idUsuario no entero
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+    
+{
+    "idClase": 1,
+    "idUsuario": "a",
+    "descripcion": "Lorem ipsum dolor sit amet, adipiscing elit. Nam gravida egestas lacus, at viverra nisl ultricies at. Vestibulum sed orci ut magna fermentum interdum. Cras sed turpis nec erat condimentum euismod. Aliquam erat volutpat. Morbi et ligula nec lectus dictum sagittis at sed nulla. Etiam dictum, elit ut tempor tincidunt, justo est sollicitudin"
+}
+
+### Clase no existente (lo hace el autorizarIdClase)
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg3OTcyLCJleHAiOjE3MTY1ODkxNzJ9.n3m74kcPCm4km3cVPr4-tQDST5xRyfvN-KlrKGpune8
+Content-Type: application/json
+    
+{
+    "idClase": 2,
+    "idUsuario": 4,
+    "descripcion": "Lorem ipsum dolor sit amet, adipiscing elit. Nam gravida egestas lacus, at viverra nisl ultricies at. Vestibulum sed orci ut magna fermentum interdum. Cras sed turpis nec erat condimentum euismod. Aliquam erat volutpat. Morbi et ligula nec lectus dictum sagittis at sed nulla. Etiam dictum, elit ut tempor tincidunt, justo est sollicitudin"
+}
+
+### respondeAComentario inexistente
+POST http://localhost:3000/api/comentarios
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOjQsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imtpa2dhbWJvYUBnbWFpbC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9naXZlbm5hbWUiOiJFbnJpcXVlIHB1dCIsImlzcyI6IlVWZW15U2Vydmlkb3JKV1QiLCJhdWQiOiJVc3Vhcmlvc1VWZW15SldUIiwiaWF0IjoxNzE2NTg4OTgwLCJleHAiOjE3MTY1OTAxODB9.LlEX5XAGVY2vQaYWKdclOb2F_As7cfJonzq2pgzYzCM
+Content-Type: application/json
+    
+{
+    "idClase": 1,
+    "idUsuario": 4,
+    "descripcion": "Lorem ipsum dolor sit amet, adipiscing elit. Nam gravida egestas lacus, at viverra nisl ultricies at. Vestibulum sed orci ut magna fermentum interdum. Cras sed turpis nec erat condimentum euismod. Aliquam erat volutpat. Morbi et ligula nec lectus dictum sagittis at sed nulla. Etiam dictum, elit ut tempor tincidunt, justo est sollicitudin",
+    "respondeAComentario": 1000
+}
