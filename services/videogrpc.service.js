@@ -3,6 +3,7 @@ const CodigosRespuesta = require('../utils/codigosRespuesta');
 const jwtSecret = process.env.JWT_SECRET;
 const jwt = require('jsonwebtoken');
 const { TAMANIO_MAXIMO_VIDEOS_KB } = require('../utils/tamanioDocumentos');
+const { where } = require('sequelize');
 
 async function enviarVideoClase (call, callback) {
     const stream = [];
@@ -212,57 +213,32 @@ async function verificarClaseSinVideo(idClase, idTipoArchivo){
     return sinVideo;
 }
 
-async function recibirVideoClase(call, callback) {
-    let datosSolicitud;
+async function recibirVideoClase(call) {
+    const idVideo = call.request.idVideo;
 
-    call.on('data', (message) => {
-        datosSolicitud = message;
-    });
-
-    call.on('end', async () => {
-        if (!datosSolicitud || !datosSolicitud.idClase || !datosSolicitud.jwt) {
-            call.end();
-            callback(null, { respuesta: CodigosRespuesta.BAD_REQUEST });
-            return;
-        }
-
-        const esValido = autenticarToken(datosSolicitud.jwt);
-        if (!esValido) {
-            call.end();
-            callback(null, { respuesta: CodigosRespuesta.UNAUTHORIZED });
-            return;
-        }
-
-        try {
-            const video = await obtenerVideoClase(datosSolicitud.idClase);
-            if(!video){
-                call.end();
-                callback(null, { respuesta: CodigosRespuesta.NOT_FOUND });
-                return;
-            }
-
-            const tamanioChunks = 18 * 1024;
-            for (let i = 0; i < video.length; i += tamanioChunks) {
-                const chunk = video.slice(i, i + tamanioChunks);
-                call.write({ chunks: chunk });
-            }
-
-            call.end();
-        } catch (error) {
-            console.log(error);
-            call.end();
-            callback(null, { respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR });
-        }
-    });
-}
-
-async function obtenerVideoClase(idClase){
     try {
-        const video = await documentos.findOne({ where: { idClase: idClase }, attributes: ['archivo'] });
-        return video ? video.archivo : null;
+        const video = await documentos.findOne({ where: { idDocumento: idVideo }, attributes: ['archivo'] });
+
+        if (!video) {
+            console.error('No se encontro el video', idVideo);
+            call.end();
+            return;
+        }
+
+        const videoData = video.archivo;
+        const chunkSize = 18 * 1024;
+        let offset = 0;
+
+        while (offset < videoData.length) {
+            const chunk = videoData.slice(offset, offset + chunkSize);
+            call.write({ chunks: chunk });
+            offset += chunkSize;
+        }
+
+        call.end();
     } catch (error) {
-        console.log(error);
-        return null;
+        console.error('Error al enviar el video', idVideo, error);
+        call.end();
     }
 }
 
