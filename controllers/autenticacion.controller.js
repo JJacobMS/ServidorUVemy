@@ -16,11 +16,11 @@ self.iniciarSesion = async function (req, res) {
         });
 
         if (data === null)
-            return res.status(CodigosRespuesta.UNAUTHORIZED).send({ detalles: ["Correo electrónico o contraseña incorrectos"] });
+            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Correo electrónico o contraseña incorrectos"] });
 
         const contraenaValida = await bcrypt.compare(contrasena, data.contrasena);
         if (!contraenaValida)
-            return res.status(CodigosRespuesta.UNAUTHORIZED).send({ detalles: ["Correo electrónico o contraseña incorrectos"] });
+            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Correo electrónico o contraseña incorrectos"] });
 
         const idsEtiqueta = await usuariosetiquetas.findAll({
             where: { idUsuario: data.idUsuario },

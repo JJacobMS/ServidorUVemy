@@ -86,7 +86,7 @@ self.subirFotoPerfilUsuario = async function (req, res) {
         const tokenDecodificado = req.tokenDecodificado;
 
         if (idUsuario != tokenDecodificado[claimTypes.Id])
-            return res.status(CodigosRespuesta.UNAUTHORIZED).send();
+            return res.status(CodigosRespuesta.BAD_REQUEST).send();
 
         const usuario = await usuarios.findByPk(idUsuario);
         if (!usuario)
