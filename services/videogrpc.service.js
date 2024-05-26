@@ -24,7 +24,7 @@ async function enviarVideoClase (call, callback) {
         call.on('end', async ()=>{
             try{
 
-                console.log("fin");
+                console.log("fin recepción nueva");
                 if(stream == null || datosDocumento.nombre == null || datosDocumento.idClase == null || datosDocumento.jwt == null){
                     callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST});
                     return;
@@ -100,6 +100,8 @@ async function actualizarVideoClase (call, callback) {
         })
 
         call.on('end', async ()=>{
+            console.log("fin receppción modificar");
+
             try{
                 if(stream == null || datosDocumento.nombre == null || datosDocumento.jwt == null || datosDocumento.idVideo == null){
                     callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST});
@@ -122,14 +124,11 @@ async function actualizarVideoClase (call, callback) {
                 const doc = await documentos.findByPk(datosDocumento.idVideo, 
                     { attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase']});
 
-                console.log(datosDocumento.id);
-                console.log(doc);
                 if(doc == null){ 
                     callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
                     return;
                 }
 
-                doc.nombre = datosDocumento.nombre;
                 doc.archivo = video;
 
                 await doc.save();
