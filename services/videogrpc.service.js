@@ -4,6 +4,7 @@ const jwtSecret = process.env.JWT_SECRET;
 const claimTypes = require('../config/claimtypes');
 const jwt = require('jsonwebtoken');
 const { TAMANIO_MAXIMO_VIDEOS_KB } = require('../utils/tamanioDocumentos');
+const { where } = require('sequelize');
 
 async function enviarVideoClase (call, callback) {
     const stream = [];
@@ -258,4 +259,33 @@ async function verificarClaseSinVideo(idClase, idTipoArchivo){
     return sinVideo;
 }
 
-module.exports = { enviarVideoClase, actualizarVideoClase };
+async function recibirVideoClase(call) {
+    const idVideo = call.request.idVideo;
+
+    try {
+        const video = await documentos.findOne({ where: { idDocumento: idVideo }, attributes: ['archivo'] });
+
+        if (!video) {
+            console.error('No se encontro el video', idVideo);
+            call.end();
+            return;
+        }
+
+        const videoData = video.archivo;
+        const chunkSize = 18 * 1024;
+        let offset = 0;
+
+        while (offset < videoData.length) {
+            const chunk = videoData.slice(offset, offset + chunkSize);
+            call.write({ chunks: chunk });
+            offset += chunkSize;
+        }
+
+        call.end();
+    } catch (error) {
+        console.error('Error al enviar el video', idVideo, error);
+        call.end();
+    }
+}
+
+module.exports = { enviarVideoClase, recibirVideoClase, actualizarVideoClase };

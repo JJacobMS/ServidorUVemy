@@ -21,6 +21,7 @@ message DocumentoVideo{
 
 service VideoService {
     rpc EnviarVideoClase (stream VideoPartesEnvio) returns (EnvioVideoRespuesta);
+    rpc RecibirVideoClase (DocumentoVideo) returns (stream VideoPartesEnvio);
     rpc ActualizarVideoClase (stream VideoPartesEnvio) returns (EnvioVideoRespuesta);
 
 }

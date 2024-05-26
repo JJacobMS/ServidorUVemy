@@ -19,6 +19,7 @@ var corsOptions = {
 //app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.use(cors(corsOptions));
+app.use("/api/comentarios", require('./routes/comentarios.routes'))
 app.use("/api/cursos", require('./routes/cursos.routes'))
 app.use("/api/cursoslistas", require('./routes/cursoslistas.routes'))
 app.use("/api/clases", require('./routes/clases.routes'))
@@ -69,9 +70,13 @@ const documentoProto = grpc.loadPackageDefinition(packageDefinition);
 
 const server = new grpc.Server();
 
-const { enviarVideoClase, actualizarVideoClase } = require('./services/videogrpc.service');
+const { enviarVideoClase, recibirVideoClase, actualizarVideoClase } = require('./services/videogrpc.service');
 server.addService(documentoProto.VideoService.service, 
-    { EnviarVideoClase : enviarVideoClase, ActualizarVideoClase: actualizarVideoClase});
+    { 
+    EnviarVideoClase : enviarVideoClase,
+    RecibirVideoClase : recibirVideoClase,
+    ActualizarVideoClase: actualizarVideoClase
+});
 
 server.bindAsync(`${process.env.SERVER_HOST}:${process.env.SERVER_PORT_GRPC}`, grpc.ServerCredentials.createInsecure(), ()=>{
     console.log(`Servidor gRPC en ejecución en el puerto ${process.env.SERVER_PORT_GRPC}`)
