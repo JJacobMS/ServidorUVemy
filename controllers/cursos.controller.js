@@ -4,10 +4,13 @@ const cursosetiquetas = require('../services/cursosetiquetas.service.');
 const usuarioscursos = require('./usuarioscursos.controller');
 const documentos = require('./documentos.controller');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
+const claimTypes = require('../config/claimtypes');
+const {esEstudianteCurso} = require('../middlewares/autorizacion.middleware');
 const curso = db.cursos;
 const usuario = db.usuarios;
-const documentosModel = db.documentos;
-const tiposarchivosModel = db.tiposarchivos;
+const etiquetasModel = db.etiquetas;
+const cursosetiquetasModel = db.cursosetiquetas;
+const usuariocurso = db.usuarioscursos;
 const sequelize = db.sequelize;
 let self = {}
 
@@ -32,21 +35,55 @@ self.get = async function(req, res){
         if (cursoRecuperado == null) {
             return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
         }
-        etiquetasRecuperadas = await sequelize.query(
-            `SELECT cursosetiquetas.idEtiqueta, etiquetas.nombre
-            FROM cursos 
-            INNER JOIN cursosetiquetas on cursosetiquetas.idCurso = cursos.idCurso
-            INNER JOIN etiquetas on etiquetas.idEtiqueta = cursosetiquetas.idEtiqueta
-            WHERE cursos.idCurso= :idCurso`,
-            {
-              replacements: { idCurso },
-              type: sequelize.QueryTypes.SELECT
-            }
-        )
-        if(etiquetasRecuperadas.length > 0){
-            cursoRecuperado = cursoRecuperado.toJSON();
-            cursoRecuperado.etiquetas = etiquetasRecuperadas
+
+        let etiquetasRecuperadas = await cursosetiquetasModel.findAll({
+            attributes: [
+              ['idEtiqueta', 'idEtiqueta'], 
+              [sequelize.col('etiqueta.nombre'), 'nombre']
+            ], 
+            where: { idCurso: idCurso },
+            include: [
+              {
+                model: etiquetasModel,
+                attributes: [],
+                }
+            ],
+        });
+
+        let promedioCalificacion = await usuariocurso.findOne({
+            attributes: [
+              [sequelize.fn('AVG', sequelize.col('Calificacion')), 'calificacion']
+            ],
+            where: { idCurso: idCurso }
+        });
+
+        let rol;
+        let profesor = await usuario.findByPk(cursoRecuperado.idUsuario, {
+            attributes: ['nombres','apellidos','correoElectronico'],
+            where: {idUsuario: cursoRecuperado.idUsuario}
+        });
+        console.log(profesor);
+        const idUsuario = req.tokenDecodificado[claimTypes.Id];
+        const esEstudiante = await esEstudianteCurso(idCurso, idUsuario);
+        if(cursoRecuperado.idUsuario==idUsuario)
+        {
+            rol = "Profesor";
+        } else if(esEstudiante)
+        {
+            rol = "Estudiante";
         }
+        else
+        {
+            rol = "Usuario";
+        }
+
+        cursoRecuperado = cursoRecuperado.toJSON();
+        cursoRecuperado.etiquetas = etiquetasRecuperadas;
+        cursoRecuperado.calificacion = promedioCalificacion.calificacion;
+        cursoRecuperado.rol = rol;
+        cursoRecuperado.profesor = profesor.correoElectronico+": "+profesor.nombres +" "+profesor.apellidos;
+        
+
         return res.status(CodigosRespuesta.OK).json(cursoRecuperado)
     }catch(error){
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
