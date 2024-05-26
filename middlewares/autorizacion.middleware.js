@@ -177,6 +177,13 @@ async function obtenerCursoConIdDocumento(idDocumento){
     return cursoDelProfesor;
 }
 
+async function esEstudianteCurso(idCurso, idUsuario){
+    const estudianteClase = await usuarioscursos.findOne({ attributes: ['idUsuario'],
+        where: { idCurso: idCurso, idUsuario: idUsuario}});
+
+    return estudianteClase != null;
+}
+
 self.esEstudianteCurso = async function (idCurso, idUsuario){
     const estudianteClase = await usuarioscursos.findOne({ attributes: ['idUsuario'],
         where: { idCurso: idCurso, idUsuario: idUsuario}});
