@@ -2,10 +2,14 @@ const cursoModel = require('../models/cursos');
 const db = require('../models/index');
 const cursosetiquetas = require('../services/cursosetiquetas.service.');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
+const TipoCurso = require('../utils/TipoCurso');
 const sequelize = db.sequelize;
 const curso = db.cursos;
 const documentosModel = db.documentos;
 const tiposarchivosModel = db.tiposarchivos;
+const etiquetasModel = db.etiquetas;
+const usuarioscursosModel = db.usuarioscursos;
+const claimTypes = require('../config/claimtypes');
 const { Op } = require('sequelize');
 
 
@@ -27,25 +31,10 @@ self.get = async function(req, res){
         if(id < 0){
             id = 0;
         }
-
-        if(etiqueta != undefined && !isNaN(etiqueta)){
-            //Buscar etiqueta y return el codigo respuesta
-            console.log("etiqueta "+etiqueta);
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al recuperar el recurso, el id no es valido");
-        } 
-
-        if(tipoCursos != undefined && !isNaN(tipoCursos) && tipoCursos ==  1  || tipoCursos == 2 ){
-            //Buscar tipoCursos
-            console.log("tipoCursos "+tipoCursos);
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al recuperar el recurso, el id no es valido");
-        } 
-
-        if(calificacion != undefined && !isNaN(calificacion) && calificacion >= 0 || calificacion <= 10){
-            //Buscar calificacion
-            console.log("calificacion "+calificacion);
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al recuperar el recurso, el id no es valido");
-
-        } 
+        const idUsuario = req.tokenDecodificado[claimTypes.Id];
+        if(isNaN(idUsuario)){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al recuperar el recurso, el idUsuario no es valido");
+        }
 
         let offset = -6;
         let limit = 6;
@@ -54,6 +43,42 @@ self.get = async function(req, res){
         for (let index = 0; index <= id; index++) {
             offset += 6;
         }
+
+        if(etiqueta != undefined && !isNaN(etiqueta)){
+            let cursosRecuperadosEtiquetas = await buscarCursosPorEtiqueta(etiqueta, offset, limit);
+            
+            if (cursosRecuperadosEtiquetas === undefined) {
+                return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send();
+            }
+            if (cursosRecuperadosEtiquetas.length === 0) {
+                return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
+            }
+            return res.status(CodigosRespuesta.OK).json(cursosRecuperadosEtiquetas)
+        } 
+
+        if(tipoCursos != undefined && !isNaN(tipoCursos) && tipoCursos ==  TipoCurso.CURSOSCREADOS  || tipoCursos == TipoCurso.CURSOSINSCRITOS ){
+            let cursosRecuperadosEtiquetas = await buscarCursosPorTipoCurso(tipoCursos, idUsuario, offset, limit);
+            
+            if (cursosRecuperadosEtiquetas === undefined) {
+                return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send();
+            }
+            if (cursosRecuperadosEtiquetas.length === 0) {
+                return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
+            }
+            return res.status(CodigosRespuesta.OK).json(cursosRecuperadosEtiquetas)
+        } 
+
+        if(calificacion != undefined && !isNaN(calificacion) && calificacion >= 0 || calificacion <= 10){
+            let cursosRecuperadosCalificacion = await buscarCursosPorCalificacion(calificacion, offset, limit);
+            if (cursosRecuperadosCalificacion === undefined) {
+                return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send();
+            }
+            if (cursosRecuperadosCalificacion.length === 0) {
+                return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
+            }
+            return res.status(CodigosRespuesta.OK).json(cursosRecuperadosCalificacion)
+        } 
+        
 
         const documentos = await documentosModel.findAll({
             attributes: ['idCurso', 'idDocumento', 'archivo'],
@@ -70,31 +95,8 @@ self.get = async function(req, res){
 
         const cursoIds = documentos.map(doc => doc.idCurso);
 
-        let whereCondition = {
-            idCurso: cursoIds
-        };
-        if (titulo!= undefined) {
-            whereCondition.titulo = {
-                [Op.like]: '%' + titulo + '%'
-            };
-        }
+        let cursosRecuperados = await RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo);
 
-        const cursosRecuperados = await curso.findAll({
-            attributes: ['idCurso', 'titulo'],
-            where: whereCondition,
-            include: [
-                {
-                    model: documentosModel,
-                    as: 'documentos',
-                    attributes: ['idDocumento', 'archivo'],
-                    where: { idClase: null },
-                    limit: 1
-                }
-            ],
-            order: [['idCurso', 'ASC']],
-            limit: limit,
-            offset: offset
-        });
         if (cursosRecuperados.length === 0) {
             return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
         }
@@ -104,6 +106,146 @@ self.get = async function(req, res){
         console.log(error);
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
+}
+
+
+async function buscarCursosPorEtiqueta(etiquetaId, offset, limit) {
+    try{
+        const cursosFiltrados = await curso.findAll({
+            attributes: ['idCurso', 'titulo'],
+            include: [
+                {
+                    model: etiquetasModel, 
+                    as: 'etiquetas', 
+                    where: { idEtiqueta: etiquetaId }
+                }
+            ],
+            order: [['idCurso', 'ASC']],
+            limit: limit,
+            offset: offset
+        });
+
+        const cursoIds = cursosFiltrados.map(cur => cur.idCurso);
+        let titulo = undefined;
+        let cursosRecuperados = await RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo);
+
+        return cursosRecuperados;
+
+    }catch(error){
+        console.log(error.message);
+        console.log(error);
+        let cursosRecuperados = undefined;
+        return cursosRecuperados;
+    }
+}
+
+async function buscarCursosPorCalificacion(calificacion, offset, limit) {
+    try{
+        let calificacionFinal = 10;
+        const cursosFiltrados = await usuarioscursosModel.findAll({
+            attributes: [
+                'idCurso'
+            ],
+            group: ['idCurso'],
+            having: sequelize.where(
+                sequelize.fn('AVG', sequelize.col('calificacion')),
+                {
+                    [Op.between]: [calificacion, calificacionFinal]
+                }
+            ),
+            order: [['idCurso', 'ASC']],
+            limit: limit,
+            offset: offset
+        });
+        const cursoIds = cursosFiltrados.map(cur => cur.idCurso);
+
+        let titulo = undefined;
+        let cursosRecuperados = await RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo);
+
+        return cursosRecuperados;
+
+    }catch(error){
+        console.log(error.message);
+        console.log(error);
+        let cursosRecuperados = undefined;
+        return cursosRecuperados;
+    }
+}
+
+
+async function buscarCursosPorTipoCurso(tipoCursos, idUsuario, offset, limit) {
+    try{
+        console.log(tipoCursos);
+        console.log(idUsuario);
+        let cursosFiltrados
+        if(tipoCursos == TipoCurso.CURSOSCREADOS){
+            console.log("TipoCurso.CURSOSCREADOS");
+            cursosFiltrados = await curso.findAll({
+                where: {idUsuario: idUsuario},
+                attributes: ['idCurso'],
+                limit: limit,
+                offset: offset
+            });
+        }
+
+        if(tipoCursos == TipoCurso.CURSOSINSCRITOS){
+            console.log("TipoCurso.CURSOSINSCRITOS");
+            cursosFiltrados = await usuarioscursosModel.findAll({
+                attributes: [
+                    'idCurso'
+                ],
+                where: { idUsuario: idUsuario },
+                group: ['idCurso'],
+                order: [['idCurso', 'ASC']],
+                limit: limit,
+                offset: offset
+            });
+        }
+
+        const cursoIds = cursosFiltrados.map(cur => cur.idCurso);
+
+        let titulo = undefined;
+        let cursosRecuperados = await RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo);
+
+        return cursosRecuperados;
+
+    }catch(error){
+        console.log(error.message);
+        console.log(error);
+        let cursosRecuperados = undefined;
+        return cursosRecuperados;
+    }
+}
+
+async function RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo){
+    
+    let whereCondition = {
+        idCurso: cursoIds
+    };
+
+    if (titulo!= undefined) {
+        whereCondition.titulo = {
+            [Op.like]: '%' + titulo + '%'
+        };
+    }
+
+    const cursosRecuperados = await curso.findAll({
+        attributes: ['idCurso', 'titulo'],
+        where: whereCondition,
+        include: [
+            {
+                model: documentosModel,
+                as: 'documentos',
+                attributes: ['idDocumento', 'archivo'],
+                where: { idClase: null },
+                limit: 1
+            }
+        ],
+        order: [['idCurso', 'ASC']],
+        limit: limit,
+        offset: offset
+    });
+    return cursosRecuperados;
 }
 
 module.exports = self;
