@@ -114,7 +114,7 @@ self.create = async function (req, res) {
                 return res.status(CodigosRespuesta.BAD_REQUEST).json({ detalles: ["Comentario al que responde no pertenece a la misma clase"] });
             }
 
-            if(!respuestaAComentario.respondeAComentario){
+            if(respuestaAComentario.respondeAComentario !== null){
                 return res.status(CodigosRespuesta.BAD_REQUEST).json({ detalles: ["No se puede responder a un comentario que es respuesta a otro comentario"] });
             }
 
