@@ -117,7 +117,7 @@ self.obtenerFotoPerfil = async function (req, res) {
         if (!usuario.imagen)
             return res.status(CodigosRespuesta.NOT_FOUND).send();
 
-        res.set('Content-Type', 'image/jpeg');
+        res.set('Content-Type', 'image/png');
         return res.status(CodigosRespuesta.OK).send(usuario.imagen);
     } catch (error) {
         console.log(error);
