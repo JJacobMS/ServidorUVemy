@@ -23,7 +23,6 @@ async function enviarVideoClase (call, callback) {
 
         call.on('end', async ()=>{
             try{
-
                 console.log("fin recepción nueva");
                 if(stream == null || datosDocumento.nombre == null || datosDocumento.idClase == null || datosDocumento.jwt == null){
                     callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST});
@@ -32,7 +31,6 @@ async function enviarVideoClase (call, callback) {
 
                 const esValido = autenticarToken(datosDocumento.jwt, datosDocumento.idClase, 0);
                 if(!esValido){
-                    console.log("no");
                     callback(null, {respuesta: CodigosRespuesta.FORBIDDEN})
                     return;
                 }
@@ -69,12 +67,13 @@ async function enviarVideoClase (call, callback) {
                     idTipoArchivo: idTipoArchivo,
                     idClase: datosDocumento.idClase
                 });
+
+                const respuesta = { respuesta : CodigosRespuesta.OK};
+                callback(null, respuesta);
+                
             }catch(error){
                 callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR});
-            }
-
-            const respuesta = { respuesta : CodigosRespuesta.OK};
-            callback(null, respuesta);
+            }            
         })
 
     }catch(error){

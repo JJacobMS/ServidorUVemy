@@ -81,11 +81,14 @@ self.obtenerCalificacionUsuarioCurso = async function(req, res){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Curso no existente");
         }
 
-        const usuarioEnCurso = await usuarioscursos.findOne({attributes: ['idUsuario', 'calificacion'], 
+        const usuarioEnCurso = await usuarioscursos.findOne({attributes: ['idCurso','idUsuario', 'calificacion'], 
             where: { idCurso: idCurso, idUsuario: idUsuario}});
     
         if(usuarioEnCurso == null){
             return res.status(CodigosRespuesta.BAD_REQUEST).send("Usuario no está registrado en el curso");
+        }
+        if(usuarioEnCurso.calificacion == null){
+            usuarioEnCurso.calificacion = 0;
         }
         return res.status(CodigosRespuesta.OK).json(usuarioEnCurso);
     }catch(error){

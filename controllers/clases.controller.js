@@ -38,22 +38,8 @@ self.obtenerPorId = async function(req, res){
     }
 }
 
-/*self.obtenerPorCurso = async function(req, res){
-    if(req.params.idCurso == null) return res.status(400).json({ message : "No especificó el curso"})
-    try{
-        let data = await clases.findAll({ where: {idCurso: req.params.idCurso}, attributes: ['idClase', 'nombre', 'descripcion', 'idCurso']})
-        return res.status(200).json(data)
-    }catch(error){
-        return res.status(500).json(error)
-    }
-}*/
-
 self.crear = async function(req, res){
     try{
-        /*let curso = await cursos.findOne({ where: { idCurso: req.body.idCurso }});
-
-        if(curso == null) return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");*/
-        
         const data = await clases.create({
             nombre: req.body.nombre,
             descripcion: req.body.descripcion,
