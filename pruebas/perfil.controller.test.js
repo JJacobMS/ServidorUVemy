@@ -33,6 +33,20 @@ describe("POST /api/perfil/verificacion", function(){
 
 describe("POST /api/perfil/registro", function(){
     
+    test("TestRegistrarUsuarioEtiquetaInexistente", async () => {
+        const peticion = {
+            nombres: "Pruebas",
+            apellidos: "Pruebas",
+            correoElectronico: CORREO_REGISTRO,
+            contrasena: "Contrasena1",
+            idsEtiqueta: [1, 9999], 
+            codigoVerificacion: CODIGO_VERIFICACION
+        };
+        const response = await request(app).post("/api/perfil/registro").set('Authorization', `Bearer ${TOKEN_REGISTRO}`).send(peticion);
+        expect(response.status).toBe(CodigosRespuesta.BAD_REQUEST);
+        expect(response.body.detalles).toContain("Error al crear una de las etiquetas");
+    });
+    
     test("TestRegistrarUsuarioCodigoVerificacionIncorrecto", async () => {
         const peticion = {
             nombres: "Pruebas",
@@ -74,6 +88,7 @@ describe("POST /api/perfil/registro", function(){
         expect(response.status).toBe(CodigosRespuesta.BAD_REQUEST);
         expect(response.body.detalles).toContain("Correo electrónico ya registrado");
     });
+
 });
 
 describe("PUT /api/perfil/foto", function(){
