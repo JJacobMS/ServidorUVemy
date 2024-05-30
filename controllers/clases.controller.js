@@ -38,15 +38,25 @@ self.obtenerPorId = async function(req, res){
     }
 }
 
-/*self.obtenerPorCurso = async function(req, res){
-    if(req.params.idCurso == null) return res.status(400).json({ message : "No especificó el curso"})
+self.obtenerPorCurso = async function(req, res){
     try{
-        let data = await clases.findAll({ where: {idCurso: req.params.idCurso}, attributes: ['idClase', 'nombre', 'descripcion', 'idCurso']})
-        return res.status(200).json(data)
+        if(req.params.idCurso == null) {
+            return res.status(CodigosRespuesta.NOT_FOUND).json({ message : "No especificó el curso"})
+        }
+        if(isNaN(req.params.idCurso)){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el id no es valido");
+        }
+        let cursoRecuperado = await cursos.findByPk(req.params.idCurso);
+        if(cursoRecuperado==null){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
+        }
+        let data = await clases.findAll({ where: {idCurso: req.params.idCurso}, attributes: ['idClase', 'nombre']})
+
+        return res.status(CodigosRespuesta.OK).json(data)
     }catch(error){
-        return res.status(500).json(error)
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error)
     }
-}*/
+}
 
 self.crear = async function(req, res){
     try{

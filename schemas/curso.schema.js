@@ -40,15 +40,6 @@ const crearCursoSchema = () =>{
                 bail: true
             }
         },
-        idUsuario: {
-            in: ['body'],
-            notEmpty: true,
-            isNumeric: true,
-            notEmpty: {
-                errorMessage: 'IdUsuario inválida',
-                bail: true
-            }
-        },
         etiquetas: {
             in: ['body'],
             notEmpty: {
