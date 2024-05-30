@@ -93,16 +93,14 @@ self.get = async function(req, res){
 self.create = async function(req, res){
     let transaccion;
     try{
-        if(isNaN(req.body.idUsuario)){
+        const idUsuario = req.tokenDecodificado[claimTypes.Id];
+        if(isNaN(idUsuario)){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Error al crear el curso, el idUsuario no es valido");
         }
-        let usuarioRecuperado = await usuario.findByPk(req.body.idUsuario);
-        console.log(usuarioRecuperado);
-        console.log(req.body.idUsuario);
+        let usuarioRecuperado = await usuario.findByPk(idUsuario);
         if(usuarioRecuperado==null){
             return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el usuario");
         }
-
         transaccion = await sequelize.transaction();
         
         let cursoCreado = await curso.create({
@@ -110,7 +108,7 @@ self.create = async function(req, res){
             descripcion: req.body.descripcion,
             objetivos: req.body.objetivos,
             requisitos: req.body.requisitos,
-            idUsuario: req.body.idUsuario
+            idUsuario: idUsuario
         }, { transaction: transaccion })
 
         if(cursoCreado==null){
@@ -148,10 +146,25 @@ self.create = async function(req, res){
 self.update = async function(req, res){
     let transaccion;
     try{
+        const idUsuario = req.tokenDecodificado[claimTypes.Id];
         if(isNaN(req.params.idCurso) || isNaN(req.body.idCurso)){
+            console.log("Error al actualizar el curso, el id no es valido");
             return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el id no es valido");
         } else if(req.params.idCurso != req.body.idCurso){
+            console.log("Error al actualizar el curso, los id no coinciden");
             return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, los id no coinciden");
+        } else if(isNaN(idUsuario)){
+            console.log("Error al actualizar el curso, el idUsuario no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el idUsuario no es valido");
+        }
+
+        let idCurso = req.params.idCurso;
+        let cursoRecuperado = await curso.findByPk(idCurso, {
+            attributes: ['descripcion', 'objetivos', 'requisitos', 'idUsuario']
+        });
+        if(cursoRecuperado.idUsuario != idUsuario){
+            console.log("CodigosRespuesta.NOT_FOUND cursoRecuperado.idUsuario");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el idUsuario no es valido");
         }
 
         let body = {
@@ -180,12 +193,6 @@ self.update = async function(req, res){
             transaction: transaccion
         });
 
-        if(data[0]==0){
-            console.log("Error al actualizar el curso");
-            await transaccion.rollback();
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso");
-        } 
-
         resultadoEtiquetas = await eliminarEtiquetasDelCurso(id, transaccion);
 
         if(resultadoEtiquetas !== 404 && resultadoEtiquetas !== 204){
@@ -196,6 +203,7 @@ self.update = async function(req, res){
 
         for (let etiquetaId of req.body.etiquetas) {
             if(isNaN(etiquetaId)){
+                await transaccion.rollback();
                 return res.status(CodigosRespuesta.NOT_FOUND).send("Error al crear una de las etiquetas, el id no es valido");
             }
             let etiquetaCreada = await crearCursosEtiquetas(id, etiquetaId, transaccion);
@@ -216,14 +224,17 @@ self.update = async function(req, res){
 
 self.delete = async function(req, res){
     try{
+        const idUsuario = req.tokenDecodificado[claimTypes.Id];
         if(isNaN(req.params.idCurso)){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Error al eliminar el curso, el id no es valido");
         }
-
         let id = req.params.idCurso;
         let cursoRecuperado = await curso.findByPk(id);
         if(cursoRecuperado==null){
             return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
+        }
+        if(cursoRecuperado.idUsuario != idUsuario){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al eliminar el curso, el idUsuario no es valido");
         }
         data = await curso.destroy({ where : {idCurso:id}});
         if(data === 1){
