@@ -3,7 +3,7 @@ const jwtSecret = process.env.JWT_SECRET;
 const claimTypes = require('../config/claimtypes');
 const { generaToken } = require('../services/jwttoken.service');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
-const { cursos, clases, usuarioscursos, documentos } = require('../models');
+const { cursos, clases, usuarioscursos, documentos, usuarios } = require('../models');
 
 let self = {};
 
@@ -18,6 +18,11 @@ self.autorizar = () => {
             const tokenDecodificado = jwt.verify(token, jwtSecret);
 
             req.tokenDecodificado = tokenDecodificado;
+
+            const usuarioNoAdmin = await usuarios.findByPk(req.tokenDecodificado[claimTypes.Id], { attributes: ['esAdministrador']});
+            if(usuarioNoAdmin == null || usuarioNoAdmin.esAdministrador == 1){
+                return res.status(CodigosRespuesta.UNAUTHORIZED).send("No puede realizar esta acción un administrador");
+            }
 
             var minutosRestantes = (tokenDecodificado.exp - (new Date().getTime() / 1000)) / 60;
             if (minutosRestantes < 5) {

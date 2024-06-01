@@ -36,6 +36,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BLOB('medium'),
       allowNull: true,
       defaultValue: null
+    },
+    esAdministrador: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+      allowNull: false
     }
   }, {
     sequelize,
