@@ -20,7 +20,10 @@ self.autorizar = () => {
             req.tokenDecodificado = tokenDecodificado;
 
             const usuarioNoAdmin = await usuarios.findByPk(req.tokenDecodificado[claimTypes.Id], { attributes: ['esAdministrador']});
-            if(usuarioNoAdmin == null || usuarioNoAdmin.esAdministrador == 1){
+            if(usuarioNoAdmin == null){
+                return res.status(CodigosRespuesta.NOT_FOUND).send("El usuario no existe registrado");
+            }
+            if(usuarioNoAdmin.esAdministrador == 1){
                 return res.status(CodigosRespuesta.UNAUTHORIZED).send("No puede realizar esta acción un administrador");
             }
 

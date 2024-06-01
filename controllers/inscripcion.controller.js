@@ -17,11 +17,6 @@ self.inscribirse = async function(req, res){
         if(cursoExistente == null){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Curso no existente");
         }
-
-        const usuarioExistente = await usuarios.findByPk(idUsuario, { attributes: [ 'idUsuario']});
-        if(usuarioExistente == null){
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Usuario no existente");
-        }
     
         if(cursoExistente.idUsuario == idUsuario){
             return res.status(CodigosRespuesta.BAD_REQUEST).send("El profesor no se puede inscribir a su propio curso");
