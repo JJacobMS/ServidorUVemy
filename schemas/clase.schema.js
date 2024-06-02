@@ -1,6 +1,6 @@
 const recuperarClaseSchema = () =>{
     return {
-        id: {
+        idClase: {
             in: ['params'],
             notEmpty: true,
             isDecimal: {
@@ -18,6 +18,9 @@ const crearClaseSchema = () =>{
             notEmpty: true,
             isNumeric: true,
             errorMessage: 'IdCurso inválida'
+        },
+        idClase: {
+
         },
         nombre: {
             in: ['body'],

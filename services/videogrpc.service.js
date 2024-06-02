@@ -1,8 +1,10 @@
-const { documentos, tiposarchivos, clases } = require('../models');
+const { documentos, tiposarchivos, clases, cursos } = require('../models');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 const jwtSecret = process.env.JWT_SECRET;
+const claimTypes = require('../config/claimtypes');
 const jwt = require('jsonwebtoken');
 const { TAMANIO_MAXIMO_VIDEOS_KB } = require('../utils/tamanioDocumentos');
+const { where } = require('sequelize');
 
 async function enviarVideoClase (call, callback) {
     const stream = [];
@@ -20,25 +22,26 @@ async function enviarVideoClase (call, callback) {
         })
 
         call.on('end', async ()=>{
-            if(stream == null || datosDocumento.nombre == null || datosDocumento.idClase == null || datosDocumento.jwt == null){
-                callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST});
-                return;
-            }
-
-            const esValido = autenticarToken(datosDocumento.jwt);
-            if(!esValido){
-                callback(null, {respuesta: CodigosRespuesta.FORBIDDEN})
-                return;
-            }
-
-            const video = Buffer.concat(stream);
-            const tamanioKB = video.length/1024;
-            if(tamanioKB > TAMANIO_MAXIMO_VIDEOS_KB){
-                callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
-                    return;
-            }
-            
             try{
+                console.log("fin recepción nueva");
+                if(stream == null || datosDocumento.nombre == null || datosDocumento.idClase == null || datosDocumento.jwt == null){
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST});
+                    return;
+                }
+
+                const esValido = autenticarToken(datosDocumento.jwt, datosDocumento.idClase, 0);
+                if(!esValido){
+                    callback(null, {respuesta: CodigosRespuesta.FORBIDDEN})
+                    return;
+                }
+
+                const video = Buffer.concat(stream);
+                const tamanioKB = video.length/1024;
+                if(tamanioKB > TAMANIO_MAXIMO_VIDEOS_KB){
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
+                        return;
+                }
+            
                 const idTipoArchivo = await verificarIdTipoArchivoVideo();
                 if(idTipoArchivo == 0){
                     callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR})
@@ -47,14 +50,14 @@ async function enviarVideoClase (call, callback) {
 
                 const existeClase = await verificarExistenciaClase(datosDocumento.idClase);
                 if(existeClase == false){ 
-                    callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR})
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
                     return;
                 }
 
                 const sinVideo = await verificarClaseSinVideo(datosDocumento.idClase, idTipoArchivo);
                 if(sinVideo == false){ 
                     console.log("Con video");
-                    callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR})
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
                     return;
                 }
 
@@ -64,7 +67,73 @@ async function enviarVideoClase (call, callback) {
                     idTipoArchivo: idTipoArchivo,
                     idClase: datosDocumento.idClase
                 });
+
+                const respuesta = { respuesta : CodigosRespuesta.OK};
+                callback(null, respuesta);
+                
             }catch(error){
+                callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR});
+            }            
+        })
+
+    }catch(error){
+        console.log("Error grpc");
+        console.log(error);
+    }
+}  
+
+async function actualizarVideoClase (call, callback) {
+    const stream = [];
+    let datosDocumento;
+
+    try{
+        call.on('data', (message) =>{
+            if(message.datosVideo != null){
+                console.log(message.datosVideo);
+                datosDocumento = message.datosVideo;
+            }
+            if(message.chunks != null){
+                stream.push(message.chunks);
+                console.log(".");
+            }
+        })
+
+        call.on('end', async ()=>{
+            console.log("fin receppción modificar");
+
+            try{
+                if(stream == null || datosDocumento.nombre == null || datosDocumento.jwt == null || datosDocumento.idVideo == null){
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST});
+                    return;
+                }
+
+                const esValido = autenticarToken(datosDocumento.jwt, 0, datosDocumento.idVideo);
+                if(!esValido){
+                    callback(null, {respuesta: CodigosRespuesta.FORBIDDEN})
+                    return;
+                }
+
+                const video = Buffer.concat(stream);
+                const tamanioKB = video.length/1024;
+                if(tamanioKB > TAMANIO_MAXIMO_VIDEOS_KB){
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
+                        return;
+                }
+
+                const doc = await documentos.findByPk(datosDocumento.idVideo, 
+                    { attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase']});
+
+                if(doc == null){ 
+                    callback(null, {respuesta: CodigosRespuesta.BAD_REQUEST})
+                    return;
+                }
+
+                doc.archivo = video;
+
+                await doc.save();
+
+            }catch(error){
+                console.log(error)
                 callback(null, {respuesta: CodigosRespuesta.INTERNAL_SERVER_ERROR});
             }
 
@@ -78,15 +147,25 @@ async function enviarVideoClase (call, callback) {
     }
 }  
 
-function autenticarToken(tokenPeticion){
-    let esValido;
+function autenticarToken(tokenPeticion, idClase, idDocumento){
+    let esValido = false;
     if (!tokenPeticion.startsWith('Bearer ')){
         esValido = false;
     }else{
         try{
             const token = tokenPeticion.split(' ')[1];
             const tokenDecodificado = jwt.verify(token, jwtSecret);
-            esValido = true;
+            if(idClase > 0){
+                if(verificarEsProfesorIdClase(tokenDecodificado[claimTypes.id], idClase)){
+                    esValido = true;
+                }
+            }
+            if(idDocumento > 0){
+                if(verificarEsProfesorIdDocumento(tokenDecodificado[claimTypes.id], idDocumento)){
+                    esValido = true;
+                }
+            }
+        
         }catch(error){
             console.log(error);
             esValido = false;
@@ -94,6 +173,39 @@ function autenticarToken(tokenPeticion){
     }
 
     return esValido;
+}
+
+async function verificarEsProfesorIdClase(idUsuario, idClase){
+    const cursoDelProfesor = await cursos.findOne({ attributes: ['idCurso', 'idUsuario'], 
+        include: { model: clases, as: "clases", attributes: ['idClase'], where: { idClase : idClase}}
+    });
+
+    if(cursoDelProfesor == null){
+        return false;
+    }
+
+    if(cursoDelProfesor.idUsuario == idUsuario){
+        return true;
+    }
+    
+    return false;
+}
+
+async function verificarEsProfesorIdDocumento(idUsuario, idDocumento){
+    const cursoDelProfesor = await cursos.findOne({ attributes: ['idCurso', 'idUsuario'],
+        include: { model: clases, as: "clases", attributes: [], 
+        include: { model: documentos, as: "documentos", where: {idDocumento: idDocumento}, attributes: []}}, 
+    });
+
+    if(cursoDelProfesor == null){
+        return false;
+    }
+
+    if(cursoDelProfesor.idUsuario == idUsuario){
+        return true;
+    }
+    
+    return false;
 }
 
 async function verificarIdTipoArchivoVideo(){
@@ -145,4 +257,33 @@ async function verificarClaseSinVideo(idClase, idTipoArchivo){
     return sinVideo;
 }
 
-module.exports = { enviarVideoClase };
+async function recibirVideoClase(call) {
+    const idVideo = call.request.idVideo;
+
+    try {
+        const video = await documentos.findOne({ where: { idDocumento: idVideo }, attributes: ['archivo'] });
+
+        if (!video) {
+            console.error('No se encontro el video', idVideo);
+            call.end();
+            return;
+        }
+
+        const videoData = video.archivo;
+        const chunkSize = 18 * 1024;
+        let offset = 0;
+
+        while (offset < videoData.length) {
+            const chunk = videoData.slice(offset, offset + chunkSize);
+            call.write({ chunks: chunk });
+            offset += chunkSize;
+        }
+
+        call.end();
+    } catch (error) {
+        console.error('Error al enviar el video', idVideo, error);
+        call.end();
+    }
+}
+
+module.exports = { enviarVideoClase, recibirVideoClase, actualizarVideoClase };

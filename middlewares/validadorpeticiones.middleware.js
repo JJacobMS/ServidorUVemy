@@ -3,6 +3,7 @@ const CodigosRespuesta = require('../utils/codigosRespuesta');
 
 const validarFormatoPeticion = (req, res, next) => {
     const errores = validationResult(req);
+    console.log(req.body);
 
     if(!errores.isEmpty()) {
         return res.status(CodigosRespuesta.BAD_REQUEST).json({

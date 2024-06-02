@@ -40,30 +40,39 @@ const crearCursoSchema = () =>{
                 bail: true
             }
         },
-        idUsuario: {
-            in: ['body'],
-            notEmpty: true,
-            isNumeric: true,
-            notEmpty: {
-                errorMessage: 'IdUsuario inválida',
-                bail: true
-            }
-        },
         etiquetas: {
             in: ['body'],
             notEmpty: {
-                options: value => Array.isArray(value) && value.every(item => Number.isInteger(item)),
+                options: (value) => {
+                    if (value) {
+                        const tamanoMaximo = 1 * 1024 * 1024; 
+                        if (Array.isArray(value) && value.every(item => Number.isInteger(item)) && value.length > tamanoMaximo) {
+                            throw new Error('La imagen debe tener un tamaño de 1MB o menos');
+                        }
+                    }
+                    return true;
+                },
                 errorMessage: 'Etiquetas inválidas',
                 bail: true
             }
         },
-
-        //ARCHIVO
+        file: {
+            
+        }
     }
 }
 
 const actualizarCursoSchema = () =>{
     return {
+        idCurso: {
+            in: ['body'],
+            notEmpty: true,
+            isNumeric: true,
+            notEmpty: {
+                errorMessage: 'idCurso inválido',
+                bail: true
+            }
+        },
         titulo: {
             in: ['body'],
             notEmpty: true,
@@ -119,14 +128,16 @@ const actualizarCursoSchema = () =>{
                 errorMessage: 'idDocumento inválido',
                 bail: true
             }
+        },
+        file: {
+            
         }
-        //ARCHIVO
     }
 }
 
 const estadisticaCursoSchema = ()=> {
     return {
-        id: {
+        idCurso: {
             in: ['params'],
             notEmpty: true,
             isNumeric: true,
@@ -154,22 +165,13 @@ const inscripcionCursoSchema = ()=> {
                 errorMessage: 'IdCurso debe ser un número'
             },
             errorMessage: 'IdCurso inválida'
-        },
-        idUsuario: {
-            in: ['body'],
-            notEmpty: true,
-            exists: true,
-            isDecimal: {
-                errorMessage: 'IdUsuario debe ser un número'
-            },
-            errorMessage: 'IdUsuario inválida'
         }
     }
 }
 
 const calificarCursoSchema = ()=> {
     return {
-        id: {
+        idCurso: {
             in: ['params'],
             notEmpty: true,
             exists: true,
@@ -186,15 +188,6 @@ const calificarCursoSchema = ()=> {
                 errorMessage: 'IdCurso debe ser un número'
             },
             errorMessage: 'IdCurso inválida'
-        },
-        idUsuario: {
-            in: ['body'],
-            notEmpty: true,
-            exists: true,
-            isDecimal: {
-                errorMessage: 'IdUsuario debe ser un número'
-            },
-            errorMessage: 'IdUsuario inválida'
         },
         calificacion:{
             in: ['body'],
@@ -226,15 +219,6 @@ const obtenerCalificacionCursoSchema = ()=> {
                 errorMessage: 'IdCurso debe ser un número'
             },
             errorMessage: 'IdCurso inválida'
-        },
-        idUsuario: {
-            in: ['params'],
-            notEmpty: true,
-            exists: true,
-            isDecimal: {
-                errorMessage: 'IdUsuario debe ser un número'
-            },
-            errorMessage: 'IdUsuario inválida'
         }
     }
 }

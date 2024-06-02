@@ -1,10 +1,11 @@
 const bcrypt = require('bcrypt');
-const { usuarios, etiquetas } = require('../models');
+const { usuarios, etiquetas, sequelize } = require('../models');
 const { generarTokenRegistro } = require('../services/jwttoken.service');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 const enviarCorreoVerificacion = require('../services/enviocorreo.service');
 const fs = require('fs');
 const claimTypes = require('../config/claimtypes');
+const { borrarEtiquetasDelUsuario, crearUsuariosEtiquetas } = require('../services/usuariosetiquetas.service');
 
 let self = {};
 
@@ -85,7 +86,7 @@ self.subirFotoPerfilUsuario = async function (req, res) {
         const tokenDecodificado = req.tokenDecodificado;
 
         if (idUsuario != tokenDecodificado[claimTypes.Id])
-            return res.status(CodigosRespuesta.UNAUTHORIZED).send();
+            return res.status(CodigosRespuesta.BAD_REQUEST).send();
 
         const usuario = await usuarios.findByPk(idUsuario);
         if (!usuario)
@@ -132,7 +133,7 @@ self.actualizarPerfilUsuario = async function (req, res) {
         if (idUsuario != req.body.idUsuario)
             return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["IdUsuario no coincide con el token"] });
 
-        const usuario = await usuarios.findOne({ where: { idUsuario: idUsuario }, attributes: ['idUsuario', 'nombres', 'apellidos', 'correoElectronico']});
+        const usuario = await usuarios.findOne({ where: { idUsuario: idUsuario }, attributes: ['idUsuario', 'correoElectronico']});
         if (!usuario)
             return res.status(CodigosRespuesta.NOT_FOUND).send({ detalles: ["No existe el usuario"] });
 
@@ -149,6 +150,41 @@ self.actualizarPerfilUsuario = async function (req, res) {
 
         await usuario.save();
 
+        return res.status(CodigosRespuesta.NO_CONTENT).send();
+    } catch (error) {
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: [error.message] });
+    }
+}
+
+self.actualizarEtiquetasUsuario = async function (req, res) {
+    try {
+        const idUsuario = req.tokenDecodificado[claimTypes.Id];
+        const { idsEtiqueta } = req.body;
+
+        if(idUsuario != req.body.idUsuario)
+            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["IdUsuario no coincide con el token"] });
+
+        const usuario = await usuarios.findOne({ where: { idUsuario: idUsuario }, attributes: ['idUsuario']});
+        if (!usuario)
+            return res.status(CodigosRespuesta.NOT_FOUND).send({ detalles: ["No existe el usuario"] });
+
+        const transaccion = await sequelize.transaction();
+        resultadoEtiquetas = await borrarEtiquetasDelUsuario(idUsuario, transaccion);
+
+        if(resultadoEtiquetas !== 404 && resultadoEtiquetas !== 204){
+            await transaccion.rollback();
+            return res.status(resultadoEtiquetas).send({ detalles: ["Error al actualizar las etiquetas"] });
+        }
+
+        for (let etiquetaId of idsEtiqueta) {
+            let etiquetaCreada = await crearUsuariosEtiquetas(idUsuario, etiquetaId, transaccion);
+            if(etiquetaCreada.status != 201){
+                await transaccion.rollback();
+                return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Error al crear una de las etiquetas"] });
+            }
+        }
+
+        await transaccion.commit();
         return res.status(CodigosRespuesta.NO_CONTENT).send();
     } catch (error) {
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: [error.message] });

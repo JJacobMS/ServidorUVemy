@@ -6,7 +6,7 @@ const generarEstadisticas = require('../services/generacionEstadisticas.service'
 let self = {}
 
 self.obtenerEstadisticasCurso = async function(req, res){
-    const idCursoSolicitado = req.params.id;
+    const idCursoSolicitado = req.params.idCurso;
     try{
       let cursoSolicitado = await cursos.findByPk(idCursoSolicitado, {attributes : ['titulo']});
       if(cursoSolicitado == null){
@@ -38,7 +38,7 @@ self.obtenerEstadisticasCurso = async function(req, res){
 
 
 self.devolverReporte = async function(req, res){
-  const idCursoSolicitado = req.params.id;
+  const idCursoSolicitado = req.params.idCurso;
     try{
       let cursoSolicitado = await cursos.findByPk(idCursoSolicitado, {attributes : ['titulo']});
       if(cursoSolicitado == null){

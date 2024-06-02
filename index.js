@@ -1,8 +1,8 @@
-const mysql = require('mysql2/promise');
 const express = require('express');
+const app = express();
+const mysql = require('mysql2/promise');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const app = express();
 
 dotenv.config();
 
@@ -19,7 +19,9 @@ var corsOptions = {
 //app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.use(cors(corsOptions));
+app.use("/api/comentarios", require('./routes/comentarios.routes'))
 app.use("/api/cursos", require('./routes/cursos.routes'))
+app.use("/api/cursoslistas", require('./routes/cursoslistas.routes'))
 app.use("/api/clases", require('./routes/clases.routes'))
 app.use("/api/documentos", require('./routes/documentos.routes'))
 app.use("/api/tiposarchivos", require('./routes/tiposarchivos.routes'))
@@ -49,7 +51,9 @@ app.get('*', (req, res) => {res.status(404).send()});
           return rows;
         } catch (error) {
             console.log(error);
-        }}
+        }
+
+    }
 getConexion();
 app.listen(process.env.SERVER_PORT,()=>{
     console.log('Aplicacion de ejemplo escuchando en el puerto '+process.env.SERVER_PORT);
@@ -67,9 +71,17 @@ const documentoProto = grpc.loadPackageDefinition(packageDefinition);
 
 const server = new grpc.Server();
 
-const { enviarVideoClase } = require('./services/videogrpc.service');
-server.addService(documentoProto.VideoService.service, { EnviarVideoClase : enviarVideoClase});
+const { enviarVideoClase, recibirVideoClase, actualizarVideoClase } = require('./services/videogrpc.service');
+server.addService(documentoProto.VideoService.service, 
+    { 
+    EnviarVideoClase : enviarVideoClase,
+    RecibirVideoClase : recibirVideoClase,
+    ActualizarVideoClase: actualizarVideoClase
+});
 
-server.bindAsync(`localhost:${process.env.SERVER_PORT_GRPC}`, grpc.ServerCredentials.createInsecure(), ()=>{
+server.bindAsync(`${process.env.SERVER_HOST}:${process.env.SERVER_PORT_GRPC}`, grpc.ServerCredentials.createInsecure(), ()=>{
     console.log(`Servidor gRPC en ejecución en el puerto ${process.env.SERVER_PORT_GRPC}`)
 });
+
+
+module.exports = app;

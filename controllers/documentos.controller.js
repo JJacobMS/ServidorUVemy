@@ -1,21 +1,12 @@
 const db = require('../models/index');
 const dbdocumentos = db.documentos;
 const cursos = db.cursos;
-const { documentos, tiposarchivos } = require('../models');
+const { documentos, tiposarchivos, clases } = require('../models');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 let self = {}
 
-/*self.getAll = async function(req, res){
-    try{
-        let data = await dbdocumentos.findAll({ attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase']})
-        return res.status(200).json(data)
-    }catch(error){
-        return res.status(500).json(error)
-    }
-}*/
-
 self.obtenerArchivoPDF = async function(req, res){
-    const idDocumento = req.params.id;
+    const idDocumento = req.params.idDocumento;
     try{
         let data = await dbdocumentos.findByPk(idDocumento, { 
             attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase'],
@@ -59,10 +50,14 @@ self.borrarArchivoDelCurso = async function(documentoId){
 
 self.crearArchivoDelCurso = async function(documento, idCurso, transaccion){
     try{
+        const idTipoArch = await obtenerIdTipoArchivoPNG();
+        if(idTipoArch == 0){
+            return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear el tipo archivo");
+        } 
         let documentoCreado  = await dbdocumentos.create({
-            archivo: documento,
+            archivo: documento.buffer,
             nombre: "Miniatura del curso "+idCurso,
-            idTipoArchivo: 1, //Debo de comprobar el mymetipe
+            idTipoArchivo: idTipoArch,
             idCurso: idCurso,
             idClase: null
         }, { transaction: transaccion })
@@ -71,6 +66,7 @@ self.crearArchivoDelCurso = async function(documento, idCurso, transaccion){
         }
         return { status: 201, message: documentoCreado };;
     }catch(error){
+        console.log(error);
         return { status: 500, message: error.message };
     }
 }
@@ -89,7 +85,9 @@ self.crear = async function(req, res){
             idTipoArchivo: idTipoArch
         });
 
-        if(data == null) return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear el documento " + req.body.nombre);
+        if(data == null){
+            return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear el documento " + req.body.nombre);
+        } 
 
         const respuesta = {
             idDocumento: data.idDocumento,
@@ -126,43 +124,30 @@ async function obtenerIdTipoArchivoPDF(){
     return idTipoArchivo;
 }
 
-self.actualizarDocumentoClase = async function(req, res){
-    const idDocumento = req.body.idDocumento;
+async function obtenerIdTipoArchivoPNG(){
+    let idTipoArchivo;
     try{
-        if(idDocumento != req.params.id){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("IdDocumento deben ser igual");
+        const tipoArchivoVideo = await tiposarchivos.findOne({ where: {nombre: "image/png"}, attributes: ['idTipoArchivo']});
+        if(tipoArchivoVideo == null){
+            const tipoNuevo = await tiposarchivos.create({
+                nombre: "image/png"
+            });
+            if(tipoNuevo == null){
+                idTipoArchivo = 0;
+            }else{
+                idTipoArchivo = tipoNuevo.idTipoArchivo;
+            }
+        }else{
+            idTipoArchivo = tipoArchivoVideo.dataValues.idTipoArchivo;
         }
-
-        const archivoBuffer = req.file.buffer;
-
-        const documento = await documentos.findByPk(idDocumento, { 
-            attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase'],
-            include: { model: tiposarchivos, as: 'tiposarchivos'}
-        });
-
-        if(documento == null){
-            return res.status(CodigosRespuesta.NOT_FOUND).send("No existe el documento");
-        }
-
-        if(documento.dataValues.tiposarchivos.nombre != "application/pdf"){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("No puede modificar un documento que no sea PDF");
-        }
-
-        documento.archivo = archivoBuffer;
-        documento.nombre = req.body.nombre;
-
-        console.log(documento);
-        await documento.save();
-
-        return res.status(CodigosRespuesta.OK).json({idDocumento: documento.idDocumento, nombre: documento.nombre});
     }catch(error){
-        console.log(error);
-        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error)
+        idTipoArchivo = 0;
     }
+    return idTipoArchivo;
 }
 
 self.eliminarDocumentoClase = async function(req, res){
-    const idDocumento = req.params.id;
+    const idDocumento = req.params.idDocumento;
     try{
         const documento = await documentos.findByPk(idDocumento, { 
             attributes: ['idDocumento', 'archivo', 'nombre', 'idTipoArchivo', 'idCurso', 'idClase'],
@@ -170,6 +155,7 @@ self.eliminarDocumentoClase = async function(req, res){
         });
 
         if(documento == null){
+            console.log(documento.dataValues.nombre);
             return res.status(CodigosRespuesta.NOT_FOUND).send("No existe el documento");
         }
         
@@ -189,7 +175,7 @@ self.eliminarDocumentoClase = async function(req, res){
 self.actualizarArchivoDelCurso = async function(idDocumento, documento, transaccion){
     try{
         let data = await dbdocumentos.update(
-            { archivo: documento }, 
+            { archivo: documento.buffer }, 
             {where:{idDocumento:idDocumento}, 
             fields: ['archivo'],
             transaction: transaccion

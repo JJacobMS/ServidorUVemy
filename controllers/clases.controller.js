@@ -3,13 +3,12 @@ const CodigosRespuesta = require('../utils/codigosRespuesta');
 let self = {}
 
 self.obtenerPorId = async function(req, res){        
-    const idClase = req.params.id;
+    const idClase = req.params.idClase;
     try{
         let clase = await clases.findOne({ where: {idClase: idClase}, attributes: ['idClase', 'nombre', 'descripcion', 'idCurso']})
         if(clase == null){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Clase no encontrada");
         }
-
         let documentosClase = await documentos.findAll({ 
             where: {idClase: idClase, '$tiposarchivos.nombre$': "application/pdf"}, 
             attributes: ['idDocumento'],
@@ -31,7 +30,7 @@ self.obtenerPorId = async function(req, res){
         if(videoClase != null){
             clase.dataValues.videoId = videoClase.dataValues.idDocumento;
         }
-        
+    
         return res.status(CodigosRespuesta.OK).json(clase);
     }catch(error){
         console.log(error);
@@ -40,21 +39,27 @@ self.obtenerPorId = async function(req, res){
 }
 
 self.obtenerPorCurso = async function(req, res){
-    if(req.params.idCurso == null) return res.status(400).json({ message : "No especificó el curso"})
     try{
-        let data = await clases.findAll({ where: {idCurso: req.params.idCurso}, attributes: ['idClase', 'nombre', 'descripcion', 'idCurso']})
-        return res.status(200).json(data)
+        if(req.params.idCurso == null) {
+            return res.status(CodigosRespuesta.NOT_FOUND).json({ message : "No especificó el curso"})
+        }
+        if(isNaN(req.params.idCurso)){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el id no es valido");
+        }
+        let cursoRecuperado = await cursos.findByPk(req.params.idCurso);
+        if(cursoRecuperado==null){
+            return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
+        }
+        let data = await clases.findAll({ where: {idCurso: req.params.idCurso}, attributes: ['idClase', 'nombre']})
+
+        return res.status(CodigosRespuesta.OK).json(data)
     }catch(error){
-        return res.status(500).json(error)
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error)
     }
 }
 
 self.crear = async function(req, res){
     try{
-        let curso = await cursos.findOne({ where: { idCurso: req.body.idCurso }});
-
-        if(curso == null) return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
-        
         const data = await clases.create({
             nombre: req.body.nombre,
             descripcion: req.body.descripcion,
@@ -63,10 +68,10 @@ self.crear = async function(req, res){
 
         if(data == null) return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear la clase");
 
-        return res.status(201).json(data);
+        return res.status(CodigosRespuesta.OK).json(data);
     }catch(error){
         console.log(error);
-        return res.status(500).json(error);
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error);
     }
 }
 
@@ -94,11 +99,11 @@ self.actualizar = async function(req, res){
 }
 
 self.eliminar = async function(req, res){        
-    const idClase = req.params.id;
+    const idClase = req.params.idClase;
     try{
         let clase = await clases.findOne({ where: {idClase: idClase}, attributes: ['idClase', 'nombre', 'descripcion', 'idCurso']})
         if(clase == null){
-            res.status(CodigosRespuesta.NOT_FOUND).send("Clase no encontrada");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Clase no encontrada");
         }
         
         await clase.destroy();
