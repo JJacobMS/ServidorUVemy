@@ -5,8 +5,8 @@ const { recuperarUsuarioSchema } = require('../schemas/usuario.schema');
 const validarFormatoPeticion = require('../middlewares/validadorpeticiones.middleware');
 const autorizacion = require('../middlewares/autorizacion.middleware');
 
-const autorizar = autorizacion.autorizar;
+const autorizarAdmin = autorizacion.autorizarAdmin;
 
-router.get('/:pagina', autorizar(), checkSchema(recuperarUsuarioSchema()), validarFormatoPeticion, usuarios.getAll);
+router.get('/:pagina', autorizarAdmin(), checkSchema(recuperarUsuarioSchema()), validarFormatoPeticion, usuarios.getAll);
 
 module.exports = router;

@@ -5,12 +5,12 @@ const validarFormatoPeticion = require('../middlewares/validadorpeticiones.middl
 const autorizacion = require('../middlewares/autorizacion.middleware');
 const etiquetas = require('../controllers/etiquetas.controller');
 
-const autorizar = autorizacion.autorizar;
+const autorizarAdmin = autorizacion.autorizarAdmin;
 
-router.get('/', autorizar(), etiquetas.getAll);
+router.get('/', autorizarAdmin(), etiquetas.getAll);
 
-router.post('/', autorizar(), checkSchema(crearEtiquetaSchema()), validarFormatoPeticion, etiquetas.create);
+router.post('/', autorizarAdmin(), checkSchema(crearEtiquetaSchema()), validarFormatoPeticion, etiquetas.create);
 
-router.delete('/:id', autorizar(), etiquetas.delete);
+router.delete('/:id', autorizarAdmin(), etiquetas.delete);
 
 module.exports = router;
