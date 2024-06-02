@@ -73,10 +73,10 @@ self.crearArchivoDelCurso = async function(documento, idCurso, transaccion){
         if(documentoCreado==null){
             return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message: "Error al crear el documento" };
         }
-        return { status: 201, message: documentoCreado };;
+        return { status: CodigosRespuesta.CREATED, message: documentoCreado };
     }catch(error){
         console.log(error);
-        return { status: 500, message: error.message };
+        return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message: error.message };
     }
 }
 

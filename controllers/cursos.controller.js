@@ -95,11 +95,11 @@ self.create = async function(req, res){
     try{
         const idUsuario = req.tokenDecodificado[claimTypes.Id];
         if(isNaN(idUsuario)){
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al crear el curso, el idUsuario no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al crear el curso, el idUsuario no es valido");
         }
         let usuarioRecuperado = await usuario.findByPk(idUsuario);
         if(usuarioRecuperado==null){
-            return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el usuario");
+            return res.status(CodigosRespuesta.NOT_FOUND).json("No se encontró el usuario");
         }
         transaccion = await sequelize.transaction();
         
@@ -113,22 +113,23 @@ self.create = async function(req, res){
 
         if(cursoCreado==null){
             await transaccion.rollback();
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("Error al crear el curso");
+            return res.status(CodigosRespuesta.BAD_REQUEST).json("Error al crear el curso");
         }
 
         let archivoCreado = await crearArchivoDelCurso(req.file, cursoCreado.idCurso, transaccion);
 
-        if(archivoCreado.status!=201){
+        if(archivoCreado.status!=CodigosRespuesta.CREATED){
             await transaccion.rollback();
             return res.status(CodigosRespuesta.BAD_REQUEST).json("Error al crear el archivo")
         }
 
         for (let etiquetaId of req.body.etiquetas) {
             if(isNaN(etiquetaId)){
-                return res.status(CodigosRespuesta.NOT_FOUND).send("Error al crear una de las etiquetas, el id no es valido");
+                await transaccion.rollback();
+                return res.status(CodigosRespuesta.NOT_FOUND).json("Error al crear una de las etiquetas, el id no es valido");
             }
             let etiquetaCreada = await crearCursosEtiquetas(cursoCreado.idCurso, etiquetaId, transaccion);
-            if(etiquetaCreada.status!=201){
+            if(etiquetaCreada.status!=CodigosRespuesta.CREATED){
                 await transaccion.rollback();
                 return res.status(CodigosRespuesta.BAD_REQUEST).json("Error al crear una de las etiquetas")
             }
@@ -139,7 +140,7 @@ self.create = async function(req, res){
         if (transaccion && !transaccion.finished) {
             await transaccion.rollback();
         }
-        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: "Error" });
     }
 }
 

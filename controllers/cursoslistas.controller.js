@@ -25,7 +25,7 @@ self.get = async function(req, res){
         let calificacion = req.query.calificacion;
 
         if(isNaN(id)){
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al recuperar el recurso, el id no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al recuperar el recurso, la pagina no es valida");
         }
 
         if(id < 0){
@@ -33,7 +33,7 @@ self.get = async function(req, res){
         }
         const idUsuario = req.tokenDecodificado[claimTypes.Id];
         if(isNaN(idUsuario)){
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al recuperar el recurso, el idUsuario no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al recuperar el recurso, el idUsuario no es valido");
         }
 
         let offset = -6;
@@ -51,7 +51,7 @@ self.get = async function(req, res){
                 return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send();
             }
             if (cursosRecuperadosEtiquetas.length === 0) {
-                return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
+                return res.status(CodigosRespuesta.NOT_FOUND).json("No se encontraron cursos");
             }
             return res.status(CodigosRespuesta.OK).json(cursosRecuperadosEtiquetas)
         } 
@@ -63,7 +63,7 @@ self.get = async function(req, res){
                 return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send();
             }
             if (cursosRecuperadosEtiquetas.length === 0) {
-                return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
+                return res.status(CodigosRespuesta.NOT_FOUND).json("No se encontraron cursos");
             }
             return res.status(CodigosRespuesta.OK).json(cursosRecuperadosEtiquetas)
         } 
@@ -74,7 +74,7 @@ self.get = async function(req, res){
                 return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send();
             }
             if (cursosRecuperadosCalificacion.length === 0) {
-                return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
+                return res.status(CodigosRespuesta.NOT_FOUND).json("No se encontraron cursos");
             }
             return res.status(CodigosRespuesta.OK).json(cursosRecuperadosCalificacion)
         } 
@@ -98,7 +98,7 @@ self.get = async function(req, res){
         let cursosRecuperados = await RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo);
 
         if (cursosRecuperados.length === 0) {
-            return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontraron cursos");
+            return res.status(CodigosRespuesta.NOT_FOUND).json("No se encontraron cursos");
         }
         return res.status(CodigosRespuesta.OK).json(cursosRecuperados)
     }catch(error){
