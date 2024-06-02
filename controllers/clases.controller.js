@@ -40,8 +40,12 @@ self.obtenerPorId = async function(req, res){
 
 self.obtenerPorCurso = async function(req, res){
     try{
+        let rol = req.query.rol;
         if(req.params.idCurso == null) {
             return res.status(CodigosRespuesta.NOT_FOUND).json({ message : "No especificó el curso"})
+        }
+        if(rol == null) {
+            return res.status(CodigosRespuesta.NOT_FOUND).json({ message : "No se ha especificado un rol"})
         }
         if(isNaN(req.params.idCurso)){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el id no es valido");
@@ -51,9 +55,30 @@ self.obtenerPorCurso = async function(req, res){
             return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
         }
         let data = await clases.findAll({ where: {idCurso: req.params.idCurso}, attributes: ['idClase', 'nombre']})
+        if(rol == "Estudiante" ||rol == "Usuario") {
+            let documentosPorClase = [];
+            await Promise.all(data.map(async (clases) => {
+                let documentosClase = await documentos.findAll({ 
+                    where: {idClase: clases.idClase}, 
+                    attributes: ['idDocumento', 'idClase', 'archivo'],
+                });
+                
+                if (documentosClase.length > 0) {
+                    documentosPorClase.push({ clase: clases, documentos: documentosClase });
+                }
+            }));
 
-        return res.status(CodigosRespuesta.OK).json(data)
+            data = data.filter((clases) => {
+                return documentosPorClase.some((item) => item.clase.idClase === clases.idClase);
+            });
+        }
+        if(!data || data.length === 0){
+            return res.status(CodigosRespuesta.NOT_FOUND).json("No se encontró clases asociadas al curso");
+        }
+
+        return res.status(CodigosRespuesta.OK).json(data);
     }catch(error){
+        console.log(error);
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error)
     }
 }
