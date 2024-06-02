@@ -7,7 +7,6 @@ const { generaToken } = require('../services/jwttoken.service');
 const TOKEN = generaToken(6, 'enrique@gmail.com', 'Enrico');
 
 describe("GET /api/cursos/:idCurso", function(){
-  
   test("TestObtenerCursoDetallesExito", async () => {
     const response = await request(app).get("/api/cursos/213").set('Authorization', `Bearer ${TOKEN}`).send();
     expect(response.status).toBe(CodigosRespuesta.OK);
@@ -29,14 +28,14 @@ describe("GET /api/cursos/:idCurso", function(){
 
 })
 
-describe("GET /api/cursos/:idCurso", function(){
+describe("DELETE /api/cursos/:idCurso", function(){
   //INSERT INTO Cursos (idCurso, titulo, descripcion, objetivos, requisitos, idUsuario) values (228,"","","","",6)
-  test("TestObtenerEliminarCursoExito", async () => {
+  test("TestEliminarCursoExito", async () => {
     const response = await request(app).delete("/api/cursos/228").set('Authorization', `Bearer ${TOKEN}`).send();
     expect(response.status).toBe(CodigosRespuesta.NO_CONTENT);
   });
 
-  test("TestObtenerEliminarCursoNoExistente", async () => {
+  test("TestEliminarCursoNoExistente", async () => {
     const response = await request(app).delete("/api/cursos/400000").set('Authorization', `Bearer ${TOKEN}`).send();
     expect(response.status).toBe(CodigosRespuesta.NOT_FOUND);
   });
@@ -46,49 +45,68 @@ describe("GET /api/cursos/:idCurso", function(){
 
 describe("POST /cursos/:idCurso", function(){
   
-  test("TestModificarCursoExito", async () => {
+  test("TestCrearCursoExito", async () => {
     const peticion = {
-      idCurso: 223,
       titulo: "hola",
       descripcion: "Curso de prueba",
       objetivos: "Curso de prueba",
       requisitos: "Curso de prueba",
       idUsuario: 6,
       etiquetas: [1, 2, 3],
-      idDocumento: 110,
   };
     const response = await request(app)
-    .put("/api/cursos/223")
-    .field("idCurso", peticion.idCurso)
+    .post("/api/cursos")
     .field("titulo", peticion.titulo)
     .field("descripcion", peticion.descripcion)
     .field("objetivos", peticion.objetivos)
     .field("requisitos", peticion.requisitos)
-    .field("idUsuario", peticion.idUsuario)
-    .field("etiquetas", JSON.stringify(peticion.etiquetas))
-    .field("idDocumento", peticion.idDocumento)
+    .field("etiquetas", peticion.etiquetas)
     .field('file', fileBytes, '204.png')
     .set('Authorization', `Bearer ${TOKEN}`);
-
-  console.log(response);
-    expect(response.status).toBe(CodigosRespuesta.NO_CONTENT);
+    console.log("TestCrearCursoExito", JSON.stringify(response.body));
+    expect(response.status).toBe(CodigosRespuesta.CREATED);
   });
-
-  test("TestModificarCursoNoExistente", async () => {
+   
+  test("TestCrearCursoErrorRollbackDocumento", async () => {
     const peticion = {
-      idCurso: 400000,
       titulo: "hola",
       descripcion: "Curso de prueba",
       objetivos: "Curso de prueba",
       requisitos: "Curso de prueba",
       idUsuario: 6,
       etiquetas: [1, 2, 3],
-      idDocumento: 112,
-      file: [1, 2, 3]
   };
-
-    const response = await request(app).put("/api/cursos/400000").send(peticion).set('Authorization', `Bearer ${TOKEN}`);
-    expect(response.status).toBe(CodigosRespuesta.NOT_FOUND);
+    const response = await request(app)
+    .post("/api/cursos")
+    .field("titulo", peticion.titulo)
+    .field("descripcion", peticion.descripcion)
+    .field("objetivos", peticion.objetivos)
+    .field("requisitos", peticion.requisitos)
+    .field("etiquetas", JSON.stringify(peticion.etiquetas))
+    .set('Authorization', `Bearer ${TOKEN}`);
+    console.log("TestCrearCursoErrorRollbackDocumento "+response.body);
+    expect(response.status).toBe(CodigosRespuesta.BAD_REQUEST);
   });
 
+  test("TestCrearCursoErrorRollbackEtiquetas", async () => {
+    const peticion = {
+      titulo: "hola",
+      descripcion: "Curso de prueba",
+      objetivos: "Curso de prueba",
+      requisitos: "Curso de prueba",
+      idUsuario: 6,
+      etiquetas: [1, 2, 33],
+  };
+    const response = await request(app)
+    .post("/api/cursos")
+    .field("titulo", peticion.titulo)
+    .field("descripcion", peticion.descripcion)
+    .field("objetivos", peticion.objetivos)
+    .field("requisitos", peticion.requisitos)
+    .field("etiquetas", peticion.etiquetas)
+    .field('file', fileBytes, '204.png')
+    .set('Authorization', `Bearer ${TOKEN}`);
+    console.log("TestCrearCursoErrorRollbackEtiquetas", JSON.stringify(response.body));
+    expect(response.status).toBe(CodigosRespuesta.BAD_REQUEST);
+  });
 })
