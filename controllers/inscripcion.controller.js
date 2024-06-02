@@ -54,7 +54,7 @@ self.calificarCurso = async function(req, res){
             where: { idCurso: idCurso, idUsuario: idUsuario}});
     
         if(usuarioEnCurso == null){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("El usuario no está inscrito en el curso");
+            return res.status(CodigosRespuesta.UNAUTHORIZED).send("El usuario no está inscrito en el curso");
         }
 
         usuarioEnCurso.calificacion = req.body.calificacion;
@@ -80,7 +80,7 @@ self.obtenerCalificacionUsuarioCurso = async function(req, res){
             where: { idCurso: idCurso, idUsuario: idUsuario}});
     
         if(usuarioEnCurso == null){
-            return res.status(CodigosRespuesta.BAD_REQUEST).send("Usuario no está registrado en el curso");
+            return res.status(CodigosRespuesta.UNAUTHORIZED).send("Usuario no está registrado en el curso");
         }
         if(usuarioEnCurso.calificacion == null){
             usuarioEnCurso.calificacion = 0;
