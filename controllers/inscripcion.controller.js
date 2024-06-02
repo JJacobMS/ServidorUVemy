@@ -17,11 +17,6 @@ self.inscribirse = async function(req, res){
         if(cursoExistente == null){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Curso no existente");
         }
-
-        const usuarioExistente = await usuarios.findByPk(idUsuario, { attributes: [ 'idUsuario']});
-        if(usuarioExistente == null){
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Usuario no existente");
-        }
     
         if(cursoExistente.idUsuario == idUsuario){
             return res.status(CodigosRespuesta.BAD_REQUEST).send("El profesor no se puede inscribir a su propio curso");
@@ -81,11 +76,14 @@ self.obtenerCalificacionUsuarioCurso = async function(req, res){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Curso no existente");
         }
 
-        const usuarioEnCurso = await usuarioscursos.findOne({attributes: ['idUsuario', 'calificacion'], 
+        const usuarioEnCurso = await usuarioscursos.findOne({attributes: ['idCurso','idUsuario', 'calificacion'], 
             where: { idCurso: idCurso, idUsuario: idUsuario}});
     
         if(usuarioEnCurso == null){
             return res.status(CodigosRespuesta.BAD_REQUEST).send("Usuario no está registrado en el curso");
+        }
+        if(usuarioEnCurso.calificacion == null){
+            usuarioEnCurso.calificacion = 0;
         }
         return res.status(CodigosRespuesta.OK).json(usuarioEnCurso);
     }catch(error){

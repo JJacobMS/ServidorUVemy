@@ -8,7 +8,7 @@ const autorizacion = require('../middlewares/autorizacion.middleware');
 
 router.get('/:idClase', checkSchema(recuperarClaseSchema()), validarFormatoPeticion,  autorizacion.autorizar(), autorizacion.autorizarIdClase("Profesor,Estudiante"), clases.obtenerPorId);
 
-//router.get('/curso/:idCurso', clases.obtenerPorCurso);
+router.get('/curso/:idCurso', clases.obtenerPorCurso);
 
 router.post('/', validarCamposPeticion(crearClaseSchema()), checkSchema(crearClaseSchema()), validarFormatoPeticion, autorizacion.autorizar(), autorizacion.autorizarIdCurso("Profesor"), clases.crear);
 

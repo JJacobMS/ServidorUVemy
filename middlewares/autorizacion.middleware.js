@@ -3,7 +3,7 @@ const jwtSecret = process.env.JWT_SECRET;
 const claimTypes = require('../config/claimtypes');
 const { generaToken } = require('../services/jwttoken.service');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
-const { cursos, clases, usuarioscursos, documentos } = require('../models');
+const { cursos, clases, usuarioscursos, documentos, usuarios } = require('../models');
 
 let self = {};
 
@@ -18,6 +18,14 @@ self.autorizar = () => {
             const tokenDecodificado = jwt.verify(token, jwtSecret);
 
             req.tokenDecodificado = tokenDecodificado;
+
+            const usuarioNoAdmin = await usuarios.findByPk(req.tokenDecodificado[claimTypes.Id], { attributes: ['esAdministrador']});
+            if(usuarioNoAdmin == null){
+                return res.status(CodigosRespuesta.NOT_FOUND).send("El usuario no existe registrado");
+            }
+            if(usuarioNoAdmin.esAdministrador == 1){
+                return res.status(CodigosRespuesta.UNAUTHORIZED).send("No puede realizar esta acción un administrador");
+            }
 
             var minutosRestantes = (tokenDecodificado.exp - (new Date().getTime() / 1000)) / 60;
             if (minutosRestantes < 5) {
@@ -178,6 +186,13 @@ async function obtenerCursoConIdDocumento(idDocumento){
 }
 
 async function esEstudianteCurso(idCurso, idUsuario){
+    const estudianteClase = await usuarioscursos.findOne({ attributes: ['idUsuario'],
+        where: { idCurso: idCurso, idUsuario: idUsuario}});
+
+    return estudianteClase != null;
+}
+
+self.esEstudianteCurso = async function (idCurso, idUsuario){
     const estudianteClase = await usuarioscursos.findOne({ attributes: ['idUsuario'],
         where: { idCurso: idCurso, idUsuario: idUsuario}});
 
