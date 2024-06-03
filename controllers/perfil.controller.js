@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { usuarios, etiquetas, sequelize } = require('../models');
+const { usuarios, sequelize } = require('../models');
 const { generarTokenRegistro } = require('../services/jwttoken.service');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 const enviarCorreoVerificacion = require('../services/enviocorreo.service');
@@ -32,10 +32,12 @@ self.solicitarCodigoVerificacionCorreo = async function (req, res) {
 }
 
 self.registrarUsuario = async function (req, res) {
+    const transaccion = await sequelize.transaction();
     try {
         const { correoElectronico, contrasena, nombres, apellidos, idsEtiqueta } = req.body;
-        const imagen = req.file;
         const contrasenaHash = await bcrypt.hash(contrasena, 10);
+
+        console.log(`Registrando usuario: ${correoElectronico}`);
 
         const usuario = await usuarios.findOne({
             where: {
@@ -43,38 +45,36 @@ self.registrarUsuario = async function (req, res) {
             }
         });
 
-        if (usuario)
-            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Correo electrónico ya registrado" ]});
-        
-        await usuarios.create({
+        if (usuario) {
+            await transaccion.rollback();
+            return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Correo electrónico ya registrado"] });
+        }
+
+        const usuarioCreado = await usuarios.create({
             correoElectronico: correoElectronico,
             contrasena: contrasenaHash,
             nombres: nombres,
             apellidos: apellidos
-        });
+        }, { transaction: transaccion });
 
-        if (imagen)
-            fs.unlink(imagen.path);
+        console.log(`Usuario creado: ${usuarioCreado.idUsuario}`);
 
-        const usuarioCreado = await usuarios.findOne({
-            where: {
-                correoElectronico: correoElectronico
+        for (let etiquetaId of idsEtiqueta) {
+            let etiquetaCreada = await crearUsuariosEtiquetas(usuarioCreado.idUsuario, etiquetaId, transaccion);
+            if (etiquetaCreada.status !== CodigosRespuesta.CREATED) {
+                console.log(`Error al crear etiqueta: ${etiquetaId} - ${etiquetaCreada.message}`);
+                await transaccion.rollback();
+                return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Error al crear una de las etiquetas"] });
             }
-        });
-
-        if (idsEtiqueta && idsEtiqueta.length > 0) {
-            await Promise.all(idsEtiqueta.map(async etiquetaId => {
-                const etiqueta = await etiquetas.findByPk(etiquetaId);
-                if (etiqueta)
-                    await usuarioCreado.addEtiqueta(etiqueta);
-            }))
         }
 
+        await transaccion.commit();
         return res.status(CodigosRespuesta.CREATED).json({
             idUsuario: usuarioCreado.idUsuario
         });
     } catch (error) {
-        console.log(error);
+        await transaccion.rollback();
+        console.log(`Error en registrarUsuario: ${error.message}`);
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: [error.message] });
     }
 }
@@ -117,7 +117,7 @@ self.obtenerFotoPerfil = async function (req, res) {
         if (!usuario.imagen)
             return res.status(CodigosRespuesta.NOT_FOUND).send();
 
-        res.set('Content-Type', 'image/jpeg');
+        res.set('Content-Type', 'image/png');
         return res.status(CodigosRespuesta.OK).send(usuario.imagen);
     } catch (error) {
         console.log(error);
@@ -171,14 +171,14 @@ self.actualizarEtiquetasUsuario = async function (req, res) {
         const transaccion = await sequelize.transaction();
         resultadoEtiquetas = await borrarEtiquetasDelUsuario(idUsuario, transaccion);
 
-        if(resultadoEtiquetas !== 404 && resultadoEtiquetas !== 204){
+        if(resultadoEtiquetas !== CodigosRespuesta.NOT_FOUND && resultadoEtiquetas !== CodigosRespuesta.NO_CONTENT){
             await transaccion.rollback();
             return res.status(resultadoEtiquetas).send({ detalles: ["Error al actualizar las etiquetas"] });
         }
 
         for (let etiquetaId of idsEtiqueta) {
             let etiquetaCreada = await crearUsuariosEtiquetas(idUsuario, etiquetaId, transaccion);
-            if(etiquetaCreada.status != 201){
+            if(etiquetaCreada.status != CodigosRespuesta.CREATED){
                 await transaccion.rollback();
                 return res.status(CodigosRespuesta.BAD_REQUEST).send({ detalles: ["Error al crear una de las etiquetas"] });
             }

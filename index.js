@@ -4,6 +4,10 @@ const mysql = require('mysql2/promise');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
+// Swagger
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger_output.json');
+
 dotenv.config();
 
 var bodyParser = require('body-parser')
@@ -16,7 +20,7 @@ var corsOptions = {
     methods: "GET,PUT,POST,DELETE",
 };
 
-//app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.use(cors(corsOptions));
 app.use("/api/comentarios", require('./routes/comentarios.routes'))

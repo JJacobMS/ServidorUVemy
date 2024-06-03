@@ -44,21 +44,21 @@ self.autorizarVerificacionCorreo = () => {
         try {
             const encabezadoAuth = req.header('Authorization');
             if (!encabezadoAuth.startsWith('Bearer '))
-                return res.status(CodigosRespuesta.UNAUTHORIZED).json({ detalles: ['Token de autorización no válido'] });
+                return res.status(CodigosRespuesta.BAD_REQUEST).json({ detalles: ['Token de autorización no válido'] });
 
             const token = encabezadoAuth.split(' ')[1];
             const tokenDecodificado = jwt.verify(token, jwtSecret);
 
             if (tokenDecodificado[claimTypes.CodigoVerificacion] !== req.body.codigoVerificacion || 
                 tokenDecodificado[claimTypes.Email] !== req.body.correoElectronico) {
-                return res.status(CodigosRespuesta.UNAUTHORIZED).json({ detalles: ['Código de verificación incorrecto'] });
+                return res.status(CodigosRespuesta.BAD_REQUEST).json({ detalles: ['Código de verificación incorrecto'] });
             }
 
             req.tokenDecodificado = tokenDecodificado;
 
             next();
         } catch (error) {
-            return res.status(CodigosRespuesta.UNAUTHORIZED).json({ detalles: ['Error al verificar el token de autorización'] });
+            return res.status(CodigosRespuesta.BAD_REQUEST).json({ detalles: ['Error al verificar el token de autorización'] });
         }
     }
 }
