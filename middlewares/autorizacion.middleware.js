@@ -7,30 +7,6 @@ const { cursos, clases, usuarioscursos, documentos, usuarios } = require('../mod
 
 let self = {};
 
-self.autorizarToken = () => {
-    return async (req, res, next) => {
-        try {
-            const encabezadoAuth = req.header('Authorization');
-            if (!encabezadoAuth.startsWith('Bearer '))
-                return res.status(CodigosRespuesta.UNAUTHORIZED).json();
-
-            const token = encabezadoAuth.split(' ')[1];
-            const tokenDecodificado = jwt.verify(token, jwtSecret);
-
-            req.tokenDecodificado = tokenDecodificado;
-
-            var minutosRestantes = (tokenDecodificado.exp - (new Date().getTime() / 1000)) / 60;
-            if (minutosRestantes < 5) {
-                var nuevoToken = generaToken(tokenDecodificado[claimTypes.Id],tokenDecodificado[claimTypes.Email], tokenDecodificado[claimTypes.GivenName]);
-                res.header("Set-Authorization", nuevoToken);
-            }
-            next();
-        } catch (error) {
-            return res.status(CodigosRespuesta.UNAUTHORIZED).json();
-        }
-    }
-}
-
 self.autorizar = () => {
     return async (req, res, next) => {
         try {

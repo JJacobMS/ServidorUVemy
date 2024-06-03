@@ -7,7 +7,7 @@ const etiquetas = require('../controllers/etiquetas.controller');
 
 const autorizarAdmin = autorizacion.autorizarAdmin;
 
-router.get('/', autorizacion.autorizarToken(), etiquetas.getAll);
+router.get('/', etiquetas.getAll);
 
 router.post('/', autorizarAdmin(), checkSchema(crearEtiquetaSchema()), validarFormatoPeticion, etiquetas.create);
 
