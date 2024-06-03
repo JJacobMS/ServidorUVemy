@@ -83,7 +83,7 @@ server.addService(documentoProto.VideoService.service,
     ActualizarVideoClase: actualizarVideoClase
 });
 
-server.bindAsync(`${process.env.SERVER_HOST}:${process.env.SERVER_PORT_GRPC}`, grpc.ServerCredentials.createInsecure(), ()=>{
+server.bindAsync(`${process.env.SERVER_HOST_GRCP}:${process.env.SERVER_PORT_GRPC}`, grpc.ServerCredentials.createInsecure(), ()=>{
     console.log(`Servidor gRPC en ejecución en el puerto ${process.env.SERVER_PORT_GRPC}`)
 });
 
