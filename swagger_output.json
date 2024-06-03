@@ -13,7 +13,8 @@
   "paths": {
     "/api/comentarios/{idClase}": {
       "get": {
-        "description": "",
+        "description": "Obtiene los comentarios de una clase a la que se tiene acceso (como Profesor o Estudiante)",
+        "consumes": ["application/json"],
         "parameters": [
           {
             "name": "idClase",
@@ -28,15 +29,22 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Lista de comentarios y respuestas de la clase",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Comentario"
+              }
+            }
           }
         }
       }
     },
     "/api/comentarios/": {
       "post": {
-        "description": "",
+        "description": "Crea un nuevo comentario en una clase a la que se tiene acceso (Como Estudiante o Profesor)",
+        "consumes": ["application/json"],
         "parameters": [
           {
             "name": "Authorization",
@@ -50,46 +58,50 @@
               "type": "object",
               "properties": {
                 "idClase": {
-                  "example": "any"
+                  "example": "1",
+                  "type": "integer"
                 },
                 "idUsuario": {
-                  "example": "any"
+                  "example": "2 (igual al del token)",
+                  "type": "integer"
                 },
                 "descripcion": {
-                  "example": "any"
+                  "example": "any",
+                  "type": "string"
                 },
                 "respondeAComentario": {
-                  "example": "any"
+                  "example": "1: Debe ser otro idComentario",
+                  "type": "integer"
                 }
-              }
+              },
+              "required": [
+                "idClase",
+                "idUsuario",
+                "descripcion"
+              ]
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Comentario creado",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idComentario": {
+                  "example": 6,
+                  "type": "integer"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/cursos/": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
       "post": {
-        "description": "",
+        "description": "Crear un nuevo curso",
+        "consumes": ["multipart/form-data"],
         "parameters": [
           {
             "name": "body",
@@ -98,59 +110,108 @@
               "type": "object",
               "properties": {
                 "idUsuario": {
-                  "example": "any"
+                  "example": "1",
+                  "type": "integer"
                 },
                 "titulo": {
-                  "example": "any"
+                  "example": "Curso de Node.js",
+                  "type": "string"
                 },
                 "descripcion": {
-                  "example": "any"
+                  "example": "Bienvenido al curso de Node.js!",
+                  "type": "string"
                 },
                 "objetivos": {
-                  "example": "any"
+                  "example": "Objetivos del curso: ...",
+                  "type": "string"
                 },
                 "requisitos": {
-                  "example": "any"
+                  "example": "Requisitos del curso: ...",
+                  "type": "string"
                 },
                 "etiquetas": {
-                  "example": "any"
+                  "example": [1,2,3],
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
                 }
               }
             }
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "description": "Archivo .png miniatura del curso",
+            "type": "file"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Curso creado exitosamente",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idCurso": {
+                  "example": 6,
+                  "type": "integer"
+                },
+                "idUsuario": {
+                  "example": "1",
+                  "type": "integer"
+                },
+                "titulo": {
+                  "example": "Curso de Node.js",
+                  "type": "string"
+                },
+                "descripcion": {
+                  "example": "Bienvenido al curso de Node.js!",
+                  "type": "string"
+                },
+                "objetivos": {
+                  "example": "Objetivos del curso: ...",
+                  "type": "string"
+                },
+                "requisitos": {
+                  "example": "Requisitos del curso: ...",
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/cursos/{idCurso}": {
       "get": {
-        "description": "",
+        "description": "Obtener detalles de un curso",
         "parameters": [
           {
             "name": "idCurso",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Detalles del curso",
+            "schema": {
+              "$ref": "#/definitions/Curso"
+            }
           }
         }
       },
       "put": {
-        "description": "",
+        "description": "Actualizar un curso",
         "parameters": [
           {
             "name": "idCurso",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "Authorization",
@@ -164,44 +225,57 @@
               "type": "object",
               "properties": {
                 "idCurso": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer",
+                  "description": "ID del curso a actualizar igual al de la ruta"
                 },
                 "titulo": {
-                  "example": "any"
+                  "example": "Curso de Node.js",
+                  "type": "string"
                 },
                 "descripcion": {
-                  "example": "any"
+                  "example": "Bienvenido al curso de Node.js!",
+                  "type": "string"
                 },
                 "objetivos": {
-                  "example": "any"
+                  "example": "Los objetivos de este curso son:...",
+                  "type": "string"
                 },
                 "requisitos": {
-                  "example": "any"
+                  "example": "Los requisitos de este curso son:...",
+                  "type": "string"
                 },
                 "idDocumento": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer"
                 },
                 "etiquetas": {
-                  "example": "any"
+                  "example": [1,5,6],
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "204": {
+            "description": "Curso actualizado"
           }
         }
       },
       "delete": {
-        "description": "",
+        "description": "Borrar un curso",
         "parameters": [
           {
             "name": "idCurso",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "Authorization",
@@ -215,28 +289,31 @@
               "type": "object",
               "properties": {
                 "idCurso": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer",
+                  "description": "ID del curso a eliminar igual al de la ruta",
+                  "required": true
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "204":{
+            "description": "Se ha eliminado el curso"
           }
         }
       }
     },
     "/api/cursos/estadisticas/{idCurso}": {
       "get": {
-        "description": "",
+        "description": "Obtener las estadísticas de un curso propio",
         "parameters": [
           {
             "name": "idCurso",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "Authorization",
@@ -245,15 +322,82 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200":{
+            "description": "Estadísticas del curso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nombre": {
+                  "type": "string",
+                  "example": "Curso de Node.js"
+                },
+                "calificacionCurso":{
+                  "type": "number",
+                  "format": "float",
+                  "example": 9.5
+                },
+                "promedioComentarios":{
+                  "type":"number",
+                  "format": "float",
+                  "example": 4.5
+                },
+                "estudiantesInscritos":{
+                  "type": "integer",
+                  "example": 10
+                },
+                "etiquetasCoinciden": {
+                  "type":"array",
+                  "items":{
+                    "type":"string"
+                  },
+                  "example":["Programación","Diseño gráfico"]
+                },
+                "clases": {
+                  "type":"array",
+                  "items":{
+                    "type":"object",
+                    "properties":{
+                      "idClase":{
+                        "type":"integer",
+                        "example":1
+                      },
+                      "nombreClase":{
+                        "type":"string",
+                        "example":"Introducción a Node.js"
+                      },
+                      "comentarios":{
+                        "type":"integer",
+                        "example": 10
+                      }
+                    }
+                  }
+                },
+                "estudiantes":{
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "idEstudiante": {
+                        "type": "integer",
+                        "example": 123
+                      },
+                      "nombreEstudiante": {
+                        "type": "string",
+                        "example": "Juan Pérez"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          
           }
         }
       }
     },
     "/api/cursos/reporte/{idCurso}": {
       "get": {
-        "description": "",
+        "description": "Obtener reporte en PDF del curso",
         "produces": [
           "application/pdf"
         ],
@@ -262,7 +406,7 @@
             "name": "idCurso",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           },
           {
             "name": "Authorization",
@@ -271,26 +415,34 @@
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Reporte PDF del curso",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "404": {
+            "description": "Curso no existe"
           }
         }
       }
     },
     "/api/cursos/inscripcion/{id}": {
       "post": {
-        "description": "",
+        "description": "Inscribirse a un curso",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "ID del curso a inscribirse"
           },
           {
             "name": "Authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true
           },
           {
             "name": "body",
@@ -299,28 +451,61 @@
               "type": "object",
               "properties": {
                 "idCurso": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer",
+                  "description": "ID del curso a inscribirse igual al de la ruta"
                 }
-              }
+              },
+              "required": [
+                "idCurso"
+              ]
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Usuario inscrito exitosamente",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idCurso": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "idUsuario": {
+                  "type": "integer",
+                  "example": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "string",
+              "example": "IdCurso no válido"
+            }
+          },
+          "404": {
+            "description": "Curso inexistente",
+            "schema": {
+              "type": "string",
+              "example": "Curso no existente"
+            }
           }
         }
       }
     },
     "/api/cursos/calificacion/{idCurso}": {
       "post": {
-        "description": "",
+        "description": "Calificar un curso siendo estudiante",
         "parameters": [
           {
             "name": "idCurso",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "ID del curso a calificar igual al de la ruta"
           },
           {
             "name": "Authorization",
@@ -334,194 +519,451 @@
               "type": "object",
               "properties": {
                 "idCurso": {
-                  "example": "any"
+                  "example": 4,
+                  "type": "integer",
+                  "description": "ID del curso a calificar igual al de la ruta",
+                  "required": true
                 },
                 "calificacion": {
-                  "example": "any"
+                  "example": 9.5,
+                  "type": "number",
+                  "format": "float",
+                  "description": "Calificación del curso",
+                  "required": true
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "201": {
+            "description": "Calificación registrada exitosamente",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idUsuarioCurso": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "idCurso": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "idUsuario": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "calificacion": {
+                  "type": "number",
+                  "format": "float",
+                  "example": 4.5
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "string",
+              "example": "IdCurso no válido"
+            }
           }
         }
       },
       "get": {
-        "description": "",
+        "description": "Permite a un usuario obtener su calificación en un curso específico",
         "parameters": [
           {
             "name": "idCurso",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "ID del curso a calificar"
           },
           {
             "name": "Authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Calificación del usuario en el curso",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idCurso": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "idUsuario": {
+                  "type": "integer",
+                  "example": 1
+                },
+                "calificacion": {
+                  "type": "number",
+                  "format": "float",
+                  "example": 4.5
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "string",
+              "example": "Usuario no está registrado en el curso"
+            }
+          },
+          "404": {
+            "description": "Curso inexistente",
+            "schema": {
+              "type": "string",
+              "example": "Curso no existente"
+            }
           }
         }
       }
     },
-    "/api/cursoslistas/{pagina}": {
+    "/api/cursos/{pagina}": {
       "get": {
-        "description": "",
+        "description": "Recupera una lista de cursos basada en los filtros proporcionados.",
         "parameters": [
           {
             "name": "pagina",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "Número de la página de cursos a recuperar"
+          },
+          {
+            "name": "titulo",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Título del curso a buscar"
+          },
+          {
+            "name": "etiqueta",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "ID de la etiqueta del curso"
+          },
+          {
+            "name": "tipoCursos",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "description": "Tipo de curso (cursos creados o inscritos)"
+          },
+          {
+            "name": "calificacion",
+            "in": "query",
+            "required": false,
+            "type": "number",
+            "description": "Calificación mínima del curso"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Token de autorización"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Lista de cursos recuperados",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "idCurso": { "type": "integer", "example": 1 },
+                  "titulo": { "type": "string", "example": "Curso de Node.js" },
+                  "descripcion": { "type": "string", "example": "Aprende Node.js desde cero" },
+                  "calificacion": { "type": "number", "example": 4.5 },
+                  "etiquetas": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "idEtiqueta": { "type": "integer", "example": 1 },
+                        "nombre": { "type": "string", "example": "Programación" }
+                      }
+                    }
+                  },
+                  "file":{
+                    "type": "binary",
+                    "description": "Archivo de miniatura del curso"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "string",
+              "example": "IdCurso no válido"
+            }
+          },
+          "404": {
+            "description": "Cursos inexistentes",
+            "schema": {
+              "type": "string",
+              "example": "No se encontraron cursos"
+            }
+          }
+        }
+      }
+    },
+    "/api/clases/curso/{idCurso}": {
+      "get": {
+        "get": {
+          "description": "Recupera todas las clases asociadas a un curso específico.",
+          "parameters": [
+            {
+              "name": "idCurso",
+              "in": "path",
+              "required": true,
+              "type": "integer",
+              "description": "ID del curso del cual se desean obtener las clases."
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Clases recuperadas exitosamente.",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "idClase": { "type": "integer", "example": 1 },
+                    "nombre": { "type": "string", "example": "Clase de introducción" }
+                  },
+                  "example": [
+                    {
+                      "idClase": 1,
+                      "nombre": "Clase de introducción"
+                    },
+                    {
+                      "idClase": 2,
+                      "nombre": "Clase de variables"
+                    }
+                  ]
+                }
+              }
+            },
+            "400": {
+              "description": "Solicitud incorrecta",
+              "schema": {
+                "type": "string",
+                "example": "IdCurso no válido"
+              }
+            },
+            "404": {
+              "description": "Curso no encontrado",
+              "schema": {
+                "type": "string",
+                "example": "No se encontró el curso"
+              }
+            }
           }
         }
       }
     },
     "/api/clases/{idClase}": {
       "get": {
-        "description": "",
+        "description": "Recupera los detalles de una clase por su ID.",
         "parameters": [
           {
             "name": "idClase",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "type": "integer",
+            "description": "ID de la clase a recuperar"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Detalles de la clase recuperada.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idClase": { "type": "integer", "example": 1 },
+                "nombre": { "type": "string", "example": "Clase de introducción" },
+                "descripcion": { "type": "string", "example": "Esta clase cubre los fundamentos de Node.js" },
+                "idCurso": { "type": "integer", "example": 1 },
+                "documentosId": {
+                  "type": "array",
+                  "items": { "type": "integer", "example": [3,5] },
+                  "description": "IDs de los documentos asociados a esta clase (archivos PDF)"
+                },
+                "videoId": {
+                  "type": "integer",
+                  "example": 5,
+                  "description": "ID del video asociado a esta clase (formato MP4)"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "string",
+              "example": "IdClase no válido"
+            }
+          },
+          "404": {
+            "description": "Clase no encontrada",
+            "schema": {
+              "type": "string",
+              "example": "Clase no encontrada"
+            }
           }
         }
       },
       "put": {
-        "description": "",
+        "description": "Actualiza los detalles de una clase existente.",
         "parameters": [
           {
             "name": "idClase",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
+            "type": "integer",
+            "description": "ID de la clase a actualizar."
           },
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "idClase": {
-                  "example": "any"
-                },
-                "nombre": {
-                  "example": "any"
-                },
-                "descripcion": {
-                  "example": "any"
-                }
-              }
+                "idClase": { "type": "integer", "example": 1 },
+                "nombre": { "type": "string", "example": "Nuevo nombre de la clase" },
+                "descripcion": { "type": "string", "example": "Nueva descripción de la clase" }
+              },
+              "required": ["idClase", "nombre", "descripcion"]
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Clase actualizada exitosamente.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idClase": { "type": "integer", "example": 1 },
+                "nombre": { "type": "string", "example": "Nuevo nombre de la clase" },
+                "descripcion": { "type": "string", "example": "Nueva descripción de la clase" }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud incorrecta",
+            "schema": {
+              "type": "string",
+              "example": "IdClase deben ser iguales"
+            }
+          },
+          "404": {
+            "description": "Clase no encontrada",
+            "schema": {
+              "type": "string",
+              "example": "Clase no existente"
+            }
           }
         }
       },
       "delete": {
-        "description": "",
+        "description": "Elimina una clase existente.",
         "parameters": [
           {
             "name": "idClase",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "idClase": {
-                  "example": "any"
-                }
-              }
-            }
+            "type": "integer",
+            "description": "ID de la clase a eliminar."
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Clase eliminada exitosamente."
+          },
+          "400": {
+            "description": "Solicitud incorrecta",
+            "schema": {
+              "type": "string",
+              "example": "IdClase no válido"
+            }
+          },
+          "404": {
+            "description": "Clase no encontrada",
+            "schema": {
+              "type": "string",
+              "example": "Clase no existente"
+            }
           }
         }
       }
     },
     "/api/clases/": {
       "post": {
-        "description": "",
+        "description": "Crea una nueva clase.",
         "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "type": "string"
-          },
           {
             "name": "body",
             "in": "body",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
-                "idCurso": {
-                  "example": "any"
-                },
                 "nombre": {
-                  "example": "any"
+                  "type": "string",
+                  "description": "Nombre de la clase."
                 },
                 "descripcion": {
-                  "example": "any"
+                  "type": "string",
+                  "description": "Descripción de la clase."
+                },
+                "idCurso": {
+                  "type": "integer",
+                  "description": "ID del curso al que pertenece la clase."
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Clase creada exitosamente.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idClase": { "type": "integer", "example": 1 },
+                "nombre": { "type": "string", "example": "Clase de Matemáticas" },
+                "descripcion": { "type": "string", "example": "Clase introductoria a la matemática básica." },
+                "idCurso": { "type": "integer", "example": 1 }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud incorrecta",
+            "schema": {
+              "type": "string",
+              "example": "IdCurso no válido"
+            }
           }
         }
       }
     },
     "/api/documentos/clase/{idDocumento}": {
       "get": {
-        "description": "",
+        "description": "Obtiene un documento PDF por su ID",
         "produces": [
           "application/pdf"
         ],
@@ -530,17 +972,36 @@
             "name": "idDocumento",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "ID del documento a obtener"
           },
           {
             "name": "Authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Documento PDF recuperado",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "400": {
+            "description": "Solicitud incorrecta",
+            "schema": {
+              "type": "string",
+              "example": "IdDocumento no válido"
+            }
+          },
+          "404": {
+            "description": "Documento no encontrado",
+            "schema": {
+              "type": "string",
+              "example": "No se encontró el archivo"
+            }
           }
         }
       },
@@ -551,7 +1012,8 @@
             "name": "idDocumento",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "description": "ID del documento a eliminar."
           },
           {
             "name": "Authorization",
@@ -565,87 +1027,119 @@
               "type": "object",
               "properties": {
                 "idDocumento": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer",
+                  "description": "ID del documento a eliminar igual al de la ruta",
+                  "required": true
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Documento eliminado exitosamente.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idDocumento": {
+                  "type": "integer",
+                  "example": 1,
+                  "description": "ID del documento eliminado."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida.",
+            "schema": {
+              "type": "string",
+              "example": "No puede eliminar un documento que no sea PDF"
+            }
+          },
+          "404": {
+            "description": "Documento no encontrado.",
+            "schema": {
+              "type": "string",
+              "example": "No existe el documento"
+            }
           }
         }
       }
     },
     "/api/documentos/clase": {
       "post": {
-        "description": "",
+        "consumes": [
+          "multipart/form-data"
+        ],
         "parameters": [
           {
             "name": "Authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true
           },
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "idClase": {
-                  "example": "any"
-                },
-                "nombre": {
-                  "example": "any"
-                }
-              }
-            }
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Archivo PDF a subir"
+          },
+          {
+            "name": "nombre",
+            "in": "formData",
+            "example": "Documento de prueba",
+            "type": "string",
+            "required": true,
+            "description": "Nombre del documento"
+          },
+          {
+            "name": "idClase",
+            "in": "formData",
+            "example": 1,
+            "type": "integer",
+            "description": "ID de la clase relacionada"
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/tiposarchivos/": {
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Documento creado exitosamente",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idDocumento": {
+                  "type": "integer",
+                  "example": 1,
+                  "description": "ID del documento creado"
+                },
+                "nombre": {
+                  "type": "string",
+                  "example": "Documento de prueba",
+                  "description": "Nombre del documento"
+                },
+                "idClase": {
+                  "type": "integer",
+                  "example": 1,
+                  "description": "ID de la clase relacionada"
+                },
+                "idTipoArchivo": {
+                  "type": "integer",
+                  "example": 1,
+                  "description": "ID del tipo de archivo (PDF)"
+                }
+              }
+            }
           },
-          "500": {
-            "description": "Internal Server Error"
+          "400": {
+            "description": "Solicitud inválida"
           }
         }
       }
     },
-    "/api/autenticacion/": {
+    "/api/perfil/verificación": {
       "post": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/autenticacion/tiempo": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/perfil/verificacion": {
-      "post": {
-        "description": "",
+        "description": "Solicitar un código de verificación para registrar un usuario",
         "parameters": [
           {
             "name": "body",
@@ -654,15 +1148,35 @@
               "type": "object",
               "properties": {
                 "correoElectronico": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "correo@ejemplo.com",
+                  "description": "Correo electrónico del usuario a registrar (debe ser único)",
+                  "required": true,
+                  "format": "email"
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Código de verificación enviado exitosamente",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "jwt": {
+                  "type": "string",
+                  "description": "Token temporal para la verificación del registro"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "string",
+              "example": "Correo electrónico ya registrado"
+            }
           }
         }
       }
@@ -683,74 +1197,171 @@
               "type": "object",
               "properties": {
                 "codigoVerificacion": {
-                  "example": "any"
+                  "example": 1254,
+                  "type": "integer",
+                  "description": "Código de verificación enviado al correo electrónico",
+                  "required": true,
+                  "minLength": 4,
+                  "maxLength": 4
                 },
                 "correoElectronico": {
-                  "example": "any"
+                  "example": "correo@ejemplo.com",
+                  "type": "string",
+                  "description": "Correo electrónico del usuario a registrar (debe ser único)",
+                  "required": true,
+                  "format": "email"
                 },
                 "contrasena": {
-                  "example": "any"
+                  "example": "Contrasena123",
+                  "type": "string",
+                  "description": "Contraseña del usuario a registrar",
+                  "required": true
                 },
                 "nombres": {
-                  "example": "any"
+                  "example": "Juan",
+                  "type": "string",
+                  "description": "Nombres del usuario a registrar",
+                  "required": true
                 },
                 "apellidos": {
-                  "example": "any"
+                  "example": "Pérez",
+                  "type": "string",
+                  "description": "Apellidos del usuario a registrar",
+                  "required": true
                 },
                 "idsEtiqueta": {
-                  "example": "any"
+                  "example": [1,2,3],
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1,
+                  "description": "IDs de las etiquetas de interés del usuario"
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "201":{
+            "description": "Usuario registrado exitosamente",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "idUsuario": {
+                  "type": "integer",
+                  "example": 1
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "string",
+              "example": "Código de verificación incorrecto"
+            }
           }
         }
       }
     },
     "/api/perfil/foto": {
       "put": {
-        "description": "",
+        "description": "Actualizar la foto de perfil de un usuario",
+        "consumes": [
+          "multipart/form-data"
+        ],
         "parameters": [
           {
             "name": "Authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true
           },
           {
-            "name": "body",
-            "in": "body",
+            "name": "imagen",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Archivo PNG a subir"
+          },
+          {
+            "name": "idUsuario",
+            "in": "formData",
+            "type": "integer",
+            "required": true,
+            "description": "ID del usuario al que pertenece la foto"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Foto de perfil actualizada",
             "schema": {
               "type": "object",
               "properties": {
                 "idUsuario": {
-                  "example": "any"
+                  "type": "integer",
+                  "example": 1
+                },
+                "detalles": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "example": "Foto de perfil actualizada"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "detalles": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "example": "Usuario no encontrado"
+                  }
                 }
               }
             }
           }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
         }
       },
       "get": {
-        "description": "",
+        "description": "Obtener foto de perfil de un usuario",
         "parameters": [
           {
             "name": "Authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Foto de perfil obtenida correctamente",
+            "schema": {
+              "type": "file"
+            }
+          },
+          "404": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "detalles": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "example": "Usuario no encontrado"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -762,7 +1373,8 @@
           {
             "name": "Authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true
           },
           {
             "name": "body",
@@ -771,39 +1383,66 @@
               "type": "object",
               "properties": {
                 "idUsuario": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer",
+                  "description": "ID del usuario a actualizar igual al del token",
+                  "required": true
                 },
                 "nombres": {
-                  "example": "any"
+                  "example": "Juan Carlos",
+                  "type": "string"
                 },
                 "apellidos": {
-                  "example": "any"
+                  "example": "Aguilar",
+                  "type": "string"
                 },
                 "correoElectronico": {
-                  "example": "any"
+                  "example": "correo@ejemplo.com",
+                  "type": "string",
+                  "format": "email",
+                  "description": "Correo electrónico del usuario a actualizar (debe ser el mismo que el registrado), no se puede modificar",
+                  "required": true
                 },
                 "contrasena": {
-                  "example": "any"
+                  "example": "Contrasena1123",
+                  "type": "string",
+                  "description": "Contraseña del usuario a actualizar",
+                  "required": true
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "204": {
+            "description": "Datos del perfil actualizados correctamente"
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "string",
+              "example": "Correo electrónico no se puede modificar"
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado",
+            "schema": {
+              "type": "string",
+              "example": ["No existe el usuario"]
+            }
           }
         }
       }
     },
     "/api/perfil/usuarioetiquetas": {
       "put": {
-        "description": "",
+        "description": "Actualizar etiquetas del usuario",
         "parameters": [
           {
             "name": "Authorization",
             "in": "header",
-            "type": "string"
+            "type": "string",
+            "required": true
           },
           {
             "name": "body",
@@ -812,18 +1451,43 @@
               "type": "object",
               "properties": {
                 "idUsuario": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer",
+                  "description": "ID del usuario a actualizar igual al del token",
+                  "required": true
                 },
                 "idsEtiqueta": {
-                  "example": "any"
+                  "example": [1,2,3],
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "uniqueItems": true,
+                  "minItems": 1,
+                  "description": "IDs de las etiquetas de interés del usuario",
+                  "required": true
                 }
               }
             }
           }
         ],
         "responses": {
-          "default": {
-            "description": ""
+          "204": {
+            "description": "Etiquetas del usuario actualizadas correctamente"
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "string",
+              "example": ["IdUsuario no coincide con el token"]
+            }
+          },
+          "404": {
+            "description": "Usuario no encontrado",
+            "schema": {
+              "type": "string",
+              "example": ["No existe el usuario"]
+            }
           }
         }
       }
@@ -834,9 +1498,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -850,10 +1511,16 @@
               "type": "object",
               "properties": {
                 "idCurso": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer",
+                  "description": "ID del curso a inscribirse igual al de la ruta",
+                  "required": true
                 },
                 "idEtiqueta": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer",
+                  "description": "ID de la etiqueta a asignar al curso",
+                  "required": true
                 }
               }
             }
@@ -862,9 +1529,6 @@
         "responses": {
           "201": {
             "description": "Created"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -877,7 +1541,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
@@ -886,9 +1550,6 @@
           },
           "404": {
             "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -899,7 +1560,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
@@ -908,9 +1569,6 @@
           },
           "404": {
             "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -921,7 +1579,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
@@ -930,9 +1588,6 @@
           },
           "404": {
             "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -943,9 +1598,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -959,10 +1611,16 @@
               "type": "object",
               "properties": {
                 "idCurso": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer",
+                  "description": "ID del curso igual al de la ruta",
+                  "required": true
                 },
                 "idEtiqueta": {
-                  "example": "any"
+                  "example": 1,
+                  "type": "integer",
+                  "description": "ID de la etiqueta a asignar al curso",
+                  "required": true
                 }
               }
             }
@@ -971,9 +1629,6 @@
         "responses": {
           "201": {
             "description": "Created"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
@@ -986,7 +1641,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
@@ -995,9 +1650,6 @@
           },
           "404": {
             "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -1008,7 +1660,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
@@ -1017,9 +1669,6 @@
           },
           "404": {
             "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },
@@ -1030,7 +1679,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer"
           }
         ],
         "responses": {
@@ -1039,20 +1688,189 @@
           },
           "404": {
             "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       }
     },
     "/api/etiquetas/": {
       "get": {
-        "description": "",
+        "description": "Obtener todas las etiquetas",
         "responses": {
-          "default": {
-            "description": ""
+          "200":{
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Etiqueta"
+              }
+            }
           }
+        }
+      },
+      "post": {
+        "description": "Crear una nueva etiqueta",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/Etiqueta"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "schema": {
+              "type": "string",
+              "example": ["Ya existe una etiqueta con el mismo nombre"]
+            }
+          }
+        }
+      },
+      "delete": {
+        "description": "Eliminar una etiqueta",
+        "parameters": [
+          {
+            "name": "idEtiqueta",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID de la etiqueta a eliminar"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "type": "string",
+              "example": ["La etiqueta está asociada a uno o más cursos"]
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Comentario": {
+      "type": "object",
+      "properties": {
+        "idComentario": {
+          "type": "integer",
+          "example": 4
+        },
+        "idClase": {
+          "type": "integer",
+          "example": 1
+        },
+        "nombreUsuario": {
+          "type": "string",
+          "example": "Juan Perez"
+        },
+        "descripcion": {
+          "type": "string",
+          "example": "Recuerden dejar su calificación en la clase. Muchas Gracias por ver"
+        },
+        "fecha": {
+          "type": "string",
+          "format": "date-time",
+          "example": "2024-05-24T21:31:14.000Z"
+        },
+        "respuestas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comentario"
+          },
+          "example": [
+            {
+              "idComentario": 5,
+              "idClase": 1,
+              "nombreUsuario": "Juan Perez",
+              "descripcion": "Ups! Me equivoqué respondí el mismo comentario. Disculpen",
+              "fecha": "2024-05-24T21:50:42.000Z",
+              "respuestas": []
+            },
+            {
+              "idComentario": 6,
+              "idClase": 1,
+              "nombreUsuario": "Juan Perez",
+              "descripcion": "Ups! Me equivoqué respondí el mismo comentario por segunda vez. Disculpen",
+              "fecha": "2024-05-24T21:50:42.000Z",
+              "respuestas": []
+            }
+          ]
+        }
+      }
+    },
+    "Etiqueta": {
+      "type": "object",
+      "properties": {
+        "idEtiqueta": {
+          "type": "integer",
+          "example": 1
+        },
+        "nombre": {
+          "type": "string",
+          "example": "Programación"
+        }
+      }
+    },
+    "Curso": {
+      "type": "object",
+      "properties": {
+        "descripcion": {
+          "type": "string",
+          "example": "Descripción del curso"
+        },
+        "objetivos": {
+          "type": "string",
+          "example": "Objetivos del curso"
+        },
+        "requisitos": {
+          "type": "string",
+          "example": "Requisitos del curso"
+        },
+        "idUsuario": {
+          "type": "integer",
+          "example": 4
+        },
+        "etiquetas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Etiqueta"
+          },
+          "example": [
+            {
+              "idEtiqueta": 1,
+              "nombre": "Programación"
+            },
+            {
+              "idEtiqueta": 4,
+              "nombre": "Diseño gráfico"
+            }
+          ]
+        },
+        "calificacion": {
+          "type": "string",
+          "nullable": true,
+          "example": 10
+        },
+        "rol": {
+          "type": "string",
+          "example": "Profesor o Estudiante"
+        },
+        "profesor o estudiante": {
+          "type": "string",
+          "example": "kikgamboa@gmail.com: Actualizar Perfil Sin contraseña"
         }
       }
     }
