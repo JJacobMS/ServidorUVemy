@@ -1,4 +1,5 @@
 const { sequelize, DataTypes } = require('sequelize');
+const { Op } = require('sequelize');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 const usuario = require('../models/usuarios');
 const db = require('../models/index');
@@ -17,7 +18,7 @@ self.getAll = async function (req, res){
         let offset = (pagina - 1) * limite;
 
         let data = await usuarios.findAll({
-            attributes: ['idUsuario', 'nombres', 'apellidos', 'imagen'],
+            attributes: ['idUsuario', 'nombres', 'apellidos', 'imagen', 'correoElectronico', 'esAdministrador'],
             limit: limite,
             offset: offset
         });
@@ -85,5 +86,40 @@ self.delete = async function(req, res){
         return res.status(500).json({ error: error.message });
     }
 }
+
+self.getAllBusqueda = async function (req, res) {
+    try {
+        let pagina = parseInt(req.params.pagina, 10);
+        if (pagina < 1) {
+            pagina = 1;
+        }
+
+        let limite = 6;
+        let offset = (pagina - 1) * limite;
+        let busqueda = req.query.busqueda || '';
+
+        let data = await usuarios.findAndCountAll({
+            where: {
+                [Op.or]: [
+                    { nombres: { [Op.like]: `%${busqueda}%` } },
+                    { apellidos: { [Op.like]: `%${busqueda}%` } }
+                ]
+            },
+            attributes: ['idUsuario', 'nombres', 'apellidos', 'imagen', 'correoElectronico', 'esAdministrador'],
+            limit: limite,
+            offset: offset
+        });
+
+        return res.status(200).json({
+            data: data.rows,
+            total: data.count,
+            totalPages: Math.ceil(data.count / limite),
+            currentPage: pagina
+        });
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
 
 module.exports = self;
