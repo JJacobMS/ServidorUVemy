@@ -12,7 +12,7 @@ self.iniciarSesion = async function (req, res) {
         let data = await usuarios.findOne({
             where: { correoElectronico: correoElectronico },
             raw: true,
-            attributes: ['idUsuario', 'correoElectronico', 'contrasena', 'nombres', 'apellidos']
+            attributes: ['idUsuario', 'correoElectronico', 'contrasena', 'nombres', 'apellidos', 'esAdministrador']
         });
 
         if (data === null)
@@ -35,7 +35,8 @@ self.iniciarSesion = async function (req, res) {
             apellidos: data.apellidos,
             correoElectronico: data.correoElectronico,
             idsEtiqueta: idsEtiqueta,
-            jwt: token
+            jwt: token,
+            esAdministrador: data.esAdministrador
         });
     } catch (error) {
         res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send({ detalles: [error.message] });

@@ -199,4 +199,38 @@ self.esEstudianteCurso = async function (idCurso, idUsuario){
     return estudianteClase != null;
 }
 
+self.autorizarAdmin = () => {
+    return async (req, res, next) => {
+        try {
+            const encabezadoAuth = req.header('Authorization');
+            if (!encabezadoAuth || !encabezadoAuth.startsWith('Bearer ')) {
+                return res.status(CodigosRespuesta.UNAUTHORIZED).json();
+            }
+
+            const token = encabezadoAuth.split(' ')[1];
+            const tokenDecodificado = jwt.verify(token, jwtSecret);
+
+            req.tokenDecodificado = tokenDecodificado;
+
+            const usuarioAdmin = await usuarios.findByPk(req.tokenDecodificado[claimTypes.Id], { attributes: ['esAdministrador'] });
+            if (usuarioAdmin == null) {
+                return res.status(CodigosRespuesta.NOT_FOUND).send("El usuario no está registrado");
+            }
+            if (usuarioAdmin.esAdministrador !== 1) {
+                return res.status(CodigosRespuesta.UNAUTHORIZED).send("Solo los administradores pueden realizar esta acción");
+            }
+
+            const minutosRestantes = (tokenDecodificado.exp - (new Date().getTime() / 1000)) / 60;
+            if (minutosRestantes < 5) {
+                const nuevoToken = generaToken(tokenDecodificado[claimTypes.Id], tokenDecodificado[claimTypes.Email], tokenDecodificado[claimTypes.GivenName]);
+                res.header("Set-Authorization", nuevoToken);
+            }
+            next();
+        } catch (error) {
+            return res.status(CodigosRespuesta.UNAUTHORIZED).json();
+        }
+    }
+}
+
+
 module.exports = self;
