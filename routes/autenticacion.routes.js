@@ -11,6 +11,4 @@ const upload = multer({ dest: 'uploads/' });
 
 router.post('/', checkSchema(esquemas.inicioSesionSchema()), validarFormatoPeticion, validarCamposPeticion(esquemas.inicioSesionSchema()), autenticacion.iniciarSesion);
 
-router.get('/tiempo', autenticacion.tiempo);
-
 module.exports = router;
