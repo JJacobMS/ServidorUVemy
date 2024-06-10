@@ -4,6 +4,10 @@ const mysql = require('mysql2/promise');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
+// Swagger
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger_output.json');
+
 dotenv.config();
 
 var bodyParser = require('body-parser')
@@ -16,7 +20,7 @@ var corsOptions = {
     methods: "GET,PUT,POST,DELETE",
 };
 
-//app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.use(cors(corsOptions));
 app.use("/api/comentarios", require('./routes/comentarios.routes'))
@@ -30,6 +34,7 @@ app.use("/api/perfil", require('./routes/perfil.routes'))
 app.use("/api/cursosetiquetas", require('./routes/cursosetiquetas.routes'))
 app.use("/api/usuarioscursos", require('./routes/usuarioscursos.routes'))
 app.use("/api/etiquetas", require('./routes/etiquetas.routes'))
+app.use("/api/usuarios", require('./routes/usuarios.routes'))
 
 const errorLogger = require('./middlewares/errorlogger.middleware');
 const errorHandler = require('./middlewares/errorhandler.middleware');
@@ -78,7 +83,7 @@ server.addService(documentoProto.VideoService.service,
     ActualizarVideoClase: actualizarVideoClase
 });
 
-server.bindAsync(`${process.env.SERVER_HOST}:${process.env.SERVER_PORT_GRPC}`, grpc.ServerCredentials.createInsecure(), ()=>{
+server.bindAsync(`${process.env.SERVER_HOST_GRPC}:${process.env.SERVER_PORT_GRPC}`, grpc.ServerCredentials.createInsecure(), ()=>{
     console.log(`Servidor gRPC en ejecución en el puerto ${process.env.SERVER_PORT_GRPC}`)
 });
 

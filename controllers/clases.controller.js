@@ -93,7 +93,7 @@ self.crear = async function(req, res){
 
         if(data == null) return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error al crear la clase");
 
-        return res.status(CodigosRespuesta.OK).json(data);
+        return res.status(CodigosRespuesta.CREATED).json(data);
     }catch(error){
         console.log(error);
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error);

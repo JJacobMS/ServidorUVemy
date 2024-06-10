@@ -1,14 +1,13 @@
 const router = require('express').Router();
 const usuarios = require('../controllers/usuarios.controller');
+const { checkSchema } = require('express-validator');
+const { recuperarUsuarioSchema, recuperarUsuariosBusquedaSchema } = require('../schemas/usuario.schema');
+const validarFormatoPeticion = require('../middlewares/validadorpeticiones.middleware');
+const autorizacion = require('../middlewares/autorizacion.middleware');
 
-//router.get('/', usuarios.getAll);
+const autorizarAdmin = autorizacion.autorizarAdmin;
 
-//router.get('/:id', usuarios.get);
-
-//router.post('/', usuarios.create);
-
-//router.put('/:id', usuarios.update);
-
-//router.delete('/:id', usuarios.delete);
+router.get('/:pagina', autorizarAdmin(), checkSchema(recuperarUsuarioSchema()), validarFormatoPeticion, usuarios.getAll);
+router.get('/buscar/:pagina', autorizarAdmin(), checkSchema(recuperarUsuariosBusquedaSchema()), validarFormatoPeticion, usuarios.getAllBusqueda);
 
 module.exports = router;

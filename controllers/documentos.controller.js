@@ -155,7 +155,6 @@ self.eliminarDocumentoClase = async function(req, res){
         });
 
         if(documento == null){
-            console.log(documento.dataValues.nombre);
             return res.status(CodigosRespuesta.NOT_FOUND).send("No existe el documento");
         }
         
@@ -165,7 +164,7 @@ self.eliminarDocumentoClase = async function(req, res){
 
         await documento.destroy();
 
-        return res.status(CodigosRespuesta.OK).json({idDocumento: idDocumento});
+        return res.status(CodigosRespuesta.NO_CONTENT).send();
     }catch(error){
         console.log(error);
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error)

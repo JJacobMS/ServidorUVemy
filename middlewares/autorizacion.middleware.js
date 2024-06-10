@@ -44,21 +44,21 @@ self.autorizarVerificacionCorreo = () => {
         try {
             const encabezadoAuth = req.header('Authorization');
             if (!encabezadoAuth.startsWith('Bearer '))
-                return res.status(CodigosRespuesta.UNAUTHORIZED).json({ detalles: ['Token de autorización no válido'] });
+                return res.status(CodigosRespuesta.BAD_REQUEST).json({ detalles: ['Token de autorización no válido'] });
 
             const token = encabezadoAuth.split(' ')[1];
             const tokenDecodificado = jwt.verify(token, jwtSecret);
 
             if (tokenDecodificado[claimTypes.CodigoVerificacion] !== req.body.codigoVerificacion || 
                 tokenDecodificado[claimTypes.Email] !== req.body.correoElectronico) {
-                return res.status(CodigosRespuesta.UNAUTHORIZED).json({ detalles: ['Código de verificación incorrecto'] });
+                return res.status(CodigosRespuesta.BAD_REQUEST).json({ detalles: ['Código de verificación incorrecto'] });
             }
 
             req.tokenDecodificado = tokenDecodificado;
 
             next();
         } catch (error) {
-            return res.status(CodigosRespuesta.UNAUTHORIZED).json({ detalles: ['Error al verificar el token de autorización'] });
+            return res.status(CodigosRespuesta.BAD_REQUEST).json({ detalles: ['Error al verificar el token de autorización'] });
         }
     }
 }
@@ -198,5 +198,39 @@ self.esEstudianteCurso = async function (idCurso, idUsuario){
 
     return estudianteClase != null;
 }
+
+self.autorizarAdmin = () => {
+    return async (req, res, next) => {
+        try {
+            const encabezadoAuth = req.header('Authorization');
+            if (!encabezadoAuth || !encabezadoAuth.startsWith('Bearer ')) {
+                return res.status(CodigosRespuesta.UNAUTHORIZED).json();
+            }
+
+            const token = encabezadoAuth.split(' ')[1];
+            const tokenDecodificado = jwt.verify(token, jwtSecret);
+
+            req.tokenDecodificado = tokenDecodificado;
+
+            const usuarioAdmin = await usuarios.findByPk(req.tokenDecodificado[claimTypes.Id], { attributes: ['esAdministrador'] });
+            if (usuarioAdmin == null) {
+                return res.status(CodigosRespuesta.NOT_FOUND).send("El usuario no está registrado");
+            }
+            if (usuarioAdmin.esAdministrador !== 1) {
+                return res.status(CodigosRespuesta.UNAUTHORIZED).send("Solo los administradores pueden realizar esta acción");
+            }
+
+            const minutosRestantes = (tokenDecodificado.exp - (new Date().getTime() / 1000)) / 60;
+            if (minutosRestantes < 5) {
+                const nuevoToken = generaToken(tokenDecodificado[claimTypes.Id], tokenDecodificado[claimTypes.Email], tokenDecodificado[claimTypes.GivenName]);
+                res.header("Set-Authorization", nuevoToken);
+            }
+            next();
+        } catch (error) {
+            return res.status(CodigosRespuesta.UNAUTHORIZED).json();
+        }
+    }
+}
+
 
 module.exports = self;
