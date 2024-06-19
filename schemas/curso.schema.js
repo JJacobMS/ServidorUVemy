@@ -43,17 +43,8 @@ const crearCursoSchema = () =>{
         etiquetas: {
             in: ['body'],
             notEmpty: {
-                options: (value) => {
-                    if (value) {
-                        const tamanoMaximo = 1 * 1024 * 1024; 
-                        if (Array.isArray(value) && value.every(item => Number.isInteger(item)) && value.length > tamanoMaximo) {
-                            throw new Error('La imagen debe tener un tamaño de 1MB o menos');
-                        }
-                    }
-                    return true;
-                },
-                errorMessage: 'Etiquetas inválidas',
-                bail: true
+                options: value => Array.isArray(value) && value.every(item => Number.isInteger(item)),
+                errorMessage: 'Etiquetas inválidas'
             }
         },
         file: {

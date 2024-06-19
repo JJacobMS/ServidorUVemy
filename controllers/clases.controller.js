@@ -1,5 +1,7 @@
 const { clases, cursos, documentos, tiposarchivos } = require('../models');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
+const claimTypes = require('../config/claimtypes');
+
 let self = {}
 
 self.obtenerPorId = async function(req, res){        
@@ -44,18 +46,20 @@ self.obtenerPorCurso = async function(req, res){
         if(req.params.idCurso == null) {
             return res.status(CodigosRespuesta.NOT_FOUND).json({ message : "No especificó el curso"})
         }
-        if(rol == null) {
-            return res.status(CodigosRespuesta.NOT_FOUND).json({ message : "No se ha especificado un rol"})
+        const idUsuario = req.tokenDecodificado[claimTypes.Id];
+        if(isNaN(idUsuario)) {
+            return res.status(CodigosRespuesta.NOT_FOUND).json({ message : "No se ha especificado un idUsuario valido"})
         }
         if(isNaN(req.params.idCurso)){
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el id no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al recuperar las clases del curso, el id no es valido");
         }
         let cursoRecuperado = await cursos.findByPk(req.params.idCurso);
         if(cursoRecuperado==null){
             return res.status(CodigosRespuesta.NOT_FOUND).send("No se encontró el curso");
         }
         let data = await clases.findAll({ where: {idCurso: req.params.idCurso}, attributes: ['idClase', 'nombre']})
-        if(rol == "Estudiante" ||rol == "Usuario") {
+        const idUsuarioDelCurso = cursoRecuperado.idUsuario
+        if(idUsuarioDelCurso != idUsuario) {
             let documentosPorClase = [];
             await Promise.all(data.map(async (clases) => {
                 let documentosClase = await documentos.findAll({ 
