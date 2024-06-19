@@ -4,7 +4,7 @@ const request = require('supertest');
 const CodigosRespuesta = require('../utils/codigosRespuesta');
 const { generaToken } = require('../services/jwttoken.service');
 const TOKEN = generaToken(6, 'enrique@gmail.com', 'Enrico');
-const TipoCurso = require('../utils/TipoCurso');
+const TipoCurso = require('../utils/tipoCurso');
 
 
 describe("GET /api/cursoslistas/:pagina", function(){
@@ -50,7 +50,7 @@ describe("GET /api/cursoslistas/:pagina?titulo=tituloejemplo", function(){
 
 
 
-describe("GET /api/cursoslistas/:pagina?tipoCursos=calificacion=calificacion", function(){
+describe("GET /api/cursoslistas/:pagina?calificacion=calificacion", function(){
   
     test("TestObtenerCursosListasTipoCursos", async () => {
       const response = await request(app).get("/api/cursoslistas/0").query({ calificacion : 8 }) .set('Authorization', `Bearer ${TOKEN}`).send();

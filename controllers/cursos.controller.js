@@ -150,13 +150,13 @@ self.update = async function(req, res){
         const idUsuario = req.tokenDecodificado[claimTypes.Id];
         if(isNaN(req.params.idCurso) || isNaN(req.body.idCurso)){
             console.log("Error al actualizar el curso, el id no es valido");
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el id no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al actualizar el curso, el id no es valido");
         } else if(req.params.idCurso != req.body.idCurso){
             console.log("Error al actualizar el curso, los id no coinciden");
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, los id no coinciden");
+            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al actualizar el curso, los id no coinciden");
         } else if(isNaN(idUsuario)){
             console.log("Error al actualizar el curso, el idUsuario no es valido");
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el idUsuario no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al actualizar el curso, el idUsuario no es valido");
         }
 
         let idCurso = req.params.idCurso;
@@ -165,7 +165,7 @@ self.update = async function(req, res){
         });
         if(cursoRecuperado.idUsuario != idUsuario){
             console.log("CodigosRespuesta.NOT_FOUND cursoRecuperado.idUsuario");
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el idUsuario no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al actualizar el curso, el idUsuario no es valido");
         }
 
         let body = {
@@ -180,7 +180,7 @@ self.update = async function(req, res){
         transaccion = await sequelize.transaction();
 
         if(isNaN(req.body.idDocumento)){
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar la miniatura, el idDocumento no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al actualizar la miniatura, el idDocumento no es valido");
         }
         
         let resultadoArchivo = await actualizarArchivoDelCurso(req.body.idDocumento, req.file, transaccion);
@@ -199,13 +199,13 @@ self.update = async function(req, res){
         if(resultadoEtiquetas !== 404 && resultadoEtiquetas !== 204){
             console.log("Error al actualizar el curso");
             await transaccion.rollback();
-            return res.status(resultadoEtiquetas).send("Error al actualizar las etiquetas");
+            return res.status(resultadoEtiquetas).json("Error al actualizar las etiquetas");
         }
 
         for (let etiquetaId of req.body.etiquetas) {
             if(isNaN(etiquetaId)){
                 await transaccion.rollback();
-                return res.status(CodigosRespuesta.NOT_FOUND).send("Error al crear una de las etiquetas, el id no es valido");
+                return res.status(CodigosRespuesta.NOT_FOUND).json("Error al crear una de las etiquetas, el id no es valido");
             }
             let etiquetaCreada = await crearCursosEtiquetas(id, etiquetaId, transaccion);
             if(etiquetaCreada.status!=201){
@@ -214,7 +214,7 @@ self.update = async function(req, res){
             }
         }
         await transaccion.commit();
-        return res.status(CodigosRespuesta.NO_CONTENT).send();
+        return res.status(CodigosRespuesta.NO_CONTENT).json();
     }catch(error){
         if (transaccion && !transaccion.finished) {
             await transaccion.rollback();
