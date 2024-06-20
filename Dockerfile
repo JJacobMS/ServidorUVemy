@@ -4,6 +4,9 @@ FROM node:14
 #Exponer el puerto que utiliza la API
 EXPOSE 3000
 
+#Exponer el puerto que utiliza gRPC
+EXPOSE 3001
+
 #Directorio de trabajo en el contenedor
 WORKDIR /app
 
@@ -17,7 +20,7 @@ COPY package*.json ./
 COPY .sequelizerc ./sequelizerc
 
 #Copiar el resto de aplicación
-COPY . /app
+COPY . .
 
 #Instalar las dependencias del proyecto
 RUN npm install
