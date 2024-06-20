@@ -18,11 +18,14 @@ self.obtenerEstadisticasCurso = async function(req, res){
       const clasesConComentarios = await generarEstadisticas.obtenerClasesConComentarios(idCursoSolicitado);
       const etiquetasCoinciden = await generarEstadisticas.recuperarEtiquetas(idCursoSolicitado);
       const estudiantesCurso = await generarEstadisticas.recuperarEstudiantesCurso(idCursoSolicitado);
+
+      const promCalificacion = Number.parseFloat(calificaciontotal.dataValues.promedioCalificacion);
+      const promComentarios = comentariosTotales[0].total/clasesConComentarios.length;
       
       respuestaEstadisticas = {
         nombre: cursoSolicitado.titulo,
-        calificacionCurso: Number.parseFloat(calificaciontotal.dataValues.promedioCalificacion),
-        promedioComentarios: comentariosTotales[0].total/clasesConComentarios.length,
+        calificacionCurso: ( isNaN(promCalificacion)) ? 0:  promCalificacion,
+        promedioComentarios: (isNaN(promComentarios)) ? 0: promComentarios,
         estudiantesInscritos: estudiantesCurso.length,
         etiquetasCoinciden: etiquetasCoinciden,
         clases: clasesConComentarios,

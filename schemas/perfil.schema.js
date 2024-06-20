@@ -134,7 +134,8 @@ self.registrarUsuarioEsquema = () => {
                 errorMessage: 'El código de verificación debe tener exactamente 4 números',
                 bail: true,
             },
-        }
+        },
+        esAdministrador: {}
     }
 }
 
@@ -266,7 +267,8 @@ self.actualizarPerfilSchema = () => {
                 errorMessage: 'La contraseña debe contener al menos una mayúscula, una minúscula y un número',
                 bail: true,
             },
-        }
+        },
+        esAdministrador: {}
     }
 }
 
@@ -309,7 +311,8 @@ self.actualizarEtiquetasSchema = () => {
                 errorMessage: 'idsEtiqueta debe ser un arreglo de números',
                 bail: true,
             },
-        }
+        },
+        esAdministrador: {}
     }
 }
 
