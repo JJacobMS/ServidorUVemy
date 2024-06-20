@@ -23,7 +23,8 @@ self.get = async function(req, res){
         let etiqueta = req.query.etiqueta;
         let tipoCursos = req.query.tipoCursos;
         let calificacion = req.query.calificacion;
-
+        
+        console.log("titulo "+titulo+" "+"etiqueta "+etiqueta+" "+"tipoCursos "+tipoCursos+" "+"calificacion "+calificacion);
         if(isNaN(id)){
             return res.status(CodigosRespuesta.NOT_FOUND).json("Error al recuperar el recurso, la pagina no es valida");
         }
@@ -63,6 +64,7 @@ self.get = async function(req, res){
                 return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send();
             }
             if (cursosRecuperadosEtiquetas.length === 0) {
+                console.log("cursosRecuperadosEtiquetas.length === 0");
                 return res.status(CodigosRespuesta.NOT_FOUND).json("No se encontraron cursos");
             }
             return res.status(CodigosRespuesta.OK).json(cursosRecuperadosEtiquetas)
@@ -186,6 +188,7 @@ async function buscarCursosPorTipoCurso(tipoCursos, idUsuario, offset, limit) {
                 limit: limit,
                 offset: offset
             });
+            console.log("tamaño"+cursosFiltrados.length);
         }
 
         if(tipoCursos == TipoCurso.CURSOSINSCRITOS){
@@ -206,7 +209,7 @@ async function buscarCursosPorTipoCurso(tipoCursos, idUsuario, offset, limit) {
 
         let titulo = undefined;
         let cursosRecuperados = await RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo);
-
+        console.log("tamaño2 "+cursosRecuperados.length);
         return cursosRecuperados;
 
     }catch(error){

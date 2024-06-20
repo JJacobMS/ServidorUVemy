@@ -188,7 +188,7 @@ self.actualizarArchivoDelCurso = async function(idDocumento, documento, transacc
             return CodigosRespuesta.NO_CONTENT
         }
     }catch(error){
-        return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message:error.message  }
+        return  CodigosRespuesta.INTERNAL_SERVER_ERROR
     }
 }
 

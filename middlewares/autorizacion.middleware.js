@@ -77,9 +77,10 @@ self.autorizarIdCurso = (roles) =>{
             if(cursoDelProfesor == null){
                 return res.status(CodigosRespuesta.NOT_FOUND).send("El curso no existe");
             }
-
+            console.log("cursoDelProfesor.idUsuario"+cursoDelProfesor.idUsuario+" idUsuario"+idUsuario);
             if(cursoDelProfesor.idUsuario == idUsuario){
                 rolesUsuarioActual = "Profesor";
+                console.log("Profesor");
             }
 
             if(await esEstudianteCurso(cursoDelProfesor.idCurso, idUsuario)){
@@ -87,9 +88,10 @@ self.autorizarIdCurso = (roles) =>{
             }
 
             if (roles.split(',').indexOf(rolesUsuarioActual) == -1){
+                console.log("No está autorizado para acceder al curso");
                 return res.status(CodigosRespuesta.UNAUTHORIZED).send("No está autorizado para acceder al curso");
             }
-                        
+                      
             next();
 
         }catch(error){
