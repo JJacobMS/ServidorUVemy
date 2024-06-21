@@ -62,7 +62,6 @@ self.get = async function(req, res){
             attributes: ['nombres','apellidos','correoElectronico'],
             where: {idUsuario: cursoRecuperado.idUsuario}
         });
-        console.log(profesor);
         const idUsuario = req.tokenDecodificado[claimTypes.Id];
         const esEstudiante = await esEstudianteCurso(idCurso, idUsuario);
         if(cursoRecuperado.idUsuario==idUsuario)
@@ -149,14 +148,11 @@ self.update = async function(req, res){
     try{
         const idUsuario = req.tokenDecodificado[claimTypes.Id];
         if(isNaN(req.params.idCurso) || isNaN(req.body.idCurso)){
-            console.log("Error al actualizar el curso, el id no es valido");
-            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al actualizar el curso, el id no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el id no es valido");
         } else if(req.params.idCurso != req.body.idCurso){
-            console.log("Error al actualizar el curso, los id no coinciden");
-            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al actualizar el curso, los id no coinciden");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, los id no coinciden");
         } else if(isNaN(idUsuario)){
-            console.log("Error al actualizar el curso, el idUsuario no es valido");
-            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al actualizar el curso, el idUsuario no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el idUsuario no es valido");
         }
 
         let idCurso = req.params.idCurso;
@@ -164,29 +160,28 @@ self.update = async function(req, res){
             attributes: ['descripcion', 'objetivos', 'requisitos', 'idUsuario']
         });
         if(cursoRecuperado.idUsuario != idUsuario){
-            console.log("CodigosRespuesta.NOT_FOUND cursoRecuperado.idUsuario");
-            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al actualizar el curso, el idUsuario no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar el curso, el idUsuario no es valido");
         }
-
+        let id = idCurso;
+        let etiquetas = req.body.etiquetas;
         let body = {
-            id: req.params.idCurso,
+            id: idCurso,
             titulo: req.body.titulo,
             descripcion: req.body.descripcion,
             objetivos: req.body.objetivos,
             requisitos: req.body.requisitos,
         };
-        let id = req.params.idCurso;
 
         transaccion = await sequelize.transaction();
 
         if(isNaN(req.body.idDocumento)){
-            return res.status(CodigosRespuesta.NOT_FOUND).json("Error al actualizar la miniatura, el idDocumento no es valido");
+            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al actualizar la miniatura, el idDocumento no es valido");
         }
         
         let resultadoArchivo = await actualizarArchivoDelCurso(req.body.idDocumento, req.file, transaccion);
         if(resultadoArchivo !== 404 && resultadoArchivo !== 204){
             await transaccion.rollback();
-            return res.status(resultadoArchivo).json("Error al actualizar la miniatura");
+            return res.status(resultadoArchivo).send("Error al actualizar la miniatura");
         }
 
         let data = await curso.update(body, {where: 
@@ -197,29 +192,27 @@ self.update = async function(req, res){
         resultadoEtiquetas = await eliminarEtiquetasDelCurso(id, transaccion);
 
         if(resultadoEtiquetas !== 404 && resultadoEtiquetas !== 204){
-            console.log("Error al actualizar el curso");
             await transaccion.rollback();
-            return res.status(resultadoEtiquetas).json("Error al actualizar las etiquetas");
+            return res.status(resultadoEtiquetas).send("Error al actualizar las etiquetas");
         }
-
-        for (let etiquetaId of req.body.etiquetas) {
+        for (let etiquetaId of etiquetas) {
             if(isNaN(etiquetaId)){
                 await transaccion.rollback();
-                return res.status(CodigosRespuesta.NOT_FOUND).json("Error al crear una de las etiquetas, el id no es valido");
+                return res.status(CodigosRespuesta.NOT_FOUND).send("Error al crear una de las etiquetas, el id no es valido");
             }
             let etiquetaCreada = await crearCursosEtiquetas(id, etiquetaId, transaccion);
             if(etiquetaCreada.status!=201){
                 await transaccion.rollback();
-                return res.status(CodigosRespuesta.BAD_REQUEST).json("Error al crear una de las etiquetas")
+                return res.status(CodigosRespuesta.BAD_REQUEST).send("Error al crear una de las etiquetas")
             }
         }
         await transaccion.commit();
-        return res.status(CodigosRespuesta.NO_CONTENT).json();
+        return res.status(CodigosRespuesta.NO_CONTENT).send();
     }catch(error){
         if (transaccion && !transaccion.finished) {
             await transaccion.rollback();
         }
-        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error interno");
     }
 }
 
@@ -238,13 +231,10 @@ self.delete = async function(req, res){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Error al eliminar el curso, el idUsuario no es valido");
         }
         data = await curso.destroy({ where : {idCurso:id}});
-        if(data === 1){
-            return res.status(CodigosRespuesta.NO_CONTENT).send("Se ha eliminado el curso")
-        }else{
-            return res.status(CodigosRespuesta.NOT_FOUND).send("Error al eliminar el curso")
-        }
+        return res.status(CodigosRespuesta.NO_CONTENT).send()
+        
     }catch(error){
-        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json();
     }
 }
 

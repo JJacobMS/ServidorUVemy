@@ -77,7 +77,6 @@ self.autorizarIdCurso = (roles) =>{
             if(cursoDelProfesor == null){
                 return res.status(CodigosRespuesta.NOT_FOUND).send("El curso no existe");
             }
-
             if(cursoDelProfesor.idUsuario == idUsuario){
                 rolesUsuarioActual = "Profesor";
             }
@@ -89,7 +88,7 @@ self.autorizarIdCurso = (roles) =>{
             if (roles.split(',').indexOf(rolesUsuarioActual) == -1){
                 return res.status(CodigosRespuesta.UNAUTHORIZED).send("No está autorizado para acceder al curso");
             }
-                        
+                      
             next();
 
         }catch(error){
@@ -128,7 +127,6 @@ self.autorizarIdClase = (roles) =>{
             next();
 
         }catch(error){
-            console.log(error);
             return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send(error);
         }
     }
@@ -164,7 +162,6 @@ self.autorizarIdDocumento = (roles) =>{
             next();
 
         }catch(error){
-            console.log(error);
             return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send(error);
         }
     }

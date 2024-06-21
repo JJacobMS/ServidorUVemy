@@ -11,6 +11,7 @@ const etiquetasModel = db.etiquetas;
 const usuarioscursosModel = db.usuarioscursos;
 const claimTypes = require('../config/claimtypes');
 const { Op } = require('sequelize');
+const { off } = require('pdfkit');
 
 
 
@@ -23,7 +24,7 @@ self.get = async function(req, res){
         let etiqueta = req.query.etiqueta;
         let tipoCursos = req.query.tipoCursos;
         let calificacion = req.query.calificacion;
-
+        
         if(isNaN(id)){
             return res.status(CodigosRespuesta.NOT_FOUND).json("Error al recuperar el recurso, la pagina no es valida");
         }
@@ -43,7 +44,6 @@ self.get = async function(req, res){
         for (let index = 0; index <= id; index++) {
             offset += 6;
         }
-
         if(etiqueta != undefined && !isNaN(etiqueta)){
             let cursosRecuperadosEtiquetas = await buscarCursosPorEtiqueta(etiqueta, offset, limit);
             
@@ -102,8 +102,6 @@ self.get = async function(req, res){
         }
         return res.status(CodigosRespuesta.OK).json(cursosRecuperados)
     }catch(error){
-        console.log(error.message);
-        console.log(error);
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
@@ -127,13 +125,11 @@ async function buscarCursosPorEtiqueta(etiquetaId, offset, limit) {
 
         const cursoIds = cursosFiltrados.map(cur => cur.idCurso);
         let titulo = undefined;
-        let cursosRecuperados = await RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo);
+        let cursosRecuperados = await RecuperarCursosPorDocumento(0, limit, cursoIds, titulo);
 
         return cursosRecuperados;
 
     }catch(error){
-        console.log(error.message);
-        console.log(error);
         let cursosRecuperados = undefined;
         return cursosRecuperados;
     }
@@ -160,13 +156,11 @@ async function buscarCursosPorCalificacion(calificacion, offset, limit) {
         const cursoIds = cursosFiltrados.map(cur => cur.idCurso);
 
         let titulo = undefined;
-        let cursosRecuperados = await RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo);
+        let cursosRecuperados = await RecuperarCursosPorDocumento(0, limit, cursoIds, titulo);
 
         return cursosRecuperados;
 
     }catch(error){
-        console.log(error.message);
-        console.log(error);
         let cursosRecuperados = undefined;
         return cursosRecuperados;
     }
@@ -175,11 +169,8 @@ async function buscarCursosPorCalificacion(calificacion, offset, limit) {
 
 async function buscarCursosPorTipoCurso(tipoCursos, idUsuario, offset, limit) {
     try{
-        console.log(tipoCursos);
-        console.log(idUsuario);
         let cursosFiltrados
         if(tipoCursos == TipoCurso.CURSOSCREADOS){
-            console.log("TipoCurso.CURSOSCREADOS");
             cursosFiltrados = await curso.findAll({
                 where: {idUsuario: idUsuario},
                 attributes: ['idCurso'],
@@ -189,7 +180,6 @@ async function buscarCursosPorTipoCurso(tipoCursos, idUsuario, offset, limit) {
         }
 
         if(tipoCursos == TipoCurso.CURSOSINSCRITOS){
-            console.log("TipoCurso.CURSOSINSCRITOS");
             cursosFiltrados = await usuarioscursosModel.findAll({
                 attributes: [
                     'idCurso'
@@ -205,13 +195,11 @@ async function buscarCursosPorTipoCurso(tipoCursos, idUsuario, offset, limit) {
         const cursoIds = cursosFiltrados.map(cur => cur.idCurso);
 
         let titulo = undefined;
-        let cursosRecuperados = await RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo);
-
+        offset = 0;
+        let cursosRecuperados = await RecuperarCursosPorDocumento(0, limit, cursoIds, titulo);
         return cursosRecuperados;
 
     }catch(error){
-        console.log(error.message);
-        console.log(error);
         let cursosRecuperados = undefined;
         return cursosRecuperados;
     }
@@ -228,7 +216,7 @@ async function RecuperarCursosPorDocumento(offset, limit, cursoIds, titulo){
             [Op.like]: '%' + titulo + '%'
         };
     }
-
+    //Si es por creados entondes offset
     const cursosRecuperados = await curso.findAll({
         attributes: ['idCurso', 'titulo'],
         where: whereCondition,
