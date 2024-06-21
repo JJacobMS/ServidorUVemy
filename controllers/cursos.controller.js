@@ -62,7 +62,6 @@ self.get = async function(req, res){
             attributes: ['nombres','apellidos','correoElectronico'],
             where: {idUsuario: cursoRecuperado.idUsuario}
         });
-        console.log(profesor);
         const idUsuario = req.tokenDecodificado[claimTypes.Id];
         const esEstudiante = await esEstudianteCurso(idCurso, idUsuario);
         if(cursoRecuperado.idUsuario==idUsuario)
@@ -208,13 +207,11 @@ self.update = async function(req, res){
             }
         }
         await transaccion.commit();
-        return res.status(CodigosRespuesta.CREATED).json();
+        return res.status(CodigosRespuesta.NO_CONTENT).send();
     }catch(error){
         if (transaccion && !transaccion.finished) {
             await transaccion.rollback();
         }
-        console.log(error);
-        console.log(error.message); 
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).send("Error interno");
     }
 }
@@ -234,7 +231,7 @@ self.delete = async function(req, res){
             return res.status(CodigosRespuesta.NOT_FOUND).send("Error al eliminar el curso, el idUsuario no es valido");
         }
         data = await curso.destroy({ where : {idCurso:id}});
-        return res.status(CodigosRespuesta.CREATED).json()
+        return res.status(CodigosRespuesta.NO_CONTENT).send()
         
     }catch(error){
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json();

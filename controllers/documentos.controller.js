@@ -66,7 +66,6 @@ self.crearArchivoDelCurso = async function(documento, idCurso, transaccion){
         }
         return { status: CodigosRespuesta.CREATED, message: documentoCreado };
     }catch(error){
-        console.log(error);
         return { status: CodigosRespuesta.INTERNAL_SERVER_ERROR, message: error.message };
     }
 }
@@ -166,7 +165,6 @@ self.eliminarDocumentoClase = async function(req, res){
 
         return res.status(CodigosRespuesta.NO_CONTENT).send();
     }catch(error){
-        console.log(error);
         return res.status(CodigosRespuesta.INTERNAL_SERVER_ERROR).json(error)
     }
 }
@@ -181,10 +179,8 @@ self.actualizarArchivoDelCurso = async function(idDocumento, documento, transacc
         });
         
         if(data[0]==0){
-            console.log("NOT_FOUND");
             return CodigosRespuesta.NOT_FOUND
         }else{
-            console.log("NO_CONTENT");
             return CodigosRespuesta.NO_CONTENT
         }
     }catch(error){
